@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Szafer Panel" />
+  <meta name="theme-color" content="#05060c" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23f7b733' rx='20' width='100' height='100'/><text x='50' y='68' text-anchor='middle' font-size='55'>🎵</text></svg>" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>Szafer Panel v10.3 · Planer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(function(r) { window._swRegistration = r; console.log('[SW] OK'); })
+          .catch(function(e) { console.warn('[SW] Failed:', e); });
+      });
+    }
+  </script>
+</head>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand szafer-brand">
+        <div class="szafer-logo-outer" id="szaferLogoHome" title="Wróć do Panelu głównego">
+          <div class="szafer-logo-inner">⚡</div>
+        </div>
+        <div class="szafer-brand-copy">
+          <div class="szafer-brand-title">
+            <span class="szafer-word-szafer">SZAFER</span><span class="szafer-word-sep"> </span><span class="szafer-word-panel">PANEL</span>
+          </div>
+          <div class="szafer-brand-sub">
+            <span class="szafer-sub-char" style="--i:0">S</span><span class="szafer-sub-char" style="--i:1">Z</span><span class="szafer-sub-char" style="--i:2">A</span><span class="szafer-sub-char" style="--i:3">F</span><span class="szafer-sub-char" style="--i:4">E</span><span class="szafer-sub-char" style="--i:5">R</span><span class="szafer-sub-char szafer-sub-space" style="--i:6"> </span><span class="szafer-sub-char" style="--i:7">C</span><span class="szafer-sub-char" style="--i:8">E</span><span class="szafer-sub-char" style="--i:9">N</span><span class="szafer-sub-char" style="--i:10">T</span><span class="szafer-sub-char" style="--i:11">R</span><span class="szafer-sub-char" style="--i:12">U</span><span class="szafer-sub-char" style="--i:13">M</span><span class="szafer-sub-char szafer-sub-space" style="--i:14"> </span><span class="szafer-sub-char" style="--i:15">D</span><span class="szafer-sub-char" style="--i:16">O</span><span class="szafer-sub-char" style="--i:17">W</span><span class="szafer-sub-char" style="--i:18">O</span><span class="szafer-sub-char" style="--i:19">D</span><span class="szafer-sub-char" style="--i:20">Z</span><span class="szafer-sub-char" style="--i:21">E</span><span class="szafer-sub-char" style="--i:22">N</span><span class="szafer-sub-char" style="--i:23">I</span><span class="szafer-sub-char" style="--i:24">A</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="authbar">
+        <!-- hidden compat chips — JS still reads/writes these -->
+        <span id="onlineCountChip" style="display:none">0</span>
+        <span id="authStatus"      style="display:none"></span>
+        <span id="userLabel"       style="display:none">—</span>
+
+        
+        <!-- ── Grupa: Status połączenia + Mood ── -->
+        <div class="authbar-group">
+  <span id="dbStatus" class="chip err" style="font-size:10px;letter-spacing:.03em"><span class="dot"></span>Brak połączenia</span>
+  <button id="moodBtn" class="mood-pill">
+            <span class="mood-pill-spark">✦</span>
+            <span class="mood-pill-label">m00d</span>
+            <span id="moodOnlineCount" class="mood-pill-count">0</span>
+          </button>
+        </div>
+
+        <div class="authbar-divider"></div>
+
+        <!-- ── Grupa: Użytkownik + Akcje ── -->
+        <div class="authbar-group">
+
+
+        <div class="prof-dropdown-wrap">
+          <button id="topbarAvatarBtn" class="tb-avatar-btn" title="Edytuj profil">
+            <span id="tbAvatarCircle" class="tb-avatar-circle">?</span>
+            <span id="tbUserName" class="tb-user-name">—</span>
+            <span id="tbOnlineDot" class="tb-online-dot off"></span>
+          </button>
+          <!-- PROFILE DROPDOWN (injected here by JS openProfileModal) -->
+          <div id="profileDropdown" class="prof-dropdown hidden"></div>
+        <div id="profileModal" class="prof-dropdown-panel hidden">
+      <div class="day-modal-header" style="background:linear-gradient(135deg,rgba(247,183,51,.12),rgba(196,113,237,.08),rgba(78,205,196,.06))">
+        <div>
+          <div class="day-modal-eyebrow">✨ Twój profil</div>
+          <div class="day-modal-title" style="font-size:22px" id="profModalTitle">Edytuj profil</div>
+          <div class="day-modal-sub">Widoczny dla całej ekipy w czasie rzeczywistym</div>
+        </div>
+        <button id="profileModalClose" class="day-modal-close">✕</button>
+      </div>
+      <div class="day-modal-body" style="max-height:75vh;overflow-y:auto">
+
+        <!-- AVATAR + NAME ROW -->
+        <div class="prof-top-row">
+          <div class="prof-avatar-col">
+            <div id="profAvatarPreview" class="prof-avatar-preview">S</div>
+            <div class="prof-avatar-label" style="margin-top:6px">Avatar</div>
+          </div>
+          <div class="prof-name-col">
+            <div class="field" style="margin-bottom:10px">
+              <label for="profDisplayName">Nazwa użytkownika</label>
+              <input id="profDisplayName" type="text" placeholder="Np. Szafer, blajetttp, Skat..."
+                  oninput="(function(v){var el=document.getElementById('tbUserName');if(el&&v)el.textContent=v;})(this.value)" />
+            </div>
+            <div class="field">
+              <label for="profEmail">Email</label>
+              <input id="profEmail" type="email" placeholder="np. blajetttp@gmail.com (dla blajetttp)" />
+            </div>
+          </div>
+        </div>
+
+        <!-- AVATAR PICKER -->
+        <div id="profAvatarPicker" class="prof-avatar-picker" style="margin:12px 0 0">
+          <button class="prof-av-btn" data-av="😎">😎</button>
+          <button class="prof-av-btn" data-av="🔥">🔥</button>
+          <button class="prof-av-btn" data-av="🎵">🎵</button>
+          <button class="prof-av-btn" data-av="🎤">🎤</button>
+          <button class="prof-av-btn" data-av="🎧">🎧</button>
+          <button class="prof-av-btn" data-av="🎬">🎬</button>
+          <button class="prof-av-btn" data-av="💎">💎</button>
+          <button class="prof-av-btn" data-av="⚡">⚡</button>
+          <button class="prof-av-btn" data-av="🦊">🦊</button>
+          <button class="prof-av-btn" data-av="🐺">🐺</button>
+          <button class="prof-av-btn" data-av="👑">👑</button>
+          <button class="prof-av-btn" data-av="🎯">🎯</button>
+          <button class="prof-av-btn" data-av="🚀">🚀</button>
+          <button class="prof-av-btn" data-av="💀">💀</button>
+          <button class="prof-av-btn" data-av="🤖">🤖</button>
+          <button class="prof-av-btn" data-av="👽">👽</button>
+        </div>
+
+        <div class="prof-sep" style="margin:14px 0"></div>
+
+        <!-- MOOD -->
+        <div class="prof-section-label">🎭 Twój mood</div>
+        <div id="profMoodPicker" class="tp-mood-row" style="justify-content:flex-start;gap:8px;flex-wrap:wrap;margin:8px 0 4px">
+          <button class="tp-mood-btn" data-mood="🔥">🔥</button>
+          <button class="tp-mood-btn" data-mood="😎">😎</button>
+          <button class="tp-mood-btn" data-mood="🎵">🎵</button>
+          <button class="tp-mood-btn" data-mood="💪">💪</button>
+          <button class="tp-mood-btn" data-mood="😴">😴</button>
+          <button class="tp-mood-btn" data-mood="🤔">🤔</button>
+          <button class="tp-mood-btn" data-mood="🚀">🚀</button>
+          <button class="tp-mood-btn" data-mood="😤">😤</button>
+          <button class="tp-mood-btn" data-mood="🎯">🎯</button>
+          <button class="tp-mood-btn" data-mood="❄️">❄️</button>
+        </div>
+
+        <!-- QUICK NOTE -->
+        <div class="prof-section-label" style="margin-top:12px">📝 Status / notatka</div>
+        <textarea id="profQuickNote" class="tp-quick-note" placeholder="Co dziś robisz? Napisz coś do ekipy..." style="margin-top:6px;width:100%;box-sizing:border-box"></textarea>
+
+        <div class="prof-sep" style="margin:14px 0"></div>
+
+        <!-- PASSWORD -->
+        <div class="prof-section-label">🔒 Zmiana hasła</div>
+        <div class="field" style="margin:8px 0">
+          <label for="profNewPassword">Nowe hasło (zostaw puste aby nie zmieniać)</label>
+          <input id="profNewPassword" type="password" placeholder="••••••••" />
+        </div>
+        <div class="field" style="margin-bottom:8px">
+          <label for="profConfirmPassword">Potwierdź nowe hasło</label>
+          <input id="profConfirmPassword" type="password" placeholder="••••••••" />
+        </div>
+
+        <div id="profMessage" class="helper" style="min-height:18px"></div>
+      </div>
+      <div class="day-modal-footer">
+        <button id="profSaveBtn" class="btn">💾 Zapisz profil</button>
+        <button id="profCancelBtn" class="btn-ghost">Anuluj</button>
+      </div>
+  </div>
+        </div>
+
+        <div class="auth-actions-col">
+          <!-- Notification Bell -->
+          <div class="notif-bell-wrap">
+            <button id="notifBellBtn" class="notif-bell-btn hidden" title="Powiadomienia">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </button>
+            <div id="notifDropdown" class="notif-dropdown hidden"></div>
+          </div>
+
+          <button id="changelogOpenBtn" class="btn-changelog cl-attention hidden" title="Zobacz co nowego w panelu">
+            <span class="btn-cl-spark">✦</span>
+            <span class="btn-cl-text">Lista Zmian</span>
+            <span class="btn-cl-badge">v10.3</span>
+          </button>
+          <div class="push-logout-col">
+            <button id="logoutBtn" class="btn-logout-tb hidden">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Wyloguj
+            </button>
+            <!-- Push Toggle — pod Wyloguj -->
+            <button id="pushToggleBtn" class="push-switch-btn hidden" title="Zarządzaj powiadomieniami push">
+              <span class="push-switch-track"><span class="push-switch-thumb"></span></span>
+              <span class="push-switch-icon">🔔</span>
+              <span class="push-switch-label">Push</span>
+              <span class="push-switch-state" id="pushSwitchState">OFF</span>
+            </button>
+          </div>
+        </div>
+      
+        </div>
+      </div>
+    </header>
+    <div class="szafer-todo-wrap">
+      <a href="https://szafer-lista-zadan.netlify.app" target="_blank" rel="noopener" class="szafer-todo-btn">
+        📋 Lista zadań Szafera
+      </a>
+      <a href="https://szafer-toolkit.netlify.app/" target="_blank" rel="noopener" class="btn-toolkit">
+        🛠️ Szafer Toolkit
+      </a>
+      <a href="https://drive.google.com/drive/u/0/folders/1gxTFz8A9mfRk2WobAIkD-jcPurj6WstW" target="_blank" rel="noopener" class="btn-drive">
+        📁 Wszystkie Materiały
+      </a>
+    </div>
+
+
+    
+  <!-- JS-compat hidden metrics/goals ghost -->
+  <div style="display:none" aria-hidden="true">
+    <div id="metricMonth"></div>
+    <div id="metricItems">0</div>
+    <div id="metricTasks">0</div>
+    <div id="metricMeetings">0</div>
+    <div id="goalTrack" contenteditable="true">Singiel 1</div>
+    <div id="goalPosts" contenteditable="true">3-4</div>
+    <div id="goalStreams" contenteditable="true">+ X słuchaczy</div>
+    <div id="goalNote" contenteditable="true">—</div>
+  </div>
+
+
+
+    <div id="appShell" class="hidden">
+      <div class="tabs">
+        <button class="tab active" data-tab="calendar"><span class="tab-icon">🏠</span> Panel</button>
+        <button class="tab" data-tab="tasks"><span class="tab-icon">✅</span> Zadania</button>
+        <button class="tab" data-tab="planning"><span class="tab-icon">🗂️</span> Planowanie</button>
+        <button class="tab" data-tab="chat"><span class="tab-icon">💬</span> Chat</button>
+        <button class="tab" data-tab="upload"><span class="tab-icon">📁</span> Upload</button>
+        <button class="tab tab-harm" data-tab="harmonogram"><span class="tab-icon">🗓️</span> Harmonogram</button>
+        <button class="tab tab-tibia" data-tab="tibia"><span class="tab-icon">⚔️</span> Tibia SzaferPanel</button>
+      </div>
+
+  <!-- ═══ CHAT TAB ═══ -->
+  <section class="tab-panel hidden" data-tab-panel="chat">
+    <div class="chat-tab-wrapper">
+    <div class="chat-container chat-tab-container">
+      <div class="chat-sidebar">
+        <div class="chat-sidebar-header">
+          <div class="chat-logo-mini">💬</div>
+          <div>
+            <div class="section-title">Team Chat</div>
+            <div class="subtitle" style="margin-top:4px">Szafer · blajetttp · Skat</div>
+          </div>
+        </div>
+        <!-- KANAŁY -->
+        <div class="chat-sidebar-section-label">Kanały</div>
+        <div class="chat-channels" id="chatChannelList">
+          <div class="chat-channel active" data-channel="general" data-type="channel">
+            <span class="chat-channel-icon">#</span>
+            <span>Ogólny</span>
+          </div>
+          <div class="chat-channel" data-channel="pomysly" data-type="channel">
+            <span class="chat-channel-icon">💡</span>
+            <span>Pomysły</span>
+          </div>
+          <div class="chat-channel" data-channel="feedback" data-type="channel">
+            <span class="chat-channel-icon">🎯</span>
+            <span>Feedback</span>
+          </div>
+        </div>
+        <!-- DM -->
+        <div class="chat-sidebar-section-label" style="margin-top:8px">Wiadomości prywatne</div>
+        <div class="chat-channels" id="chatDmList">
+          <div class="chat-channel" data-channel="dm__szafer" data-type="dm" data-dm-target="szafer">
+            <span class="chat-dm-avatar av-szafer">S</span>
+            <span>Szafer</span>
+            <span class="chat-dm-dot" id="dmDot_szafer"></span>
+          </div>
+          <div class="chat-channel" data-channel="dm__blajetttp" data-type="dm" data-dm-target="blajetttp">
+            <span class="chat-dm-avatar av-blajetttp">A</span>
+            <span>blajetttp</span>
+            <span class="chat-dm-dot" id="dmDot_blajetttp"></span>
+          </div>
+          <div class="chat-channel" data-channel="dm__skat" data-type="dm" data-dm-target="skat">
+            <span class="chat-dm-avatar av-skat">SK</span>
+            <span>Skat</span>
+            <span class="chat-dm-dot" id="dmDot_skat"></span>
+          </div>
+        </div>
+        <div class="chat-online-section">
+          <div class="section-title" style="padding:0 16px;font-size:10px">Online</div>
+          <div id="chatOnlineUsers" class="chat-online-list"></div>
+        </div>
+      </div>
+      <div class="chat-main">
+        <div class="chat-main-header">
+          <div class="chat-main-channel-name"># Ogólny</div>
+          <div class="chat-main-channel-desc">Główny kanał komunikacji ekipy</div>
+        </div>
+        <div id="chatMessages" class="chat-messages"></div>
+        <div class="chat-input-area">
+          <div class="chat-input-row">
+            <input id="chatInput" type="text" class="chat-input" placeholder="Napisz wiadomość do ekipy..." />
+            <button id="chatSendBtn" class="chat-send-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+          </div>
+          <div class="chat-input-hint">Enter aby wysłać · Wiadomości widzi cała ekipa</div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /chat-tab-wrapper -->
+  </section>
+
+
+      <section class="tab-panel" data-tab-panel="calendar">
+
+        <!-- ═══ CALENDAR HERO HEADER ═══ -->
+        <div class="cal-hero">
+          <div class="cal-hero-bg"></div>
+          <div class="cal-hero-content">
+            <div class="cal-hero-text">
+              <div class="cal-hero-eyebrow">📅 Planowanie treści</div>
+              <div class="cal-hero-title" id="calendarMonthLabel">—</div>
+              <div class="cal-hero-sub">Publikacje, spotkania i rollout</div>
+            </div>
+            <div class="cal-hero-controls">
+              <button id="prevMonthBtn" class="cal-nav-btn">‹</button>
+              <button id="todayBtn" class="cal-nav-btn cal-nav-today">Dziś</button>
+              <button id="nextMonthBtn" class="cal-nav-btn">›</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ CALENDAR GRID ═══ -->
+        <div class="cal-main">
+          <div class="cal-grid-wrap">
+            <div class="weekdays">
+              <div>Pon</div><div>Wt</div><div>Śr</div><div>Czw</div><div>Pt</div><div>Sob</div><div>Nd</div>
+            </div>
+            <div id="calendarDays" class="days"></div>
+          </div>
+          <div class="cal-legend-bar">
+            <div class="cal-legend-group">
+              <span class="cal-legend-label">Typy wpisów</span>
+              <div class="cal-legend-items">
+                <span class="cal-leg-item"><span class="cal-leg-dot" style="background:linear-gradient(135deg,#f7b733,#fc4a1a)"></span>Klip</span>
+                <span class="cal-leg-item"><span class="cal-leg-dot" style="background:linear-gradient(135deg,#4ecdc4,#1a9fd9)"></span>Rolka</span>
+                <span class="cal-leg-item"><span class="cal-leg-dot" style="background:linear-gradient(135deg,#c471ed,#f64f59)"></span>Post</span>
+                <span class="cal-leg-item"><span class="cal-leg-dot" style="background:linear-gradient(135deg,#f9d976,#f39f86)"></span>Story</span>
+                <span class="cal-leg-item"><span class="cal-leg-dot" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"></span>Backstage</span>
+                <span class="cal-leg-item"><span class="cal-leg-dot" style="background:linear-gradient(135deg,#dfe6e9,#b2bec3)"></span>Spotkanie</span>
+                <span class="cal-leg-item"><span class="cal-leg-dot" style="background:linear-gradient(135deg,#a855f7,#7c3aed)"></span>Studio</span>
+                <span class="cal-leg-item"><span class="cal-leg-dot" style="background:linear-gradient(135deg,#f472b6,#ec4899)"></span>Sesja</span>
+              </div>
+            </div>
+            <div class="cal-legend-divider"></div>
+            <div class="cal-legend-group">
+              <span class="cal-legend-label">Zadania</span>
+              <div class="cal-legend-items">
+                <span class="cal-leg-item"><span class="cal-leg-dot" style="background:#ff5d73;border-radius:3px"></span>Wysoki</span>
+                <span class="cal-leg-item"><span class="cal-leg-dot" style="background:#ffb020;border-radius:3px"></span>Średni</span>
+                <span class="cal-leg-item"><span class="cal-leg-dot" style="background:#20c997;border-radius:3px"></span>Niski</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ UPCOMING — full width below calendar ═══ -->
+        <div class="cal-upcoming-panel" style="margin-top:16px">
+          <div class="cal-upcoming-header">
+            <div>
+              <div class="cal-sidebar-title">Najbliższe wpisy</div>
+              <div class="cal-sidebar-sub">Szybki podgląd kalendarza</div>
+            </div>
+            <div class="cal-upcoming-count" id="upcomingCount"></div>
+          </div>
+          <div class="cal-upcoming-body">
+            <div id="upcomingList" class="cal-upcoming-grid"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-panel hidden" data-tab-panel="tasks">
+
+        <!-- ══ TASK FORM — full-width, premium ══ -->
+        <div class="task-form-hero">
+          <div class="task-form-hero-bg"></div>
+          <div class="task-form-hero-inner">
+            <div class="task-form-hero-left">
+              <div class="task-form-hero-icon">☑️</div>
+              <div>
+                <div class="task-form-hero-title">Dodaj / edytuj zadanie</div>
+                <div id="taskFormMode" class="task-form-hero-sub">Tworzenie nowego taska</div>
+              </div>
+            </div>
+            <div class="task-form-fields">
+              <div class="task-form-row">
+                <div class="task-form-field task-form-field-wide">
+                  <label for="taskTitle">Tytuł zadania</label>
+                  <input id="taskTitle" type="text" placeholder="Np. zebrać RAW-y z klipu 2" />
+                </div>
+                <div class="task-form-field">
+                  <label for="taskDue">Termin</label>
+                  <div class="date-picker-wrap">
+                    <div class="date-picker-icon">📅</div>
+                    <input id="taskDue" type="date" />
+                    <div id="taskDuePreview" class="date-picker-preview">Wybierz datę</div>
+                  </div>
+                  <div class="date-quick-btns">
+                    <button type="button" class="date-quick-btn" data-target="taskDue" data-offset="0">Dziś</button>
+                    <button type="button" class="date-quick-btn" data-target="taskDue" data-offset="1">Jutro</button>
+                    <button type="button" class="date-quick-btn" data-target="taskDue" data-offset="3">Za 3 dni</button>
+                    <button type="button" class="date-quick-btn" data-target="taskDue" data-offset="7">Za tydzień</button>
+                  </div>
+                </div>
+              </div>
+              <div class="task-form-row">
+                <div class="task-form-field">
+                  <label for="taskStatus">Status</label>
+                  <select id="taskStatus"></select>
+                </div>
+                <div class="task-form-field">
+                  <label for="taskOwner">Odpowiedzialny</label>
+                  <select id="taskOwner"></select>
+                </div>
+                <div class="task-form-field">
+                  <label for="taskPriority">Priorytet</label>
+                  <select id="taskPriority">
+                    <option>Niski</option>
+                    <option>Średni</option>
+                    <option>Wysoki</option>
+                  </select>
+                </div>
+              </div>
+              <div class="task-form-row">
+                <div class="task-form-field task-form-field-wide">
+                  <label for="taskNotes">Notatka</label>
+                  <textarea id="taskNotes" placeholder="Link, kontekst, blokery, CTA..." style="min-height:72px;resize:vertical"></textarea>
+                </div>
+              </div>
+              <div class="task-form-footer">
+                <button id="saveTaskBtn" class="task-form-save-btn">
+                  <span class="task-form-save-glow"></span>
+                  <span>✓ Zapisz zadanie</span>
+                </button>
+                <button id="cancelTaskEditBtn" class="btn-ghost hidden">Anuluj edycję</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ PERSON BOARDS — full-width horizontal ══ -->
+        <div class="person-boards-wrap" style="margin-top:14px">
+          <div class="person-boards-header">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <div>
+                <div class="section-title">Bieżące zadania wg osoby</div>
+                <div class="subtitle" style="margin-top:3px">Otwarte taski i aktywne wpisy przypisane do konkretnych osób</div>
+              </div>
+              <div class="pb-header-icon">👥</div>
+            </div>
+          </div>
+          <div id="personBoards" class="person-grid"></div>
+        </div>
+
+        <!-- ══ TASK LIST — full-width horizontal ══ -->
+        <div class="tasklist-panel" style="margin-top:14px">
+          <div class="tasklist-panel-header">
+            <div>
+              <div class="section-title">Lista zadań</div>
+              <div class="subtitle" style="margin-top:3px">Edycja, usuwanie, zmiana statusów</div>
+            </div>
+            <div class="pb-header-icon">☑️</div>
+          </div>
+          <div class="tasklist-panel-body">
+            <div id="taskList" class="task-grid-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-panel hidden" data-tab-panel="planning">
+
+        <!-- ══ ITEM FORM HERO — full-width ══ -->
+        <div class="item-form-hero">
+          <div class="item-form-hero-bg"></div>
+          <div class="item-form-hero-inner">
+
+            <!-- Left accent panel -->
+            <div class="item-form-hero-left">
+              <div class="item-form-hero-icon">🗂️</div>
+              <div class="item-form-hero-title">Dodaj / edytuj wpis</div>
+              <div id="itemFormMode" class="item-form-hero-sub">Nowy wpis do kalendarza</div>
+            </div>
+
+            <!-- Form fields -->
+            <div class="item-form-fields">
+
+              <!-- Row 1: title + date -->
+              <div class="item-form-row">
+                <div class="item-form-field item-form-field-wide">
+                  <label for="itemTitle">Tytuł wpisu</label>
+                  <input id="itemTitle" type="text" placeholder="Np. premiera klipu 1 / spotkanie planujące" />
+                </div>
+                <div class="item-form-field">
+                  <label for="itemDate">Data</label>
+                  <div class="date-picker-wrap">
+                    <div class="date-picker-icon">📅</div>
+                    <input id="itemDate" type="date" />
+                    <div id="itemDatePreview" class="date-picker-preview">Wybierz datę</div>
+                  </div>
+                  <div class="date-quick-btns">
+                    <button type="button" class="date-quick-btn" data-target="itemDate" data-offset="0">Dziś</button>
+                    <button type="button" class="date-quick-btn" data-target="itemDate" data-offset="1">Jutro</button>
+                    <button type="button" class="date-quick-btn" data-target="itemDate" data-offset="3">Za 3 dni</button>
+                    <button type="button" class="date-quick-btn" data-target="itemDate" data-offset="7">Za tydzień</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Row 2: type + status + owner + channel -->
+              <div class="item-form-row">
+                <div class="item-form-field">
+                  <label for="itemType">Typ</label>
+                  <select id="itemType"></select>
+                </div>
+                <div class="item-form-field">
+                  <label for="itemStatus">Status</label>
+                  <select id="itemStatus"></select>
+                </div>
+                <div class="item-form-field">
+                  <label for="itemOwner">Odpowiedzialny</label>
+                  <select id="itemOwner"></select>
+                </div>
+                <div class="item-form-field">
+                  <label for="itemPlace">Kanał / miejsce</label>
+                  <select id="itemPlace">
+                    <option value="">— wybierz kanał —</option>
+                    <option value="YouTube">▶️ YouTube</option>
+                    <option value="TikTok">🎵 TikTok</option>
+                    <option value="Instagram">📸 Instagram</option>
+                    <option value="Instagram Reels">🎬 Instagram Reels</option>
+                    <option value="TikTok / Reels">📱 TikTok / Reels</option>
+                    <option value="Facebook">📘 Facebook</option>
+                    <option value="Twitch">🎮 Twitch</option>
+                    <option value="Discord">💬 Discord</option>
+                    <option value="Spotify">🎧 Spotify</option>
+                    <option value="Zoom">🖥️ Zoom</option>
+                    <option value="Studio">🎙️ Studio</option>
+                    <option value="Inne">📌 Inne</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Row 3: notes + color + save -->
+              <div class="item-form-row item-form-row-bottom">
+                <div class="item-form-field item-form-field-wide">
+                  <label for="itemNotes">Notatka / CTA</label>
+                  <textarea id="itemNotes" placeholder="Link do calla, agenda, CTA, hook..." style="min-height:68px;resize:vertical"></textarea>
+                </div>
+                <div class="item-form-field">
+                  <label>Kolor wpisu</label>
+                  <div id="itemColorPicker" class="color-swatches">
+                    <button type="button" class="color-swatch swatch-default active" data-color="" title="Auto (wg. typu)">✓</button>
+                    <button type="button" class="color-swatch" data-color="#f7b733" style="background:#f7b733"></button>
+                    <button type="button" class="color-swatch" data-color="#fc4a1a" style="background:#fc4a1a"></button>
+                    <button type="button" class="color-swatch" data-color="#ff6b6b" style="background:#ff6b6b"></button>
+                    <button type="button" class="color-swatch" data-color="#c471ed" style="background:#c471ed"></button>
+                    <button type="button" class="color-swatch" data-color="#a855f7" style="background:#a855f7"></button>
+                    <button type="button" class="color-swatch" data-color="#0ea5e9" style="background:#0ea5e9"></button>
+                    <button type="button" class="color-swatch" data-color="#4ecdc4" style="background:#4ecdc4"></button>
+                    <button type="button" class="color-swatch" data-color="#43e97b" style="background:#43e97b"></button>
+                    <button type="button" class="color-swatch" data-color="#f9d976" style="background:#f9d976"></button>
+                    <button type="button" class="color-swatch" data-color="#f472b6" style="background:#f472b6"></button>
+                    <button type="button" class="color-swatch" data-color="#e2e8f0" style="background:#e2e8f0"></button>
+                    <button type="button" class="color-swatch" data-color="#64748b" style="background:#64748b"></button>
+                    <button type="button" class="color-swatch" data-color="#ef4444" style="background:#ef4444"></button>
+                    <button type="button" class="color-swatch" data-color="#1a9fd9" style="background:#1a9fd9"></button>
+                  </div>
+                </div>
+                <div class="item-form-actions-col">
+                  <button id="saveItemBtn" class="item-form-save-btn">
+                    <span>Zapisz wpis</span>
+                  </button>
+                  <button id="cancelItemEditBtn" class="btn-ghost hidden" style="width:100%;justify-content:center">Anuluj edycję</button>
+                  <div class="item-form-utils">
+                    <button id="seedBtn" class="item-util-btn">⚡ Demo</button>
+                    <button id="exportBtn" class="item-util-btn">⬇ JSON</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Row 4: media attach (collapsible-style, full width) -->
+              <div class="item-form-row">
+                <div class="item-form-field item-form-media-field">
+                  <label>📎 Materiały z Uploadu <span style="font-weight:400;color:rgba(168,173,199,.45);text-transform:none;letter-spacing:0">— zależy od wybranego kanału</span></label>
+                  <div id="mediaAttachInfo" class="media-attach-info">Wybierz typ i kanał aby zobaczyć kompatybilne pliki</div>
+                  <div id="mediaAttachGrid" class="media-attach-grid"></div>
+                  <div id="mediaAttachedList" class="media-attached-list"></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ TYPE LEGEND + ITEM LIST — full-width ══ -->
+        <div class="itemlist-panel" style="margin-top:14px">
+          <div class="itemlist-panel-header">
+            <div>
+              <div class="section-title">Wpisy w kalendarzu</div>
+              <div class="subtitle" style="margin-top:3px">Wszystkie wpisy z edycją i usuwaniem</div>
+            </div>
+            <div id="typeLegend" class="type-legend-inline">
+              <div class="type-legend-grid">
+                <div class="type-legend-item"><span class="type-legend-dot" style="background:linear-gradient(135deg,#f7b733,#fc4a1a)"></span><span>🎬 Klip</span></div>
+                <div class="type-legend-item"><span class="type-legend-dot" style="background:linear-gradient(135deg,#4ecdc4,#1a9fd9)"></span><span>📱 Rolka</span></div>
+                <div class="type-legend-item"><span class="type-legend-dot" style="background:linear-gradient(135deg,#c471ed,#f64f59)"></span><span>🖼️ Post</span></div>
+                <div class="type-legend-item"><span class="type-legend-dot" style="background:linear-gradient(135deg,#f9d976,#f39f86)"></span><span>✨ Story</span></div>
+                <div class="type-legend-item"><span class="type-legend-dot" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"></span><span>🎥 Backstage</span></div>
+                <div class="type-legend-item"><span class="type-legend-dot" style="background:linear-gradient(135deg,#dfe6e9,#b2bec3)"></span><span>📅 Spotkanie</span></div>
+                <div class="type-legend-item"><span class="type-legend-dot" style="background:linear-gradient(135deg,#a855f7,#7c3aed)"></span><span>🎙️ Studio</span></div>
+                <div class="type-legend-item"><span class="type-legend-dot" style="background:linear-gradient(135deg,#f472b6,#ec4899)"></span><span>📸 Sesja</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="itemlist-panel-body">
+            <div id="itemList" class="il-list"></div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ═══ UPLOAD TAB ═══ -->
+      <section class="tab-panel hidden" data-tab-panel="upload">
+        <div class="grid">
+          <div class="column">
+            <div class="section">
+              <div class="section-header">
+                <div>
+                  <div class="section-title">Upload plików</div>
+                  <div class="subtitle" style="margin-top:6px">Przeciągnij i upuść lub kliknij aby dodać pliki dla ekipy</div>
+                </div>
+              </div>
+              <div class="section-body">
+                <div id="uploadDropZone" class="upload-drop-zone">
+                  <div class="upload-drop-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  </div>
+                  <div class="upload-drop-text">Przeciągnij pliki tutaj</div>
+                  <div class="upload-drop-hint">lub kliknij aby wybrać · max 8 MB / plik</div>
+                  <input id="uploadFileInput" type="file" multiple style="display:none" />
+                </div>
+                <div id="uploadProgress" class="upload-progress-wrap hidden"></div>
+                <div class="field" style="margin-top:12px">
+                  <label for="uploadFolder">Folder / tag</label>
+                  <select id="uploadFolder">
+                    <option value="ogólne">📁 Ogólne</option>
+                    <option value="klipy">🎬 Klipy</option>
+                    <option value="grafiki">🖼️ Grafiki</option>
+                    <option value="muzyka">🎵 Muzyka</option>
+                    <option value="dokumenty">📄 Dokumenty</option>
+                    <option value="raw">📦 RAW / Materiały</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="column">
+            <div class="section">
+              <div class="section-header">
+                <div>
+                  <div class="section-title">Pliki ekipy</div>
+                  <div class="subtitle" style="margin-top:6px">Przesłane pliki z podglądem</div>
+                </div>
+                <div style="display:flex;gap:6px;align-items:center">
+                  <select id="uploadFilterFolder" class="upload-filter-select">
+                    <option value="">Wszystkie</option>
+                    <option value="ogólne">📁 Ogólne</option>
+                    <option value="klipy">🎬 Klipy</option>
+                    <option value="grafiki">🖼️ Grafiki</option>
+                    <option value="muzyka">🎵 Muzyka</option>
+                    <option value="dokumenty">📄 Dokumenty</option>
+                    <option value="raw">📦 RAW</option>
+                  </select>
+                </div>
+              </div>
+              <div class="section-body">
+                <div id="uploadFileList" class="upload-file-list">
+                  <div class="empty">Brak przesłanych plików.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ TIBIA TAB ═══ -->
+              <section class="tab-panel hidden" data-tab-panel="harmonogram">
+          <div class="harm-wrap">
+
+            <!-- HERO -->
+            <div class="harm-hero">
+              <div class="harm-hero-bg"></div>
+              <div class="harm-hero-content">
+                <div>
+                  <div class="harm-hero-eyebrow">Strategia publikacji</div>
+                  <div class="harm-hero-title">Harmonogram Wrzutek</div>
+                  <div class="harm-hero-sub">Optymalne godziny dla ka&#380;dej platformy i dnia tygodnia</div>
+                </div>
+                <div class="harm-legend">
+                  <div class="harm-legend-item"><span class="harm-dot best"></span>Najlepiej</div>
+                  <div class="harm-legend-item"><span class="harm-dot good"></span>Dobrze</div>
+                  <div class="harm-legend-item"><span class="harm-dot meh"></span>Meh</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TABLE -->
+            <div class="harm-table-wrap">
+              <div class="harm-table-scroll">
+                <div class="harm-tbl" id="harmTbl">
+                  <!-- HEADER -->
+                  <div class="harm-tbl-row harm-tbl-head">
+                    <div class="harm-th-corner"></div>
+                    <div class="harm-th" data-harm-col="0"><div class="harm-th-day-label"><span>PON</span></div></div>
+                    <div class="harm-th" data-harm-col="1"><div class="harm-th-day-label"><span>WT</span></div></div>
+                    <div class="harm-th" data-harm-col="2"><div class="harm-th-day-label"><span>&#346;R</span></div></div>
+                    <div class="harm-th" data-harm-col="3"><div class="harm-th-day-label"><span>CZW</span></div></div>
+                    <div class="harm-th" data-harm-col="4"><div class="harm-th-day-label"><span>PT</span></div></div>
+                    <div class="harm-th" data-harm-col="5"><div class="harm-th-day-label"><span>SOB</span></div></div>
+                    <div class="harm-th" data-harm-col="6"><div class="harm-th-day-label"><span>ND</span></div></div>
+                  </div>
+
+                  <!-- IG REELS -->
+                  <div class="harm-tbl-row harm-tbl-row-plat" style="--hp-color:#E1306C">
+                    <div class="harm-plat-cell"><span class="harm-plat-icon">&#127916;</span><div><div class="harm-plat-name">IG Reels</div></div></div>
+                    <div class="harm-times-cell" data-harm-col="0"><span class="harm-time best">12:00</span><span class="harm-time best">19:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="1"><span class="harm-time best">12:00</span><span class="harm-time best">19:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="2"><span class="harm-time best">12:00</span><span class="harm-time best">19:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="3"><span class="harm-time best">12:00</span><span class="harm-time best">19:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="4"><span class="harm-time good">18:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="5"><span class="harm-time best">11:00</span><span class="harm-time good">17:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="6"><span class="harm-time meh">14:00</span></div>
+                  </div>
+
+                  <!-- IG POSTY -->
+                  <div class="harm-tbl-row harm-tbl-row-plat" style="--hp-color:#833AB4">
+                    <div class="harm-plat-cell"><span class="harm-plat-icon">&#128248;</span><div><div class="harm-plat-name">IG Posty</div></div></div>
+                    <div class="harm-times-cell" data-harm-col="0"><span class="harm-time good">20:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="1"><span class="harm-time best">11:00</span><span class="harm-time good">19:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="2"><span class="harm-time best">12:00</span><span class="harm-time good">19:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="3"><span class="harm-time best">9:00</span><span class="harm-time good">12:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="4"><span class="harm-time good">18:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="5"><span class="harm-dash">&#8212;</span></div>
+                    <div class="harm-times-cell" data-harm-col="6"><span class="harm-time good">21:00</span></div>
+                  </div>
+
+                  <!-- TIKTOK -->
+                  <div class="harm-tbl-row harm-tbl-row-plat" style="--hp-color:#ff0050">
+                    <div class="harm-plat-cell"><span class="harm-plat-icon">&#127925;</span><div><div class="harm-plat-name">TikTok</div></div></div>
+                    <div class="harm-times-cell" data-harm-col="0"><span class="harm-time best">19:00</span><span class="harm-time best">21:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="1"><span class="harm-time best">19:00</span><span class="harm-time best">21:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="2"><span class="harm-time best">19:00</span><span class="harm-time best">21:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="3"><span class="harm-time good">19:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="4"><span class="harm-time good">18:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="5"><span class="harm-time good">14:00</span><span class="harm-time good">20:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="6"><span class="harm-time meh">15:00</span></div>
+                  </div>
+
+                  <!-- YT SHORTS -->
+                  <div class="harm-tbl-row harm-tbl-row-plat" style="--hp-color:#ff4444">
+                    <div class="harm-plat-cell"><span class="harm-plat-icon">&#9654;&#65039;</span><div><div class="harm-plat-name">YT Shorts</div></div></div>
+                    <div class="harm-times-cell" data-harm-col="0"><span class="harm-time meh">15:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="1"><span class="harm-time meh">15:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="2"><span class="harm-time meh">15:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="3"><span class="harm-time meh">15:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="4"><span class="harm-time good">14:00</span><span class="harm-time good">18:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="5"><span class="harm-time best">12:00</span><span class="harm-time best">16:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="6"><span class="harm-time best">12:00</span><span class="harm-time best">16:00</span></div>
+                  </div>
+
+                  <!-- IG STORIES -->
+                  <div class="harm-tbl-row harm-tbl-row-plat" style="--hp-color:#f7b733">
+                    <div class="harm-plat-cell"><span class="harm-plat-icon">&#128218;</span><div><div class="harm-plat-name">IG Stories</div></div></div>
+                    <div class="harm-times-cell" data-harm-col="0"><span class="harm-time good">9:00</span><span class="harm-time good">20:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="1"><span class="harm-time good">9:00</span><span class="harm-time good">20:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="2"><span class="harm-time good">9:00</span><span class="harm-time good">20:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="3"><span class="harm-time good">9:00</span><span class="harm-time good">20:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="4"><span class="harm-time best">12:00</span><span class="harm-time good">18:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="5"><span class="harm-time good">11:00</span><span class="harm-time good">20:00</span></div>
+                    <div class="harm-times-cell" data-harm-col="6"><span class="harm-time good">14:00</span></div>
+                  </div>
+
+                  <!-- RELEASE -->
+                  <div class="harm-tbl-row harm-tbl-row-plat" style="--hp-color:#a855f7">
+                    <div class="harm-plat-cell"><span class="harm-plat-icon">&#127911;</span><div><div class="harm-plat-name">Release</div></div></div>
+                    <div class="harm-times-cell" data-harm-col="0"><span class="harm-dash">&#8212;</span></div>
+                    <div class="harm-times-cell" data-harm-col="1"><span class="harm-dash">&#8212;</span></div>
+                    <div class="harm-times-cell" data-harm-col="2"><span class="harm-dash">&#8212;</span></div>
+                    <div class="harm-times-cell" data-harm-col="3"><span class="harm-dash">&#8212;</span></div>
+                    <div class="harm-times-cell" data-harm-col="4"><span class="harm-time best">00:00<span class="harm-time-lbl">singiel</span></span><span class="harm-time best">18:00<span class="harm-time-lbl">klip</span></span></div>
+                    <div class="harm-times-cell" data-harm-col="5"><span class="harm-dash">&#8212;</span></div>
+                    <div class="harm-times-cell" data-harm-col="6"><span class="harm-dash">&#8212;</span></div>
+                  </div>
+
+                </div><!-- /.harm-tbl -->
+              </div><!-- /.harm-table-scroll -->
+            </div><!-- /.harm-table-wrap -->
+
+            <!-- TIPS -->
+            <div>
+              <div class="harm-section-hdr">Wskaz&oacute;wki</div>
+              <div class="harm-tips-grid">
+                <div class="harm-tip">
+                  <span class="harm-tip-icon">&#127916;</span>
+                  <div><div class="harm-tip-title">IG Reels &mdash; Pn&ndash;Czw prime time</div><div class="harm-tip-text">12:00 i 19:00 to z&#322;ota godzina przez ca&#322;y tydzie&#324; roboczy. Sobota z 11:00 r&oacute;wnie&#380; daje mocne zasi&#281;gi.</div></div>
+                </div>
+                <div class="harm-tip">
+                  <span class="harm-tip-icon">&#127925;</span>
+                  <div><div class="harm-tip-title">TikTok &mdash; wieczory Pn&ndash;&#346;r</div><div class="harm-tip-text">19:00 i 21:00 od poniedzia&#322;ku do &#347;rody to najsilniejszy window. Unikaj weekend&oacute;w &mdash; tam zasi&#281;gi s&#322;absze.</div></div>
+                </div>
+                <div class="harm-tip">
+                  <span class="harm-tip-icon">&#9654;&#65039;</span>
+                  <div><div class="harm-tip-title">YT Shorts &mdash; weekend peak</div><div class="harm-tip-text">Sobota i niedziela to najlepszy czas (12:00 i 16:00). W tygodniu roboczym Shorts dzia&#322;aj&#261; s&#322;abiej.</div></div>
+                </div>
+                <div class="harm-tip">
+                  <span class="harm-tip-icon">&#127911;</span>
+                  <div><div class="harm-tip-title">Release &mdash; zawsze w pi&#261;tek</div><div class="harm-tip-text">Singiel o p&oacute;&#322;nocy (00:00 PT) dla algorytm&oacute;w streamingowych, klip o 18:00 dla maksymalnego zasi&#281;gu wieczorem.</div></div>
+                </div>
+                <div class="harm-tip">
+                  <span class="harm-tip-icon">&#128218;</span>
+                  <div><div class="harm-tip-title">IG Stories &mdash; rano i wiecz&oacute;r</div><div class="harm-tip-text">9:00 i 20:00 przez ca&#322;y tydzie&#324;. W pi&#261;tek 12:00 to najlepsza pora &mdash; ludzie sprawdzaj&#261; stories w przerwie lunch.</div></div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /.harm-wrap -->
+        </section>
+<section class="tab-panel hidden" data-tab-panel="tibia">
+        <div class="tibia-wrap">
+          <div class="tibia-topbar">
+            <div class="tibia-topbar-left">
+              <div class="tibia-logo">⚔️</div>
+              <div>
+                <div class="tibia-title">Tibia SzaferPanel</div>
+                <div class="tibia-sub">Launcher + narzędzia · graj obok panelu</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tibia-launcher">
+            <div class="tibia-launch-hero">
+              <div class="tibia-launch-particles" id="tibiaParticles"></div>
+              <div class="tibia-launch-content">
+                <div class="tibia-launch-icon">⚔️</div>
+                <div class="tibia-launch-title">Uruchom Tibię</div>
+                <div class="tibia-launch-desc">Klient otworzy się w osobnym oknie — możesz je przypiąć obok panelu i grać podczas planowania.</div>
+                <button id="tibiaLaunchBtn" class="tibia-launch-btn">
+                  <span class="tibia-launch-btn-glow"></span>
+                  🎮 Uruchom Web Client
+                </button>
+                <div id="tibiaWindowStatus" class="tibia-window-status">
+                  <span class="dot"></span> Klient nieaktywny
+                </div>
+              </div>
+            </div>
+
+            <div class="tibia-tools-grid">
+              <div class="tibia-tool-section">
+                <div class="tibia-tool-title">🔍 Sprawdź postać</div>
+                <div class="tibia-char-lookup">
+                  <input id="tibiaCharName" type="text" placeholder="Wpisz nick postaci..." class="tibia-char-input" />
+                  <button id="tibiaCharBtn" class="tibia-btn">Szukaj</button>
+                </div>
+                <div id="tibiaCharResult" class="tibia-char-result"></div>
+              </div>
+
+              <div class="tibia-tool-section">
+                <div class="tibia-tool-title">⚡ Szybkie akcje</div>
+                <div class="tibia-quick-actions">
+                  <a href="https://www.tibia.com/community/?subtopic=webclient" target="_blank" rel="noopener" class="tibia-action-btn">
+                    🌐 Web Client (nowa karta)
+                  </a>
+                  <a href="https://www.tibia.com/account/?subtopic=accountmanagement" target="_blank" rel="noopener" class="tibia-action-btn">
+                    👤 Moje konto
+                  </a>
+                  <a href="https://www.tibia.com/community/?subtopic=worlds" target="_blank" rel="noopener" class="tibia-action-btn">
+                    🌍 Lista światów
+                  </a>
+                  <a href="https://www.tibia.com/community/?subtopic=highscores" target="_blank" rel="noopener" class="tibia-action-btn">
+                    🏆 Highscores
+                  </a>
+                  <a href="https://www.tibia.com/news/?subtopic=newsarchive" target="_blank" rel="noopener" class="tibia-action-btn">
+                    📰 News Tibia
+                  </a>
+                  <a href="https://www.tibia.com/community/?subtopic=killstatistics" target="_blank" rel="noopener" class="tibia-action-btn">
+                    💀 Kill Statistics
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="tibia-tool-title" style="padding:0 22px;margin-top:4px">🧰 Przydatne strony</div>
+            <div class="tibia-links-grid" style="padding:10px 22px 22px">
+              <a href="https://tibia.fandom.com/wiki/Main_Page" target="_blank" rel="noopener" class="tibia-link-card">
+                <span class="tibia-link-icon">📖</span><span>TibiaWiki</span>
+              </a>
+              <a href="https://guildstats.eu/" target="_blank" rel="noopener" class="tibia-link-card">
+                <span class="tibia-link-icon">📊</span><span>GuildStats</span>
+              </a>
+              <a href="https://tibiamaps.io/" target="_blank" rel="noopener" class="tibia-link-card">
+                <span class="tibia-link-icon">🗺️</span><span>Tibia Maps</span>
+              </a>
+              <a href="https://www.tibiaroyal.com/" target="_blank" rel="noopener" class="tibia-link-card">
+                <span class="tibia-link-icon">👑</span><span>TibiaRoyal</span>
+              </a>
+              <a href="https://intibia.com/" target="_blank" rel="noopener" class="tibia-link-card">
+                <span class="tibia-link-icon">🔍</span><span>inTibia</span>
+              </a>
+              <a href="https://tibiopedia.pl/" target="_blank" rel="noopener" class="tibia-link-card">
+                <span class="tibia-link-icon">🇵🇱</span><span>Tibiopedia PL</span>
+              </a>
+              <a href="https://tibia.toolsoftibia.com/" target="_blank" rel="noopener" class="tibia-link-card">
+                <span class="tibia-link-icon">🔧</span><span>Tools of Tibia</span>
+              </a>
+              <a href="https://tibiapal.com/" target="_blank" rel="noopener" class="tibia-link-card">
+                <span class="tibia-link-icon">🤝</span><span>TibiaPal</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ═══ MEDIA LIGHTBOX ═══ -->
+  <div id="mediaLightbox" class="media-lightbox hidden" onclick="if(event.target===this)this.classList.add('hidden')">
+    <button class="media-lb-close" onclick="document.getElementById('mediaLightbox').classList.add('hidden')">✕</button>
+    <div class="media-lb-content">
+      <img id="mediaLbImg" src="" alt="" class="media-lb-img" />
+      <div id="mediaLbName" class="media-lb-name"></div>
+    </div>
+  </div>
+
+  <!-- ═══ LOGIN MODAL ═══ -->
+  <div id="loginModal" class="day-modal-overlay">
+    <div class="day-modal" style="max-width:440px">
+      <div class="day-modal-header">
+        <div>
+          <div class="day-modal-eyebrow">Dostęp do panelu</div>
+          <div class="day-modal-title" style="font-size:22px">Zaloguj się</div>
+          <div class="day-modal-sub">Panel się odblokowuje i synchronizuje stan dla ekipy</div>
+        </div>
+      </div>
+      <div class="day-modal-body" style="max-height:none">
+        <div id="authLoadingSpinner" style="text-align:center;padding:18px 0 8px;font-size:13px;color:var(--muted,#888)">
+              <div style="display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.15);border-top-color:var(--accent,#f7b733);border-radius:50%;animation:spin 0.7s linear infinite;margin-bottom:8px"></div>
+              <div>Łączenie z Firebase...</div>
+            </div>
+            <div id="authGate" class="hidden">
+          <div class="field" style="margin-bottom:12px">
+            <label for="loginEmail">Email</label>
+            <input id="loginEmail" type="email" placeholder="np. blajetttp@gmail.com" />
+          </div>
+          <div class="field" style="margin-bottom:12px">
+            <label for="loginPassword">Hasło</label>
+            <input id="loginPassword" type="password" placeholder="••••••••" />
+          </div>
+          <div class="toolbar" style="margin-bottom:8px">
+            <button id="loginBtn" class="btn">Zaloguj</button>
+            <button id="registerBtn" class="btn-ghost">Załóż konto</button>
+          </div>
+          <div id="authMessage" class="helper"></div>
+        </div>
+        <div id="authReady" class="hidden" style="text-align:center;padding:20px 0">
+          <div style="font-size:32px;margin-bottom:8px">✅</div>
+          <div style="font-size:14px;font-weight:700">Zalogowano pomyślnie!</div>
+          <div class="current-user" style="margin-top:6px">Użytkownik: <strong id="currentUserEmail">—</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PROFILE MODAL ═══ -->
+  
+
+  <!-- ═══ DAY MODAL ═══ -->
+  <div id="dayModal" class="day-modal-overlay hidden">
+    <div class="day-modal">
+      <div class="day-modal-header">
+        <div>
+          <div class="day-modal-eyebrow">Szczegóły dnia</div>
+          <div id="dayModalTitle" class="day-modal-title">—</div>
+          <div id="dayModalSub" class="day-modal-sub"></div>
+        </div>
+        <button id="dayModalCloseX" class="day-modal-close">✕</button>
+      </div>
+      <div id="dayModalBody" class="day-modal-body"></div>
+      <div class="day-modal-footer">
+        <button id="dayModalAddBtn" class="btn">＋ Dodaj wpis na ten dzień</button>
+        <button id="dayModalCloseBtn" class="btn-ghost">Zamknij</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+
+    <!-- ══════════════════ M00D MODAL ══════════════════ -->
+    <div id="moodModal" class="mood-modal hidden" role="dialog">
+      <div class="mood-modal-backdrop" id="moodModalBackdrop"></div>
+      <div class="mood-modal-panel">
+        <div class="mood-modal-topbar">
+          <div class="mood-modal-title-row">
+            <span class="mood-modal-spark">✦</span>
+            <span class="mood-modal-title-text">m00d</span>
+            <span class="mood-modal-live-badge">
+              <span class="mood-live-dot"></span>NA ŻYWO
+            </span>
+          </div>
+          <button class="mood-modal-close-btn" id="moodModalClose" title="Zamknij (ESC)">✕</button>
+        </div>
+        <div class="mood-modal-body">
+          <div class="mood-tp-wrap">
+            <div class="tp-particles" id="tpParticles"></div>
+          <div class="tp-header">
+            <div class="tp-live-dot"></div>
+            <div class="tp-title-animated">
+              <span class="tp-title-main">Szafer Panel</span>
+              <span class="tp-title-sep">—</span>
+              <span class="tp-title-live">NA ŻYWO</span>
+            </div>
+          </div>
+
+          <div class="tp-team-grid">
+            <div class="tp-person tp-active" data-person="Szafer">
+              <div class="tp-person-avatar">S</div>
+              <div class="tp-person-name">Szafer</div>
+              <div id="tpStatusSzafer" class="tp-person-status"><span class="dot ok"></span>Aktywny</div>
+            </div>
+            <div class="tp-person" data-person="blajetttp">
+              <div class="tp-person-avatar av-blajetttp">A</div>
+              <div class="tp-person-name">blajetttp</div>
+              <div id="tpStatusBlajetttp" class="tp-person-status"><span class="dot ok"></span>Aktywny</div>
+            </div>
+            <div class="tp-person" data-person="Skat">
+              <div class="tp-person-avatar av-skat">SK</div>
+              <div class="tp-person-name">Skat</div>
+              <div id="tpStatusSkat" class="tp-person-status"><span class="dot ok"></span>Aktywny</div>
+            </div>
+          </div>
+
+          <div class="tp-mood-section">
+            <div class="tp-mood-label">Twój mood dzisiaj</div>
+            <div id="tpMoodRow" class="tp-mood-row">
+              <button class="tp-mood-btn" data-mood="🔥" title="Na maxa">🔥</button>
+              <button class="tp-mood-btn" data-mood="😎" title="Chill">😎</button>
+              <button class="tp-mood-btn" data-mood="💪" title="Roboczo">💪</button>
+              <button class="tp-mood-btn" data-mood="🎵" title="Kreatywnie">🎵</button>
+              <button class="tp-mood-btn" data-mood="😴" title="Na luzie">😴</button>
+              <button class="tp-mood-btn" data-mood="🤔" title="Myślę...">🤔</button>
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:14px">
+            <label style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Quick Note dla ekipy</label>
+            <textarea id="tpQuickNote" class="tp-quick-note" placeholder="Np. dzisiaj nagrywam vocal, będę off o 18"></textarea>
+          </div>
+
+          <div class="tp-mood-label">Ostatnia aktywność</div>
+          <div id="tpActivityFeed" class="tp-activity-feed">
+            <div class="tp-activity-item">
+              <span class="tp-act-icon">🎬</span>
+              <span class="tp-act-text">Panel uruchomiony — gotowy do pracy!</span>
+              <span class="tp-act-time">teraz</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    <!-- ══════════════════ END M00D MODAL ══════════════════ -->
+<!-- ══════════════════ CHANGELOG MODAL ══════════════════ -->
+<div id="changelogModal" class="cl-overlay hidden">
+  <div class="cl-panel">
+    <div class="cl-header">
+      <span class="cl-header-icon">🚀</span>
+      <div class="cl-header-title">Co nowego?</div>
+      <span class="cl-header-ver" id="clHeaderVer">Panel v10.3 · Changelog</span>
+      <button id="changelogCloseBtn" class="cl-close cl-header-close" aria-label="Zamknij changelog">✕</button>
+    </div>
+    <!-- VERSION SELECTOR -->
+    <div class="cl-version-selector" id="clVersionSelector">
+      <button class="cl-ver-btn cl-ver-active" data-ver="v10.3"><span class="cl-ver-dot"></span>v10.3<span class="cl-ver-label-new">NOWA</span></button>
+      
+      <button class="cl-ver-btn" data-ver="v10.2">v10.2</button>
+      <button class="cl-ver-btn" data-ver="v10.1">v10.1</button>
+      <button class="cl-ver-btn" data-ver="v10">v10</button>
+      <button class="cl-ver-btn" data-ver="older" style="opacity:.65">v9 i starsze</button>
+    </div>
+    <div class="cl-body" id="clBody">
+
+      <!-- ══════ V10.2.1 ══════ -->
+      <div class="cl-ver-panel" data-ver-panel="v10.3">
+        <div class="cl-ver-banner">
+          <span>🚀</span>
+          <span class="cl-ver-banner-label" style="color:#20c997">v10.3 — 06.04.2026</span>
+          <span class="cl-badge cl-badge-new" style="font-size:8px">NAJNOWSZE</span>
+        </div>
+
+        <!-- Push & SW -->
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🔔</span> Service Worker &amp; Push Fix</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#20c997"><span class="cl-item-icon">⚙️</span><div class="cl-item-body"><div class="cl-item-title">Service Worker — push działa teraz na telefonie</div><div class="cl-item-desc">Dodano <code>sw.js</code> z obsługą zdarzeń <code>push</code> i <code>notificationclick</code>. Powiadomienia działają na Android Chrome i iOS Safari 16.4+ po dodaniu do ekranu głównego.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">📣</span><div class="cl-item-body"><div class="cl-item-title">sendPushNotification — hierarchia SW → fallback</div><div class="cl-item-desc">Funkcja używa teraz <code>SW.showNotification()</code> jako priorytetu (działa w tle na mobile). Bezpośrednie <code>new Notification()</code> tylko jako ostateczny fallback desktopowy.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">🔄</span><div class="cl-item-body"><div class="cl-item-title">Reset _pushInitDone przy wylogowaniu</div><div class="cl-item-desc">Flaga <code>_pushInitDone</code> nie była zerowana przy logout — push nie reinicjalizował się po ponownym logowaniu. Naprawiono.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+          </div>
+        </div>
+
+        <!-- iOS guide button -->
+        <div style="padding: 4px 0 16px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <button class="btn-ios-guide" data-open-ios-guide="1" id="iosGuideOpenBtn" title="Jak włączyć push na iPhone" onclick="(function(){var el=document.getElementById('iosGuideModal');if(el){el.classList.remove('hidden');document.body.style.overflow='hidden';}})()">
+            <span class="ios-guide-btn-spark">🍎</span>
+            <span>Poradnik: Jak włączyć push na iOS</span>
+            <span style="font-size:11px; opacity:.7">→</span>
+          </button>
+          <span style="font-size:10px; color:var(--muted); opacity:.65">Wymagane: iOS 16.4+ &amp; Safari</span>
+        </div>
+
+        <!-- Architektura -->
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">📁</span> Architektura &amp; Deploy</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">🌐</span><div class="cl-item-body"><div class="cl-item-title">Podział na pliki — GitHub + Netlify ready</div><div class="cl-item-desc">Panel podzielony na <code>index.html</code>, <code>css/style.css</code>, <code>js/app.js</code>, <code>js/ui.js</code>, <code>manifest.json</code>, <code>sw.js</code> i <code>netlify.toml</code>. Deploy przez GitHub → Netlify.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">📄</span><div class="cl-item-body"><div class="cl-item-title">manifest.json — osobny plik zamiast base64 data URI</div><div class="cl-item-desc">Manifest przeniesiony z inline base64 do <code>/manifest.json</code>. Wymagane do poprawnej rejestracji Service Workera i działania PWA na iOS.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+          </div>
+        </div>
+
+        <!-- CSS -->
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🎨</span> CSS Cleanup</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">🧹</span><div class="cl-item-body"><div class="cl-item-title">Usunięto 2 zduplikowane reguły .btn-cl-badge</div><div class="cl-item-desc">Reguła <code>.btn-cl-badge</code> była zdefiniowana 3× (2 duplikaty). Pozostawiono jedną kanoniczną definicję z <code>!important</code>.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+          </div>
+        </div>
+
+        <div class="cl-subpatch-divider">
+          <div class="cl-subpatch-line"></div>
+          <div class="cl-subpatch-label">
+            <span class="cl-subpatch-icon">✨</span>
+            <span class="cl-subpatch-version">PATCH v10.3</span>
+            <span class="cl-subpatch-sublabel">SW · Push · Deploy · CSS</span>
+          </div>
+          <div class="cl-subpatch-line"></div>
+        </div>
+      </div><!-- /v10.3 -->
+
+      
+
+      <!-- ══════ V10.2 ══════ -->
+      <div class="cl-ver-panel" data-ver-panel="v10.2">
+        <div class="cl-ver-banner"><span>⚡</span><span class="cl-ver-banner-label" style="color:var(--accent)">v10.2 — 05.04.2026</span><span class="cl-badge" style="font-size:8px;opacity:.7">v10.2</span></div>
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🚨</span> Krytyczne naprawy</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#ff5d73"><span class="cl-item-icon">💥</span><div class="cl-item-body"><div class="cl-item-title">Krytyczny: async async saveProfile()</div><div class="cl-item-desc">Podwójne słowo kluczowe <code>async</code> powodowało SyntaxError i crash całego bloku profilu, Tibii, uploadu i mediów.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">👤</span><div class="cl-item-body"><div class="cl-item-title">emailToPerson — crash profili</div><div class="cl-item-desc">Funkcja <code>emailToPerson()</code> wywoływana lecz niezdefiniowana → cichy <code>ReferenceError</code>. Dodano alias do <code>resolvePersonFromEmail</code>.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+          </div>
+        </div>
+
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🔐</span> Autoryzacja i sesja</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#0ea5e9"><span class="cl-item-icon">🔐</span><div class="cl-item-body"><div class="cl-item-title">Modal logowania widoczny przy starcie</div><div class="cl-item-desc">Otwarcie pliku lokalnie (<code>file://</code>) na Firefox powodowało białą stronę — modal teraz widoczny domyślnie + spinner.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#ffb020"><span class="cl-item-icon">🔒</span><div class="cl-item-body"><div class="cl-item-title">Auto-logout nie pokazywał logowania</div><div class="cl-item-desc">Po wygaśnięciu 2h sesji panel wyglądał na zablokowany — teraz modal logowania pojawia się automatycznie.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">⌨️</span><div class="cl-item-body"><div class="cl-item-title">Enter w formularzu logowania</div><div class="cl-item-desc">Naciśnięcie Enter w polach email lub hasło od razu loguje — nie trzeba klikać myszką.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
+
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🔥</span> Firebase / API</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#20c997"><span class="cl-item-icon">📧</span><div class="cl-item-body"><div class="cl-item-title">updateEmail → verifyBeforeUpdateEmail</div><div class="cl-item-desc">Zdeprecjonowane <code>updateEmail()</code> zastąpione bezpieczną <code>verifyBeforeUpdateEmail()</code> z potwierdzeniem na mailu przed zmianą.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+          </div>
+        </div>
+
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🔔</span> Powiadomienia — hotfixy</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">🐛</span><div class="cl-item-body"><div class="cl-item-title">Podwójny handler w powiadomieniach</div><div class="cl-item-desc">Kliknięcie powiadomienia wywoływało podwójną nawigację i re-render (pętla). Usunięto redundantny listener.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">🔔</span><div class="cl-item-body"><div class="cl-item-title">Historia powiadomień + odznaczanie</div><div class="cl-item-desc">Powiadomienia zapamiętywane w localStorage. Przycisk „Odznacz" zamiast „Wyczyść" — kaskadowa animacja fade + read-state.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">🪟</span><div class="cl-item-body"><div class="cl-item-title">Kliknięcie powiadomienia → popup ze szczegółami</div><div class="cl-item-desc">Zamiast przejścia do zakładki — wyskakujące okienko z pełną treścią, ikoną, typem, nadawcą i czasem. Zamykalne przez ✕, Zamknij lub Escape.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
+
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">📅</span> Kalendarz</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#ff5d73"><span class="cl-item-icon">📅</span><div class="cl-item-body"><div class="cl-item-title">Przeszłe dni w kalendarzu klikalne</div><div class="cl-item-desc"><code>pointer-events:none</code> blokował podgląd wpisów z przeszłych dni. Teraz można kliknąć i zobaczyć szczegóły.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+          </div>
+        </div>
+
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">👤</span> Profil użytkownika</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">💾</span><div class="cl-item-body"><div class="cl-item-title">Profil zachowany po wylogowaniu</div><div class="cl-item-desc">Nazwa i avatar zapisywane w localStorage — natychmiastowy restore po ponownym logowaniu bez czekania na Firebase.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
+
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🎨</span> CSS i wygląd</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Duplikat CSS text-transform i presence</div><div class="cl-item-desc">Usunięto nadpisany <code>text-transform:capitalize</code> z hero kalendarza i zduplikowaną regułę <code>.tp-online .tp-person-avatar</code>.</div></div><span class="cl-badge cl-badge-perf">Perf</span></div>
+          </div>
+        </div>
+
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🏠</span> Nawigacja i brand</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">⚡</span><div class="cl-item-body"><div class="cl-item-title">Odświeżony brand — SZAFER PANEL / CENTRUM DOWODZENIA</div><div class="cl-item-desc">Logo ⚡ w animowanym kole gradientowym, tytuł z dwukolorowym shimmerem, podtytuł z animacją literka po literce.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">🏠</span><div class="cl-item-body"><div class="cl-item-title">Logo ⚡ → powrót do Panelu</div><div class="cl-item-desc">Kliknięcie logo (piorun w kole) z dowolnej zakładki przenosi natychmiast do zakładki Panel — działa przez bezpośredni click na przycisk zakładki.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
+
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">📋</span> Changelog i meta</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#0ea5e9"><span class="cl-item-icon">📋</span><div class="cl-item-body"><div class="cl-item-title">Naprawiony HTML changelogu</div><div class="cl-item-desc">Zagnieżdżony <code>cl-section</code> wewnątrz niezamkniętego <code>cl-items</code> powodował błędne renderowanie wpisów. Struktura skonsolidowana.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">📅</span><div class="cl-item-body"><div class="cl-item-title">Data changelogu v10.1 poprawiona</div><div class="cl-item-desc">Banner wyświetlał datę 04.04.2026 zamiast poprawnej 05.04.2026.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+          </div>
+        </div>
+
+      </div><!-- /v10.2 -->
+
+      <!-- ══════ V10.1 ══════ -->
+      <div class="cl-ver-panel" data-ver-panel="v10.1">
+        <div class="cl-ver-banner"><span>🔥</span><span class="cl-ver-banner-label" style="color:var(--muted)">v10.1 — 05.04.2026</span></div>
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">💬</span> Team Chat — poprawki</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#ff5d73"><span class="cl-item-icon">🔒</span><div class="cl-item-body"><div class="cl-item-title">Usuwanie tylko swoich wiadomości</div><div class="cl-item-desc">Naprawiony krytyczny bug — każdy mógł usunąć wszystkie wiadomości. Teraz kosz widać tylko przy swoich.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">💎</span><div class="cl-item-body"><div class="cl-item-title">Nowy wygląd wiadomości</div><div class="cl-item-desc">Twoje wiadomości mają teraz avatar + czytelne bąbelki. Cudze też dostały bubble-style. Cały chat wygląda nowocześniej.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">✨</span> Animacje zakładek</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">🎬</span><div class="cl-item-body"><div class="cl-item-title">Płynne przejścia fade + blur</div><div class="cl-item-desc">Szarpane slide'y zastąpione: fade + translateY + blur. GPU-accelerated, ultra-smooth cubic-bezier. Zero input lagu.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🎨</span> Zmiany wyglądu</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">🏠</span><div class="cl-item-body"><div class="cl-item-title">Zakładka "Kalendarz" → "Panel"</div><div class="cl-item-desc">Główna zakładka przemianowana na "Panel" z ikonką 🏠 — lepiej oddaje rolę centrum dowodzenia.</div></div></div>
+            <div class="cl-item" style="--cl-accent:#0ea5e9"><span class="cl-item-icon">📋</span><div class="cl-item-body"><div class="cl-item-title">Lista Zmian z historią wersji</div><div class="cl-item-desc">Changelog obsługuje wiele wersji — przełączaj patche przyciskami v10.1 / v10 / starsze powyżej.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🔔</span> Powiadomienia — poprawki</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#ff5d73"><span class="cl-item-icon">🐛</span><div class="cl-item-body"><div class="cl-item-title">Nowe zadania generują powiadomienia</div><div class="cl-item-desc">Naprawiony bug — dodanie nowego zadania nie tworzyło powiadomienia w dzwoneczku. Teraz działa jak wpisy.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">⏰</span><div class="cl-item-body"><div class="cl-item-title">Przypomnienia 12h przed terminem</div><div class="cl-item-desc">System automatycznie sprawdza co 5 minut i powiadamia o zadaniach/wpisach z terminem w ciągu 12h.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">🧹</span><div class="cl-item-body"><div class="cl-item-title">Naprawiony crash w seedDemo</div><div class="cl-item-desc">Usunięty błędny kod notification z funkcji demo (nieistniejąca zmienna taskPayload).</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+          </div>
+        </div>
+      </div><!-- /v10.1 -->
+
+
+      <!-- ══════ V10 ══════ -->
+      <div class="cl-ver-panel cl-ver-panel-hidden" data-ver-panel="v10">
+        <div class="cl-ver-banner"><span>⚡</span><span class="cl-ver-banner-label" style="color:#4ecdc4">v10 — 2026</span></div>
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🗂️</span> Nowe zakładki</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">📁</span><div class="cl-item-body"><div class="cl-item-title">Upload plików</div><div class="cl-item-desc">Drag &amp; drop, galeria z podglądem, foldery — do 8 MB na plik, zapis w bazie</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#228b22"><span class="cl-item-icon">⚔️</span><div class="cl-item-body"><div class="cl-item-title">Tibia SzaferPanel</div><div class="cl-item-desc">Launcher klienta, wyszukiwarka postaci na żywo, szybkie linki do narzędzi</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">⚡</span> Nowe systemy</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#6366f1"><span class="cl-item-icon">💬</span><div class="cl-item-body"><div class="cl-item-title">Team Chat na żywo</div><div class="cl-item-desc">3 kanały (#Ogólny, Pomysły, Feedback) + prywatne DM — wiadomości w czasie rzeczywistym</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">😊</span><div class="cl-item-body"><div class="cl-item-title">m00d / Team Pulse</div><div class="cl-item-desc">Status ekipy w czasie rzeczywistym — mood emoji, quick notes, feed aktywności</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#20c997"><span class="cl-item-icon">🟢</span><div class="cl-item-body"><div class="cl-item-title">System obecności online/offline</div><div class="cl-item-desc">Heartbeat co 45s, stale detection co 30s, auto-offline przy zamknięciu taba</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">👤</span><div class="cl-item-body"><div class="cl-item-title">Edytor profilu</div><div class="cl-item-desc">Zmiana nazwy, avatar emoji, mood, notatka statusu, zmiana hasła — widoczne dla ekipy</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#0ea5e9"><span class="cl-item-icon">📎</span><div class="cl-item-body"><div class="cl-item-title">Przypisywanie mediów do wpisów</div><div class="cl-item-desc">Selekcja plików z uploadu, kompatybilność wg kanału (YT=video, IG=zdjęcia...)</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">📲</span><div class="cl-item-body"><div class="cl-item-title">Eksport do kalendarza (.ics)</div><div class="cl-item-desc">Przycisk 📲 przy wpisach i zadaniach — generuje plik .ics z przypomnieniami</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#20c997"><span class="cl-item-icon">📱</span><div class="cl-item-body"><div class="cl-item-title">Powiadomienia Push (iPhone / Desktop)</div><div class="cl-item-desc">Natywne powiadomienia systemowe o nowych wiadomościach, zadaniach i wpisach — działają nawet gdy tab jest w tle. Auto-wylogowanie usunięte.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">💎</span> Wygląd i UX</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">📅</span><div class="cl-item-body"><div class="cl-item-title">Przebudowa kalendarza</div><div class="cl-item-desc">Hero header, legenda typów i priorytetów, wypalony wygląd przeszłych dni</div></div></div>
+            <div class="cl-item" style="--cl-accent:#0ea5e9"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Nowe formularze wpisów i zadań</div><div class="cl-item-desc">Hero layout, date picker z "Dziś / Jutro / Za 3 dni", picker 14 kolorów</div></div></div>
+            <div class="cl-item" style="--cl-accent:#20c997"><span class="cl-item-icon">🎉</span><div class="cl-item-body"><div class="cl-item-title">Konfetti przy ukończeniu</div><div class="cl-item-desc">Animacja confetti przy oznaczeniu zadania/wpisu jako gotowe + lightbox zdjęć</div></div></div>
+          </div>
+        </div>
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🔧</span> Bugfixy i wydajność</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#ff5d73"><span class="cl-item-icon">🟢</span><div class="cl-item-body"><div class="cl-item-title">Naprawiony widok online/offline</div><div class="cl-item-desc">Stale checker co 30s, aktualizacja DM kropek, offline przy zamknięciu taba</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#ffb020"><span class="cl-item-icon">🐛</span><div class="cl-item-body"><div class="cl-item-title">Race condition zakładek</div><div class="cl-item-desc">Naprawione miganie przy szybkim przełączaniu — sekwencja oparta na animationend</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">⚡</span><div class="cl-item-body"><div class="cl-item-title">Optymalizacja wydajności</div><div class="cl-item-desc">GPU animacje, content-visibility, mniej particles, debounce renderAll, prefers-reduced-motion</div></div><span class="cl-badge cl-badge-perf">Perf</span></div>
+          </div>
+        </div>
+      </div><!-- /v10 -->
+
+      <!-- ══════ OLDER ══════ -->
+      <div class="cl-ver-panel cl-ver-panel-hidden" data-ver-panel="older">
+        <div style="padding:44px 16px;text-align:center">
+          <div style="font-size:44px;margin-bottom:14px;opacity:.28">🗄️</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">Archiwum v9 i starsze</div>
+          <div style="font-size:12px;line-height:1.65;color:var(--muted)">Historia zmian przed wersją v10 nie jest przechowywana w tym panelu.</div>
+        </div>
+      </div><!-- /older -->
+
+    </div><!-- /cl-body -->
+    <div class="cl-footer">
+      <button id="changelogDismissBtn" class="cl-dismiss-btn" onclick="(function(){var m=document.getElementById('changelogModal');if(m){m.classList.add('hidden');document.body.style.overflow='';document.documentElement.style.overflow='';}})()">✓ Przeczytałem zmiany</button>
+      <div class="cl-footer-hint">Pokazuje się jednorazowo po aktualizacji</div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- ══ NOTIFICATION DETAIL MODAL ══ -->
+  <div id="notifDetailModal" class="notif-detail-overlay hidden">
+    <div class="notif-detail-panel">
+      <button class="notif-detail-close" id="notifDetailClose">✕</button>
+      <div class="notif-detail-top">
+        <div class="notif-detail-icon-wrap" id="notifDetailIcon">🔔</div>
+        <div class="notif-detail-meta">
+          <span class="notif-detail-badge" id="notifDetailBadge">NOTIF</span>
+          <div class="notif-detail-from" id="notifDetailFrom"></div>
+        </div>
+      </div>
+      <div class="notif-detail-body" id="notifDetailText"></div>
+      <div class="notif-detail-footer">
+        <span class="notif-detail-time" id="notifDetailTime"></span>
+        <button class="notif-detail-dismiss" id="notifDetailDismiss">Zamknij</button>
+      </div>
+    </div>
+  </div>
+
+<!-- ══════════════ iOS PUSH GUIDE MODAL ══════════════ -->
+<div id="iosGuideModal" class="ios-guide-overlay hidden">
+  <div class="ios-guide-panel" role="dialog" aria-labelledby="iosGuideTitle">
+    <button id="iosGuideClose" class="ios-guide-close" aria-label="Zamknij">✕</button>
+    <div class="ios-guide-header">
+      <div class="ios-guide-eyebrow">📱 Poradnik krok po kroku</div>
+      <div class="ios-guide-title" id="iosGuideTitle">Jak włączyć push<br>na iPhone / iPad</div>
+      <div class="ios-guide-sub">Powiadomienia push na iOS wymagają kilku kroków konfiguracji w Safari. Zajmie to ~30 sekund.</div>
+    </div>
+    <div class="ios-guide-steps">
+      <div class="ios-guide-step">
+        <div class="ios-step-num">1</div>
+        <div class="ios-step-body">
+          <div class="ios-step-title">Otwórz panel w Safari</div>
+          <div class="ios-step-desc">Wymagany jest przeglądarka <strong>Safari</strong> (nie Chrome, Firefox ani Edge). Aplikacja musi być otwarta właśnie w nim.</div>
+        </div>
+        <span class="ios-step-icon">🧭</span>
+      </div>
+      <div class="ios-guide-step">
+        <div class="ios-step-num">2</div>
+        <div class="ios-step-body">
+          <div class="ios-step-title">Kliknij ikonę „Udostępnij"</div>
+          <div class="ios-step-desc">Na dolnym pasku Safari znajdź ikonę <strong>□↑</strong> (kwadrat ze strzałką w górę) i kliknij ją.</div>
+        </div>
+        <span class="ios-step-icon">↑</span>
+      </div>
+      <div class="ios-guide-step">
+        <div class="ios-step-num">3</div>
+        <div class="ios-step-body">
+          <div class="ios-step-title">Wybierz „Dodaj do ekranu głównego"</div>
+          <div class="ios-step-desc">Przewiń listę opcji w dół i wybierz <strong>„Dodaj do ekranu głównego"</strong>. Potwierdź przyciskiem <em>Dodaj</em>.</div>
+        </div>
+        <span class="ios-step-icon">🏠</span>
+      </div>
+      <div class="ios-guide-step">
+        <div class="ios-step-num">4</div>
+        <div class="ios-step-body">
+          <div class="ios-step-title">Otwórz aplikację z ikony</div>
+          <div class="ios-step-desc">Wróć na pulpit i otwórz <strong>Szafer Panel</strong> klikając nową ikonę. Ważne: NIE z Safari — tylko z ikony na ekranie głównym.</div>
+        </div>
+        <span class="ios-step-icon">📲</span>
+      </div>
+      <div class="ios-guide-step">
+        <div class="ios-step-num">5</div>
+        <div class="ios-step-body">
+          <div class="ios-step-title">Zaloguj się i kliknij przycisk Push</div>
+          <div class="ios-step-desc">Po zalogowaniu kliknij przycisk <strong>🔔 Push</strong> w prawym górnym rogu. System zapyta o zgodę na powiadomienia.</div>
+        </div>
+        <span class="ios-step-icon">🔔</span>
+      </div>
+      <div class="ios-guide-step">
+        <div class="ios-step-num">6</div>
+        <div class="ios-step-body">
+          <div class="ios-step-title">Zatwierdź uprawnienia</div>
+          <div class="ios-step-desc">W wyskakującym oknie iOS kliknij <strong>„Zezwól"</strong>. Gotowe — teraz otrzymasz powiadomienia nawet gdy aplikacja jest w tle.</div>
+        </div>
+        <span class="ios-step-icon">✅</span>
+      </div>
+    </div>
+    <div class="ios-guide-warning">
+      <span class="ios-guide-warning-icon">⚠️</span>
+      <div class="ios-guide-warning-text">
+        Wymagane: <strong>iOS 16.4 lub nowszy</strong> oraz Safari. Powiadomienia działają tylko gdy aplikacja jest zainstalowana na ekranie głównym (tryb PWA). Na starszych wersjach iOS push nie jest obsługiwany przez Apple.
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ══════ END iOS PUSH GUIDE MODAL ══════ -->
+
+<!-- ── Version update toast ── -->
+<div id="szaferUpdateToast" class="szafer-update-toast" role="status" aria-live="polite">
+  <span class="szafer-update-toast-icon">🚀</span>
+  <div class="szafer-update-toast-body">
+    <div class="szafer-update-toast-title">Szafer Panel zaktualizowany do v10.3!</div>
+    <div class="szafer-update-toast-sub">Naprawiony push na mobile, SW, nowe funkcje</div>
+  </div>
+  <button class="szafer-update-toast-btn" onclick="hideVersionUpdateToast && hideVersionUpdateToast()">Zobacz nowości</button>
+</div>
+
+<script src="js/ui.js"></script>
+</body>
+</html>

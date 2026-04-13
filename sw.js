@@ -1,7 +1,7 @@
 /* ════════════════════════════════════════════════
    Szafer Panel — Service Worker v10.4
    ════════════════════════════════════════════════ */
-const CACHE_NAME = 'szafer-panel-v10.4';
+const CACHE_NAME = 'szafer-panel-v10.5';
 const PRECACHE = ['/', '/index.html', '/css/style.css', '/js/app.js', '/js/ui.js', '/manifest.json'];
 
 /* ── Install ── */
@@ -24,12 +24,22 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-/* ── Fetch: cache-first dla własnych zasobów ── */
+/* ── Fetch: network-first dla JS/CSS (zawsze świeże), cache-first dla reszty ── */
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
-  // Cache tylko własne zasoby (nie Firebase, Google Fonts, itp.)
   if (!url.origin.includes(self.location.hostname)) return;
+  // JS i CSS zawsze pobieraj z sieci (żeby zmiany były widoczne od razu)
+  if (url.pathname.startsWith('/js/') || url.pathname.startsWith('/css/') || url.pathname === '/index.html' || url.pathname === '/') {
+    event.respondWith(
+      fetch(event.request).then(response => {
+        var clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        return response;
+      }).catch(() => caches.match(event.request))
+    );
+    return;
+  }
   event.respondWith(
     caches.match(event.request).then(cached => cached || fetch(event.request))
   );

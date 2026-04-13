@@ -1895,70 +1895,77 @@
 
     /* ════════════ UPLOAD TAB ════════════ */
     /* ════ UPLOAD v2 — clean vertical layout ════ */
-    .upv2-wrap { display:flex; flex-direction:column; gap:14px; }
+    .upv2-wrap { display:flex; flex-direction:column; gap:16px; }
 
-    /* Hero */
+    /* ── Hero ── */
     .upv2-hero {
-      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
-      padding:16px 20px;
-      background:linear-gradient(135deg, rgba(247,183,51,.07), rgba(78,205,196,.04));
-      border:1px solid rgba(247,183,51,.14); border-radius:18px;
+      display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px;
+      padding:18px 22px;
+      background:linear-gradient(135deg, rgba(247,183,51,.13) 0%, rgba(78,205,196,.07) 100%);
+      border:1px solid rgba(247,183,51,.25); border-radius:20px;
+      box-shadow:0 4px 24px rgba(247,183,51,.06);
     }
-    .upv2-hero-left { display:flex; align-items:center; gap:12px; }
+    .upv2-hero-left { display:flex; align-items:center; gap:14px; }
     .upv2-hero-icon {
-      width:40px; height:40px; border-radius:12px; flex-shrink:0;
-      background:rgba(247,183,51,.12); border:1px solid rgba(247,183,51,.2);
+      width:44px; height:44px; border-radius:13px; flex-shrink:0;
+      background:rgba(247,183,51,.18); border:1px solid rgba(247,183,51,.3);
       display:flex; align-items:center; justify-content:center; color:var(--accent);
     }
-    .upv2-hero-title { font-size:16px; font-weight:800; }
-    .upv2-hero-sub { font-size:11px; color:var(--muted); margin-top:2px; }
-    .upv2-stats { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-    .upv2-stat { display:flex; flex-direction:column; align-items:center; gap:1px; min-width:40px; }
-    .upv2-stat-n { font-size:20px; font-weight:800; color:var(--accent); line-height:1; }
-    .upv2-stat-l { font-size:9px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
-    .upv2-stat-div { width:1px; height:28px; background:rgba(255,255,255,.08); }
+    .upv2-hero-title { font-size:17px; font-weight:800; color:var(--text); }
+    .upv2-hero-sub { font-size:12px; color:var(--muted); margin-top:3px; }
+    .upv2-stats { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    .upv2-stat { display:flex; flex-direction:column; align-items:center; gap:3px; min-width:44px; }
+    .upv2-stat-n { font-size:22px; font-weight:900; color:var(--accent); line-height:1; display:block; }
+    .upv2-stat-l { font-size:9px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.06em; display:block; }
+    .upv2-stat-div { width:1px; height:30px; background:rgba(255,255,255,.12); flex-shrink:0; }
 
-    /* Drop zone */
+    /* ── Drop zone ── */
     .upv2-drop {
-      padding:32px 24px; border-radius:18px; text-align:center; cursor:pointer;
-      border:2px dashed rgba(255,255,255,.1); background:rgba(255,255,255,.02);
+      padding:36px 24px; border-radius:20px; text-align:center; cursor:pointer;
+      border:2px dashed rgba(255,255,255,.15); background:rgba(255,255,255,.03);
       transition:all .22s ease;
     }
     .upv2-drop:hover, .upv2-drop.drag-over {
-      border-color:rgba(247,183,51,.45); background:rgba(247,183,51,.04);
-      box-shadow:0 0 30px rgba(247,183,51,.08);
+      border-color:rgba(247,183,51,.5); background:rgba(247,183,51,.05);
+      box-shadow:0 0 40px rgba(247,183,51,.1); transform:translateY(-1px);
     }
-    .upv2-drop-icon { color:var(--muted); opacity:.4; margin-bottom:10px; transition:all .2s; }
-    .upv2-drop:hover .upv2-drop-icon, .upv2-drop.drag-over .upv2-drop-icon { opacity:.9; color:var(--accent); }
-    .upv2-drop-text { font-size:14px; font-weight:600; color:var(--text); }
-    .upv2-drop-link { color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
-    .upv2-drop-hint { font-size:11px; color:var(--muted); margin-top:6px; }
+    .upv2-drop-icon { color:var(--muted); opacity:.45; margin-bottom:12px; transition:all .22s; display:block; }
+    .upv2-drop:hover .upv2-drop-icon, .upv2-drop.drag-over .upv2-drop-icon { opacity:1; color:var(--accent); }
+    .upv2-drop-text { font-size:15px; font-weight:700; color:var(--text); }
+    .upv2-drop-link { color:var(--accent); text-decoration:underline; text-underline-offset:3px; }
+    .upv2-drop-hint { font-size:11px; color:var(--muted); margin-top:8px; display:block; }
 
-    /* Controls row */
+    /* ── Controls row ── */
     .upv2-controls {
-      display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;
-      padding:14px 16px; border-radius:16px;
-      background:rgba(255,255,255,.025); border:1px solid rgba(255,255,255,.06);
+      display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;
+      padding:16px 20px; border-radius:18px;
+      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09);
     }
-    .upv2-label { display:block; font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:7px; }
+    .upv2-label { display:block; font-size:10px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; }
     .upv2-folder-wrap { flex-shrink:0; }
     .upv2-select {
-      background:rgba(0,0,0,.4); border:1px solid rgba(255,255,255,.1);
-      border-radius:10px; padding:7px 12px; font-size:12px; color:var(--text); cursor:pointer;
+      display:block; background:rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.15);
+      border-radius:10px; padding:8px 14px; font-size:13px; color:var(--text); cursor:pointer;
     }
-    .upv2-filter-wrap { flex:1; min-width:200px; }
-    .upv2-chips { display:flex; flex-wrap:wrap; gap:6px; }
+    .upv2-filter-wrap { flex:1; min-width:220px; }
+    .upv2-chips { display:flex; flex-wrap:wrap; gap:7px; }
     .upv2-chip {
-      padding:5px 11px; border-radius:999px; border:1px solid rgba(255,255,255,.09);
-      background:rgba(255,255,255,.03); font-size:11px; color:var(--muted); cursor:pointer;
-      transition:all .14s;
+      padding:6px 13px; border-radius:999px; border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04); font-size:11px; font-weight:600; color:var(--muted);
+      cursor:pointer; transition:all .15s;
     }
-    .upv2-chip:hover { background:rgba(255,255,255,.08); color:var(--text); }
-    .upv2-chip.active { background:rgba(247,183,51,.14); border-color:rgba(247,183,51,.35); color:var(--accent); font-weight:700; }
-
+    .upv2-chip:hover { background:rgba(255,255,255,.1); color:var(--text); border-color:rgba(255,255,255,.2); }
+    .upv2-chip.active {
+      background:rgba(247,183,51,.18); border-color:rgba(247,183,51,.45);
+      color:var(--accent); font-weight:800;
+    }
     .upv2-list { margin-top:0 !important; }
 
-    /* Old drop-zone kept for CSS compat (id changed to upv2-drop) */
+    /* ── Calendar mini-tag clickable ── */
+    .cal-tag-clickable { cursor:pointer; }
+    .cal-tag-clickable:hover { opacity:.8; transform:scale(1.04); transition:all .12s; }
+
+    /* compat placeholder */
     .upload-drop-zone {
       padding:40px 20px; border-radius:20px; text-align:center; cursor:pointer;
       border:2px dashed rgba(255,255,255,.12); background:rgba(255,255,255,.02);

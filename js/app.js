@@ -369,11 +369,37 @@
       els.cancelTaskEditBtn.addEventListener("click", cancelTaskEdit);
       els.seedBtn.addEventListener("click", seedDemo);
       els.exportBtn.addEventListener("click", exportJson);
-      // ── Calendar day click ──
+      // ── Calendar day click — mini-tag goes directly to item, day-num opens modal ──
       els.calendarDays.addEventListener('click', function(e) {
+        // Direct click on mini-tag → navigate to item/task editor
+        var miniTag = e.target.closest('[data-entry-id]');
+        if (miniTag) {
+          var entryId   = miniTag.dataset.entryId;
+          var entryType = miniTag.dataset.entryType;
+          if (entryType === 'task') {
+            var tasksBtn = document.querySelector('[data-tab="tasks"]');
+            if (tasksBtn) tasksBtn.click();
+            setTimeout(function() { editTask(entryId); }, 300);
+          } else {
+            var planBtn = document.querySelector('[data-tab="tasks"]');
+            if (planBtn) planBtn.click();
+            setTimeout(function() { editItem(entryId); }, 300);
+          }
+          return;
+        }
+        // Click on day cell → open day modal
         var cell = e.target.closest('.day');
         if (cell && cell.dataset.iso) openDayModal(cell.dataset.iso);
       });
+
+      // ── Profile button click ──
+      var topbarAvBtn = document.getElementById('topbarAvatarBtn');
+      if (topbarAvBtn) {
+        topbarAvBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          openProfileModal();
+        });
+      }
       // ── Day modal ──
       $('dayModalCloseX').addEventListener('click', closeDayModal);
       $('dayModalCloseBtn').addEventListener('click', closeDayModal);
@@ -1401,15 +1427,18 @@
         const shown = allEntries.slice(0, 3);
         shown.forEach(entry => {
           const tag = document.createElement("span");
+          tag.dataset.entryId   = entry.data.id;
+          tag.dataset.entryType = entry._type;
+          tag.title = "Kliknij aby otworzyć: " + entry.data.title;
           if (entry._type === 'task') {
             const calPriorityColors = { "Wysoki":"#ff5d73","Średni":"#ffb020","Niski":"#20c997" };
             const calPColor = calPriorityColors[entry.data.priority] || "#20c997";
-            tag.className = "mini-tag-task" + (entry.data.completed ? " task-done-cal" : "");
+            tag.className = "mini-tag-task cal-tag-clickable" + (entry.data.completed ? " task-done-cal" : "");
             tag.style.setProperty("--task-cal-color", calPColor);
             tag.textContent = "✓ " + entry.data.title;
           } else {
             var isItemDone = entry.data.completed;
-            tag.className = "mini-tag " + tagClass(entry.data.type) + (isItemDone ? " item-done-cal" : "");
+            tag.className = "mini-tag cal-tag-clickable " + tagClass(entry.data.type) + (isItemDone ? " item-done-cal" : "");
             if (!isItemDone && entry.data.color) { tag.style.background = entry.data.color; tag.style.color = '#120d05'; }
             tag.textContent = (isItemDone ? "✓ " : "") + entry.data.title;
           }

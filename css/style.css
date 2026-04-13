@@ -1894,6 +1894,40 @@
     }
 
     /* ════════════ UPLOAD TAB ════════════ */
+    /* ── Stats bar ── */
+    .ul-stats-bar {
+      display:flex; align-items:center; gap:0;
+      padding:14px 20px; margin-bottom:6px;
+      background:linear-gradient(135deg,rgba(247,183,51,.12),rgba(78,205,196,.06));
+      border:1px solid rgba(247,183,51,.22); border-radius:18px;
+    }
+    .ul-stat { display:flex; flex-direction:column; align-items:center; padding:0 22px; gap:4px; }
+    .ul-stat-n { font-size:28px; font-weight:900; color:var(--accent); line-height:1; }
+    .ul-stat-l { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); }
+    .ul-stat-sep { width:1px; height:36px; background:rgba(255,255,255,.1); }
+    /* ── Drop zone ── */
+    .ul-drop {
+      padding:32px 20px; border-radius:16px; text-align:center; cursor:pointer;
+      border:2px dashed rgba(255,255,255,.14); background:rgba(255,255,255,.02);
+      transition:all .22s;
+    }
+    .ul-drop:hover, .ul-drop.drag-over {
+      border-color:rgba(247,183,51,.5); background:rgba(247,183,51,.05);
+      box-shadow:0 0 30px rgba(247,183,51,.08);
+    }
+    .ul-drop-icon { color:var(--muted); opacity:.4; margin-bottom:10px; transition:opacity .2s; }
+    .ul-drop:hover .ul-drop-icon, .ul-drop.drag-over .ul-drop-icon { opacity:1; color:var(--accent); }
+    .ul-drop-text { font-size:15px; font-weight:700; color:var(--text); margin-bottom:4px; }
+    .ul-drop-hint { font-size:11px; color:var(--muted); }
+    /* ── Filter chips ── */
+    .ul-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:4px; }
+    .ul-chip {
+      padding:5px 13px; border-radius:999px; font-size:11px; font-weight:600;
+      border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.03);
+      color:var(--muted); cursor:pointer; transition:all .14s;
+    }
+    .ul-chip:hover { background:rgba(255,255,255,.09); color:var(--text); }
+    .ul-chip.active { background:rgba(247,183,51,.16); border-color:rgba(247,183,51,.4); color:var(--accent); font-weight:800; }
     /* ════ UPLOAD v2 — clean vertical layout ════ */
     .upv2-wrap { display:flex; flex-direction:column; gap:16px; }
 

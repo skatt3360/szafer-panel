@@ -64,7 +64,7 @@
 
 
         <div class="prof-dropdown-wrap">
-          <button id="topbarAvatarBtn" class="tb-avatar-btn" title="Edytuj profil">
+          <button id="topbarAvatarBtn" class="tb-avatar-btn" title="Edytuj profil" onclick="window.openProfileModal && window.openProfileModal()">
             <span id="tbAvatarCircle" class="tb-avatar-circle">?</span>
             <span id="tbUserName" class="tb-user-name">—</span>
             <span id="tbOnlineDot" class="tb-online-dot off"></span>
@@ -628,86 +628,91 @@
 
       <!-- ═══ UPLOAD TAB ═══ -->
       <section class="tab-panel hidden" data-tab-panel="upload">
-        <div class="upv2-wrap">
 
-          <!-- ── Hero ── -->
-          <div class="upv2-hero">
-            <div class="upv2-hero-left">
-              <div class="upv2-hero-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              </div>
-              <div>
-                <div class="upv2-hero-title">Pliki ekipy</div>
-                <div class="upv2-hero-sub">Wspólne repozytorium · synchronizacja w czasie rzeczywistym</div>
-              </div>
-            </div>
-            <div class="upv2-stats">
-              <div class="upv2-stat"><span class="upv2-stat-n" id="uploadStatTotal">0</span><span class="upv2-stat-l">plików</span></div>
-              <div class="upv2-stat-div"></div>
-              <div class="upv2-stat"><span class="upv2-stat-n" id="uploadStatImages">0</span><span class="upv2-stat-l">grafik</span></div>
-              <div class="upv2-stat-div"></div>
-              <div class="upv2-stat"><span class="upv2-stat-n" id="uploadStatVideos">0</span><span class="upv2-stat-l">wideo</span></div>
-              <div class="upv2-stat-div"></div>
-              <div class="upv2-stat"><span class="upv2-stat-n" id="uploadStatDocs">0</span><span class="upv2-stat-l">inne</span></div>
-            </div>
-          </div>
-
-          <!-- ── Drop zone ── -->
-          <div class="upv2-drop" id="uploadDropZone">
-            <div class="upv2-drop-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            </div>
-            <div class="upv2-drop-text">Przeciągnij pliki tutaj lub <span class="upv2-drop-link">kliknij aby wybrać</span></div>
-            <div class="upv2-drop-hint">PNG, JPG, MP4, PDF, MP3 · max 8 MB / plik</div>
-            <input id="uploadFileInput" type="file" multiple style="display:none" />
-          </div>
-
-          <div id="uploadProgress" class="upload-progress-wrap hidden"></div>
-
-          <!-- ── Controls row ── -->
-          <div class="upv2-controls">
-            <div class="upv2-folder-wrap">
-              <label class="upv2-label">Zapisz do folderu</label>
-              <select id="uploadFolder" class="upv2-select">
-                <option value="ogólne">📁 Ogólne</option>
-                <option value="klipy">🎬 Klipy</option>
-                <option value="grafiki">🖼️ Grafiki</option>
-                <option value="muzyka">🎵 Muzyka</option>
-                <option value="dokumenty">📄 Dokumenty</option>
-                <option value="raw">📦 RAW / Materiały</option>
-              </select>
-            </div>
-            <div class="upv2-filter-wrap">
-              <label class="upv2-label">Filtruj widok</label>
-              <div class="upv2-chips">
-                <button class="upv2-chip active" data-folder-chip="">Wszystkie</button>
-                <button class="upv2-chip" data-folder-chip="ogólne">📁 Ogólne</button>
-                <button class="upv2-chip" data-folder-chip="klipy">🎬 Klipy</button>
-                <button class="upv2-chip" data-folder-chip="grafiki">🖼️ Grafiki</button>
-                <button class="upv2-chip" data-folder-chip="muzyka">🎵 Muzyka</button>
-                <button class="upv2-chip" data-folder-chip="dokumenty">📄 Dok.</button>
-                <button class="upv2-chip" data-folder-chip="raw">📦 RAW</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- hidden compat select for JS -->
-          <select id="uploadFilterFolder" style="display:none">
-            <option value="">Wszystkie</option>
-            <option value="ogólne">Ogólne</option>
-            <option value="klipy">Klipy</option>
-            <option value="grafiki">Grafiki</option>
-            <option value="muzyka">Muzyka</option>
-            <option value="dokumenty">Dokumenty</option>
-            <option value="raw">RAW</option>
-          </select>
-
-          <!-- ── File list ── -->
-          <div id="uploadFileList" class="upload-file-list upv2-list">
-            <div class="empty">Brak przesłanych plików.</div>
-          </div>
-
+        <!-- Stats bar -->
+        <div class="ul-stats-bar">
+          <div class="ul-stat"><span class="ul-stat-n" id="uploadStatTotal">0</span><span class="ul-stat-l">plików</span></div>
+          <div class="ul-stat-sep"></div>
+          <div class="ul-stat"><span class="ul-stat-n" id="uploadStatImages">0</span><span class="ul-stat-l">grafik</span></div>
+          <div class="ul-stat-sep"></div>
+          <div class="ul-stat"><span class="ul-stat-n" id="uploadStatVideos">0</span><span class="ul-stat-l">wideo</span></div>
+          <div class="ul-stat-sep"></div>
+          <div class="ul-stat"><span class="ul-stat-n" id="uploadStatDocs">0</span><span class="ul-stat-l">inne</span></div>
         </div>
+
+        <div class="grid">
+          <!-- Left col: upload + folder -->
+          <div class="column">
+            <div class="section">
+              <div class="section-header">
+                <div>
+                  <div class="section-title">📤 Dodaj pliki</div>
+                  <div class="subtitle" style="margin-top:4px">Przeciągnij lub kliknij aby wybrać</div>
+                </div>
+              </div>
+              <div class="section-body">
+                <div id="uploadDropZone" class="ul-drop">
+                  <div class="ul-drop-icon">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  </div>
+                  <div class="ul-drop-text">Upuść pliki tutaj</div>
+                  <div class="ul-drop-hint">lub kliknij · max 8 MB / plik</div>
+                  <input id="uploadFileInput" type="file" multiple style="display:none" />
+                </div>
+                <div id="uploadProgress" class="upload-progress-wrap hidden"></div>
+                <div class="field" style="margin-top:14px">
+                  <label for="uploadFolder">📁 Folder docelowy</label>
+                  <select id="uploadFolder">
+                    <option value="ogólne">📁 Ogólne</option>
+                    <option value="klipy">🎬 Klipy</option>
+                    <option value="grafiki">🖼️ Grafiki</option>
+                    <option value="muzyka">🎵 Muzyka</option>
+                    <option value="dokumenty">📄 Dokumenty</option>
+                    <option value="raw">📦 RAW / Materiały</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right col: file list -->
+          <div class="column">
+            <div class="section">
+              <div class="section-header">
+                <div>
+                  <div class="section-title">🗂️ Pliki ekipy</div>
+                  <div class="subtitle" style="margin-top:4px">Przesłane pliki · podgląd i pobieranie</div>
+                </div>
+              </div>
+              <div class="section-body" style="padding-top:10px">
+                <!-- Filter chips -->
+                <div class="ul-chips">
+                  <button class="ul-chip active" data-folder-chip="">Wszystkie</button>
+                  <button class="ul-chip" data-folder-chip="ogólne">📁 Ogólne</button>
+                  <button class="ul-chip" data-folder-chip="klipy">🎬 Klipy</button>
+                  <button class="ul-chip" data-folder-chip="grafiki">🖼️ Grafiki</button>
+                  <button class="ul-chip" data-folder-chip="muzyka">🎵 Muzyka</button>
+                  <button class="ul-chip" data-folder-chip="dokumenty">📄 Dok.</button>
+                  <button class="ul-chip" data-folder-chip="raw">📦 RAW</button>
+                </div>
+                <!-- hidden compat select -->
+                <select id="uploadFilterFolder" style="display:none">
+                  <option value="">Wszystkie</option>
+                  <option value="ogólne">Ogólne</option>
+                  <option value="klipy">Klipy</option>
+                  <option value="grafiki">Grafiki</option>
+                  <option value="muzyka">Muzyka</option>
+                  <option value="dokumenty">Dokumenty</option>
+                  <option value="raw">RAW</option>
+                </select>
+                <div id="uploadFileList" class="upload-file-list" style="margin-top:12px">
+                  <div class="empty">Brak przesłanych plików.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </section>
 
       <!-- ═══ TIBIA TAB ═══ -->

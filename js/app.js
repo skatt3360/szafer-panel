@@ -311,11 +311,13 @@
             if (tab === 'planning') { try { renderMediaAttachGrid(); } catch(e){} }
             if (tab === 'chat') {
               try { initChat(); subscribeChatChannel(); } catch(e){}
-              // Always scroll to bottom when entering chat tab
+              // Mark that we need to scroll to bottom on next render
+              window._chatShouldScrollBottom = true;
+              // Also try immediately after animation
               setTimeout(function() {
-                var chatContainer = document.getElementById('chatMessages');
-                if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
-              }, 350);
+                var c = document.getElementById('chatMessages');
+                if (c) c.scrollTop = c.scrollHeight;
+              }, 400);
             }
           }
         });
@@ -2268,8 +2270,9 @@
 
       container.innerHTML = '';
       container.appendChild(frag);
-      // Always scroll to bottom on new messages if user was already near bottom
-      if (wasAtBottom) {
+      // Scroll to bottom if user was near bottom, first load, or tab-enter flag set
+      if (wasAtBottom || window._chatShouldScrollBottom) {
+        window._chatShouldScrollBottom = false;
         requestAnimationFrame(function() {
           container.scrollTop = container.scrollHeight;
         });
@@ -3278,10 +3281,10 @@
       // Filter (hidden select kept for compat)
       if (filterSelect) filterSelect.addEventListener('change', function() { renderUploadFiles(); });
 
-      // Folder chip shortcuts (upv2-chip)
-      document.querySelectorAll('.upv2-chip[data-folder-chip]').forEach(function(chip) {
+      // Folder chip shortcuts
+      document.querySelectorAll('.ul-chip[data-folder-chip]').forEach(function(chip) {
         chip.addEventListener('click', function() {
-          document.querySelectorAll('.upv2-chip[data-folder-chip]').forEach(function(c){ c.classList.remove('active'); });
+          document.querySelectorAll('.ul-chip[data-folder-chip]').forEach(function(c){ c.classList.remove('active'); });
           chip.classList.add('active');
           var val = chip.dataset.folderChip;
           if (filterSelect) { filterSelect.value = val; renderUploadFiles(); }

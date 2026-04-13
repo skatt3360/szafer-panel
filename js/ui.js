@@ -43,7 +43,7 @@
    (skrypt może być w dowolnym miejscu HTML)
    ════════════════════════════════════════════════════════ */
 (function() {
-  var _activeVer = 'v10.4';
+  var _activeVer = 'v10.5';
 
   function showChangelog() {
     var m = document.getElementById('changelogModal');
@@ -130,7 +130,7 @@
 
   /* Auto-show once per version */
   (function() {
-    var VER = 'v10.4', KEY = 'szaferCLseen_' + VER;
+    var VER = 'v10.5', KEY = 'szaferCLseen_' + VER;
     function tryAutoShow() {
       var shell = document.getElementById('appShell');
       if (!shell || shell.classList.contains('hidden')) return;
@@ -208,7 +208,8 @@
   var col = colMap[jsDay];
   var tbl = document.getElementById('harmTbl');
   if (!tbl) return;
-  tbl.querySelectorAll('[data-col="' + col + '"]').forEach(function(c) {
-    c.classList.add('harm-today');
+  /* highlight header */
+  tbl.querySelectorAll('[data-harm-col="' + col + '"]').forEach(function(c) {
+    c.classList.add('harm-today-col');
   });
 })();

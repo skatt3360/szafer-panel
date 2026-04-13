@@ -64,7 +64,7 @@
 
 
         <div class="prof-dropdown-wrap">
-          <button id="topbarAvatarBtn" class="tb-avatar-btn" title="Edytuj profil" data-action="open-profile">
+          <button id="topbarAvatarBtn" class="tb-avatar-btn" title="Edytuj profil" data-action="open-profile" onclick="if(window.openProfileModal)window.openProfileModal()">
             <span id="tbAvatarCircle" class="tb-avatar-circle">?</span>
             <span id="tbUserName" class="tb-user-name">—</span>
             <span id="tbOnlineDot" class="tb-online-dot off"></span>
@@ -1191,12 +1191,19 @@
             <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Nowy wygląd chatu — nowoczesny dark UI</div><div class="cl-item-desc">Całkowity redesign zakładki Chat: nowy sidebar z kanałami i DM, eleganckie bąbelki wiadomości, grupowanie kolejnych wiadomości tej samej osoby, nowe awatary z gradientami.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
             <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">↩</span><div class="cl-item-body"><div class="cl-item-title">Odpowiadanie na wiadomości</div><div class="cl-item-desc">Najedź na wiadomość i kliknij ↩ aby odpowiedzieć. Powyżej inputa pojawi się pasek z podglądem cytowanej wiadomości. W wysłanej wiadomości widoczny jest cytat oryginału.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
             <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">😊</span><div class="cl-item-body"><div class="cl-item-title">Picker emotek — 24 emotki jednym kliknięciem</div><div class="cl-item-desc">Przycisk 😊 otwiera panel z 24 popularnymi emotkami. Kliknij emotkę aby wstawić do pola tekstowego. Panel zamyka się po wyborze lub kliknięciu poza nim.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">❤️</span><div class="cl-item-body"><div class="cl-item-title">Reakcje na wiadomości (jak Discord/Slack)</div><div class="cl-item-desc">Najedź na wiadomość → kliknij 😊 w pasku akcji → wybierz emotkę z 8 szybkich reakcji. Reakcje są widoczne dla całej ekipy. Kliknij chip reakcji aby dodać lub cofnąć swoją.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🗓️</span> Harmonogram — naprawa</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#43e97b"><span class="cl-item-icon">🔧</span><div class="cl-item-body"><div class="cl-item-title">Podświetlanie dzisiejszej kolumny</div><div class="cl-item-desc">Naprawiono skrypt który nie trafiał w właściwy atrybut (data-col zamiast data-harm-col). Teraz dzisiejszy dzień tygodnia jest poprawnie podświetlany turkusem.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
           </div>
         </div>
         <div class="cl-section">
           <div class="cl-section-title"><span class="cl-section-icon">👤</span> Profil — naprawa</div>
           <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#43e97b"><span class="cl-item-icon">🔧</span><div class="cl-item-body"><div class="cl-item-title">Kliknięcie awatara/nazwy otwiera edycję profilu</div><div class="cl-item-desc">Naprawiono podpięcie przycisku profilu w topbarze — używa teraz data-action zamiast wielu nakładających się listenerów, które się wzajemnie anulowały.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#43e97b"><span class="cl-item-icon">🔧</span><div class="cl-item-body"><div class="cl-item-title">Kliknięcie awatara/nazwy otwiera edycję profilu</div><div class="cl-item-desc">Naprawiono podpięcie przycisku — teraz onclick bezpośrednio w HTML, nie może już nie zadziałać niezależnie od kolejności ładowania skryptów.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
           </div>
         </div>
       </div>

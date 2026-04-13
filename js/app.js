@@ -394,14 +394,28 @@
         if (cell && cell.dataset.iso) openDayModal(cell.dataset.iso);
       });
 
-      // ── Profile button click ──
-      var topbarAvBtn = document.getElementById('topbarAvatarBtn');
-      if (topbarAvBtn) {
-        topbarAvBtn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          openProfileModal();
-        });
-      }
+      // ── Profile — unified open/close ──
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('[data-action="open-profile"]')) {
+          if (typeof openProfileModal === 'function') openProfileModal();
+          return;
+        }
+        var pm = document.getElementById('profileModal');
+        if (pm && !pm.classList.contains('hidden')) {
+          var wrap = document.querySelector('.prof-dropdown-wrap');
+          if (wrap && !wrap.contains(e.target)) {
+            if (typeof closeProfileModal === 'function') closeProfileModal();
+          }
+        }
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          var pm = document.getElementById('profileModal');
+          if (pm && !pm.classList.contains('hidden')) {
+            if (typeof closeProfileModal === 'function') closeProfileModal();
+          }
+        }
+      });
       // ── Day modal ──
       $('dayModalCloseX').addEventListener('click', closeDayModal);
       $('dayModalCloseBtn').addEventListener('click', closeDayModal);
@@ -2077,13 +2091,20 @@
         var msgRef = ref(db, path + '/' + msgId);
         var prof = _profileData[currentUser.uid] || {};
         var senderDisplay = prof.displayName || (currentUser.email || '').split('@')[0];
-        set(msgRef, {
+        var msgData = {
           id: msgId,
           text: text,
           sender: senderDisplay,
           senderEmail: currentUser.email || currentUser.uid,
           timestamp: Date.now()
-        });
+        };
+        if (_chatReplyTo) {
+          msgData.replyTo = { id: _chatReplyTo.id, sender: _chatReplyTo.sender, text: _chatReplyTo.text.substring(0, 100) };
+          _chatReplyTo = null;
+          var bar = $('chatReplyBar');
+          if (bar) bar.classList.add('hidden');
+        }
+        set(msgRef, msgData);
         // Auto-scroll to bottom after sending
         requestAnimationFrame(function() {
           var container = $('chatMessages');
@@ -2106,8 +2127,46 @@
 
       subscribeChatChannel();
       updateOnlineUsers();
+
+      // ── Emoji picker ──
+      var emojiBtn = $('chatEmojiBtn');
+      var emojiPicker = $('chatEmojiPicker');
+      if (emojiBtn && emojiPicker) {
+        emojiBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          emojiPicker.classList.toggle('hidden');
+        });
+        emojiPicker.querySelectorAll('.chat-v2-emoji').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var chatInput = $('chatInput');
+            if (chatInput) {
+              chatInput.value += btn.dataset.emoji;
+              chatInput.focus();
+              // trigger input event for send button state
+              chatInput.dispatchEvent(new Event('input'));
+            }
+            emojiPicker.classList.add('hidden');
+          });
+        });
+        document.addEventListener('click', function(e) {
+          if (!emojiPicker.classList.contains('hidden') && !emojiPicker.contains(e.target) && e.target !== emojiBtn) {
+            emojiPicker.classList.add('hidden');
+          }
+        });
+      }
+
+      // ── Reply cancel ──
+      var replyCancel = $('chatReplyCancel');
+      if (replyCancel) {
+        replyCancel.addEventListener('click', function() {
+          _chatReplyTo = null;
+          var bar = $('chatReplyBar');
+          if (bar) bar.classList.add('hidden');
+        });
+      }
     }
 
+    var _chatReplyTo = null; // { id, sender, text }
     var _chatLastMsgTimestamp = 0;
 
     function subscribeChatChannel() {
@@ -2241,6 +2300,34 @@
         var deleteBtn  = canDelete
           ? '<button class="chat-action-btn chat-delete-btn" title="Usuń wiadomość">🗑️</button>'
           : '';
+        var replyBtn = '<button class="chat-action-btn chat-reply-btn" title="Odpowiedz">↩</button>';
+        var reactBtn = '<button class="chat-action-btn chat-react-btn" title="Reakcja">😊</button>';
+
+        var replyQuoteHtml = '';
+        if (msg.replyTo) {
+          replyQuoteHtml = '<div class="chat-msg-reply-quote">' +
+            '<div class="chat-msg-reply-quote-name">' + escapeHtml(msg.replyTo.sender || '?') + '</div>' +
+            '<div class="chat-msg-reply-quote-text">' + escapeHtml(msg.replyTo.text || '') + '</div>' +
+          '</div>';
+        }
+
+        // Build reactions bar
+        var myUid = currentUser ? currentUser.uid : '';
+        var reactions = msg.reactions || {};
+        var reactionMap = {}; // emoji → { count, uids[] }
+        Object.keys(reactions).forEach(function(uid) {
+          var em = reactions[uid];
+          if (!reactionMap[em]) reactionMap[em] = { count: 0, uids: [] };
+          reactionMap[em].count++;
+          reactionMap[em].uids.push(uid);
+        });
+        var reactionsHtml = '';
+        Object.keys(reactionMap).forEach(function(em) {
+          var r = reactionMap[em];
+          var isMineReact = r.uids.indexOf(myUid) !== -1;
+          reactionsHtml += '<button class="chat-reaction-chip' + (isMineReact ? ' mine' : '') + '" data-emoji="' + em + '" data-path="' + msgPath + '">' +
+            em + ' <span class="chat-reaction-count">' + r.count + '</span></button>';
+        });
 
         msgEl.innerHTML = avatarHtml +
           '<div class="chat-msg-body">' +
@@ -2249,11 +2336,75 @@
                 (isMine ? ' <span class="chat-msg-you">Ty</span>' : '') +
               '</span>' +
               '<span class="chat-msg-time">' + timeStr + '</span>' +
-              '<div class="chat-msg-actions">' + deleteBtn + '</div>' +
             '</div>' +
+            replyQuoteHtml +
             '<div class="chat-msg-text">' + textHtml + '</div>' +
-          '</div>';
+            (reactionsHtml ? '<div class="chat-msg-reactions">' + reactionsHtml + '</div>' : '') +
+          '</div>' +
+          '<div class="chat-msg-actions">' + reactBtn + replyBtn + deleteBtn + '</div>';
 
+        // Reaction chips click
+        msgEl.querySelectorAll('.chat-reaction-chip').forEach(function(chip) {
+          chip.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!currentUser) return;
+            var em = chip.dataset.emoji;
+            var rPath = msgPath + '/reactions/' + currentUser.uid;
+            var current = (msg.reactions || {})[currentUser.uid];
+            set(ref(db, rPath), current === em ? null : em);
+          });
+        });
+
+        // Quick react popup
+        var _quickReactEmojis = ['👍','❤️','😂','🔥','💀','🤡','💯','😎'];
+        var rBtn2 = msgEl.querySelector('.chat-react-btn');
+        if (rBtn2) {
+          rBtn2.addEventListener('click', function(e) {
+            e.stopPropagation();
+            // Remove any existing quick-react popups
+            document.querySelectorAll('.chat-quick-react').forEach(function(p) { p.remove(); });
+            var popup = document.createElement('div');
+            popup.className = 'chat-quick-react';
+            _quickReactEmojis.forEach(function(em) {
+              var eb = document.createElement('button');
+              eb.className = 'chat-quick-react-emoji';
+              eb.textContent = em;
+              eb.addEventListener('click', function(e2) {
+                e2.stopPropagation();
+                if (!currentUser) return;
+                var rPath = msgPath + '/reactions/' + currentUser.uid;
+                var current = (msg.reactions || {})[currentUser.uid];
+                set(ref(db, rPath), current === em ? null : em);
+                popup.remove();
+              });
+              popup.appendChild(eb);
+            });
+            msgEl.querySelector('.chat-msg-actions').appendChild(popup);
+            setTimeout(function() {
+              document.addEventListener('click', function rm() {
+                popup.remove();
+                document.removeEventListener('click', rm);
+              });
+            }, 10);
+          });
+        }
+
+        // Reply button
+        var rBtn = msgEl.querySelector('.chat-reply-btn');
+        if (rBtn) {
+          rBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            _chatReplyTo = { id: firebaseKey, sender: senderName, text: msg.text || '' };
+            var bar = $('chatReplyBar');
+            var nameEl = $('chatReplyName');
+            var prevEl = $('chatReplyPreview');
+            if (bar) bar.classList.remove('hidden');
+            if (nameEl) nameEl.textContent = senderName;
+            if (prevEl) prevEl.textContent = (msg.text || '').substring(0, 60);
+            var chatInput = $('chatInput');
+            if (chatInput) chatInput.focus();
+          });
+        }
         if (canDelete) {
           var delBtn = msgEl.querySelector('.chat-delete-btn');
           if (delBtn) {
@@ -3837,39 +3988,7 @@
       if (pm) pm.classList.add('hidden');
     }
 
-    // FIX: Bezpośrednie listenery — nie zależą od initProfileSystem / kolejności wywołań
-    document.addEventListener('DOMContentLoaded', function() {}, false); // ensure DOM
-    (function _attachProfileClosers() {
-      function _tryAttach() {
-        var xBtn = $('profileModalClose');
-        var cancelBtn = $('profCancelBtn');
-        if (!xBtn) { setTimeout(_tryAttach, 150); return; }
-        if (!xBtn.__closeAttached) {
-          xBtn.addEventListener('click', function(e) { e.stopPropagation(); closeProfileModal(); });
-          xBtn.__closeAttached = true;
-        }
-        if (cancelBtn && !cancelBtn.__closeAttached) {
-          cancelBtn.addEventListener('click', function(e) { e.stopPropagation(); closeProfileModal(); });
-          cancelBtn.__closeAttached = true;
-        }
-      }
-      // Próbuj natychmiast i po chwili (moduł ładuje się asynchronicznie)
-      _tryAttach();
-      // ESC key
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-          var pm = $('profileModal');
-          if (pm && !pm.classList.contains('hidden')) closeProfileModal();
-        }
-      });
-      // Klik poza profileModal zamyka go
-      document.addEventListener('click', function(e) {
-        var pm = $('profileModal');
-        if (!pm || pm.classList.contains('hidden')) return;
-        var wrap = document.querySelector('.prof-dropdown-wrap');
-        if (wrap && !wrap.contains(e.target)) closeProfileModal();
-      });
-    })();
+    // Profile close buttons — attached by initProfileSystem
 
     async function saveProfile() {
       if (!currentUser) return;
@@ -4161,7 +4280,7 @@
     })()
     // ── New-version update toast ──────────────────────────
     function showVersionUpdateToast() {
-      var SEEN_KEY = 'szafer-seen-v10.4';
+      var SEEN_KEY = 'szafer-seen-v10.5';
       try { if (localStorage.getItem(SEEN_KEY)) return; } catch(e){}
       var toast = document.getElementById('szaferUpdateToast');
       if (!toast) return;
@@ -4181,6 +4300,6 @@
       var toast = document.getElementById('szaferUpdateToast');
       if (!toast) return;
       toast.classList.remove('show');
-      try { localStorage.setItem('szafer-seen-v10.4', '1'); } catch(e){}
+      try { localStorage.setItem('szafer-seen-v10.5', '1'); } catch(e){}
     }
 ;

@@ -9,7 +9,7 @@
   <meta name="theme-color" content="#05060c" />
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23f7b733' rx='20' width='100' height='100'/><text x='50' y='68' text-anchor='middle' font-size='55'>🎵</text></svg>" />
   <link rel="manifest" href="/manifest.json" />
-  <title>Szafer Panel v10.4 · Planer</title>
+  <title>Szafer Panel v10.5 · Planer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -64,7 +64,7 @@
 
 
         <div class="prof-dropdown-wrap">
-          <button id="topbarAvatarBtn" class="tb-avatar-btn" title="Edytuj profil" onclick="window.openProfileModal && window.openProfileModal()">
+          <button id="topbarAvatarBtn" class="tb-avatar-btn" title="Edytuj profil" data-action="open-profile">
             <span id="tbAvatarCircle" class="tb-avatar-circle">?</span>
             <span id="tbUserName" class="tb-user-name">—</span>
             <span id="tbOnlineDot" class="tb-online-dot off"></span>
@@ -176,7 +176,7 @@
           <button id="changelogOpenBtn" class="btn-changelog cl-attention hidden" title="Zobacz co nowego w panelu">
             <span class="btn-cl-spark">✦</span>
             <span class="btn-cl-text">Lista Zmian</span>
-            <span class="btn-cl-badge">v10.3</span>
+            <span class="btn-cl-badge">v10.5</span>
           </button>
           <div class="push-logout-col">
             <button id="logoutBtn" class="btn-logout-tb hidden">
@@ -237,74 +237,130 @@
 
   <!-- ═══ CHAT TAB ═══ -->
   <section class="tab-panel hidden" data-tab-panel="chat">
-    <div class="chat-tab-wrapper">
-    <div class="chat-container chat-tab-container">
-      <div class="chat-sidebar">
-        <div class="chat-sidebar-header">
-          <div class="chat-logo-mini">💬</div>
-          <div>
-            <div class="section-title">Team Chat</div>
-            <div class="subtitle" style="margin-top:4px">Szafer · blajetttp · Skat</div>
+    <div class="chat-v2-shell">
+
+      <!-- ── Sidebar ── -->
+      <div class="chat-v2-sidebar">
+        <div class="chat-v2-sidebar-top">
+          <div class="chat-v2-brand">
+            <div class="chat-v2-brand-icon">💬</div>
+            <div>
+              <div class="chat-v2-brand-name">Team Chat</div>
+              <div class="chat-v2-brand-sub">Szafer · blajetttp · Skat</div>
+            </div>
           </div>
         </div>
-        <!-- KANAŁY -->
-        <div class="chat-sidebar-section-label">Kanały</div>
-        <div class="chat-channels" id="chatChannelList">
+
+        <div class="chat-v2-section-label">Kanały</div>
+        <div id="chatChannelList">
           <div class="chat-channel active" data-channel="general" data-type="channel">
-            <span class="chat-channel-icon">#</span>
-            <span>Ogólny</span>
+            <span class="chat-v2-ch-icon">#</span>
+            <span class="chat-v2-ch-name">Ogólny</span>
           </div>
           <div class="chat-channel" data-channel="pomysly" data-type="channel">
-            <span class="chat-channel-icon">💡</span>
-            <span>Pomysły</span>
+            <span class="chat-v2-ch-icon">💡</span>
+            <span class="chat-v2-ch-name">Pomysły</span>
           </div>
           <div class="chat-channel" data-channel="feedback" data-type="channel">
-            <span class="chat-channel-icon">🎯</span>
-            <span>Feedback</span>
+            <span class="chat-v2-ch-icon">🎯</span>
+            <span class="chat-v2-ch-name">Feedback</span>
           </div>
         </div>
-        <!-- DM -->
-        <div class="chat-sidebar-section-label" style="margin-top:8px">Wiadomości prywatne</div>
-        <div class="chat-channels" id="chatDmList">
+
+        <div class="chat-v2-section-label" style="margin-top:8px">Prywatne</div>
+        <div id="chatDmList">
           <div class="chat-channel" data-channel="dm__szafer" data-type="dm" data-dm-target="szafer">
             <span class="chat-dm-avatar av-szafer">S</span>
-            <span>Szafer</span>
+            <span class="chat-v2-ch-name">Szafer</span>
             <span class="chat-dm-dot" id="dmDot_szafer"></span>
           </div>
           <div class="chat-channel" data-channel="dm__blajetttp" data-type="dm" data-dm-target="blajetttp">
             <span class="chat-dm-avatar av-blajetttp">A</span>
-            <span>blajetttp</span>
+            <span class="chat-v2-ch-name">blajetttp</span>
             <span class="chat-dm-dot" id="dmDot_blajetttp"></span>
           </div>
           <div class="chat-channel" data-channel="dm__skat" data-type="dm" data-dm-target="skat">
             <span class="chat-dm-avatar av-skat">SK</span>
-            <span>Skat</span>
+            <span class="chat-v2-ch-name">Skat</span>
             <span class="chat-dm-dot" id="dmDot_skat"></span>
           </div>
         </div>
-        <div class="chat-online-section">
-          <div class="section-title" style="padding:0 16px;font-size:10px">Online</div>
+
+        <div class="chat-v2-online-wrap">
+          <div class="chat-v2-section-label">Online teraz</div>
           <div id="chatOnlineUsers" class="chat-online-list"></div>
         </div>
       </div>
-      <div class="chat-main">
-        <div class="chat-main-header">
-          <div class="chat-main-channel-name"># Ogólny</div>
-          <div class="chat-main-channel-desc">Główny kanał komunikacji ekipy</div>
+
+      <!-- ── Main area ── -->
+      <div class="chat-v2-main">
+
+        <!-- Header -->
+        <div class="chat-v2-header">
+          <div class="chat-v2-header-left">
+            <div class="chat-main-channel-name"># Ogólny</div>
+            <div class="chat-main-channel-desc">Główny kanał komunikacji ekipy</div>
+          </div>
         </div>
-        <div id="chatMessages" class="chat-messages"></div>
-        <div class="chat-input-area">
-          <div class="chat-input-row">
-            <input id="chatInput" type="text" class="chat-input" placeholder="Napisz wiadomość do ekipy..." />
-            <button id="chatSendBtn" class="chat-send-btn">
+
+        <!-- Messages -->
+        <div id="chatMessages" class="chat-v2-messages"></div>
+
+        <!-- Reply preview bar -->
+        <div id="chatReplyBar" class="chat-v2-reply-bar hidden">
+          <div class="chat-v2-reply-info">
+            <span class="chat-v2-reply-icon">↩</span>
+            <span>Odpowiadasz na: </span>
+            <span id="chatReplyName" class="chat-v2-reply-name"></span>
+            <span id="chatReplyPreview" class="chat-v2-reply-preview"></span>
+          </div>
+          <button id="chatReplyCancel" class="chat-v2-reply-cancel">✕</button>
+        </div>
+
+        <!-- Input area -->
+        <div class="chat-v2-input-area">
+          <div class="chat-v2-input-row">
+            <button id="chatEmojiBtn" class="chat-v2-emoji-btn" type="button" title="Emotki">😊</button>
+            <input id="chatInput" type="text" class="chat-v2-input" placeholder="Napisz wiadomość do ekipy…" autocomplete="off" />
+            <button id="chatSendBtn" class="chat-v2-send-btn" type="button">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
             </button>
           </div>
-          <div class="chat-input-hint">Enter aby wysłać · Wiadomości widzi cała ekipa</div>
+          <div class="chat-input-hint">Enter wysyła · Shift+Enter nowa linia</div>
         </div>
+
+        <!-- Emoji picker (hidden by default) -->
+        <div id="chatEmojiPicker" class="chat-v2-emoji-picker hidden">
+          <div class="chat-v2-emoji-grid">
+            <button class="chat-v2-emoji" data-emoji="😂">😂</button>
+            <button class="chat-v2-emoji" data-emoji="❤️">❤️</button>
+            <button class="chat-v2-emoji" data-emoji="🔥">🔥</button>
+            <button class="chat-v2-emoji" data-emoji="👍">👍</button>
+            <button class="chat-v2-emoji" data-emoji="👎">👎</button>
+            <button class="chat-v2-emoji" data-emoji="😎">😎</button>
+            <button class="chat-v2-emoji" data-emoji="🤣">🤣</button>
+            <button class="chat-v2-emoji" data-emoji="😭">😭</button>
+            <button class="chat-v2-emoji" data-emoji="🥶">🥶</button>
+            <button class="chat-v2-emoji" data-emoji="💀">💀</button>
+            <button class="chat-v2-emoji" data-emoji="🤡">🤡</button>
+            <button class="chat-v2-emoji" data-emoji="🎉">🎉</button>
+            <button class="chat-v2-emoji" data-emoji="✅">✅</button>
+            <button class="chat-v2-emoji" data-emoji="❌">❌</button>
+            <button class="chat-v2-emoji" data-emoji="💯">💯</button>
+            <button class="chat-v2-emoji" data-emoji="🚀">🚀</button>
+            <button class="chat-v2-emoji" data-emoji="💪">💪</button>
+            <button class="chat-v2-emoji" data-emoji="🎬">🎬</button>
+            <button class="chat-v2-emoji" data-emoji="🎵">🎵</button>
+            <button class="chat-v2-emoji" data-emoji="📱">📱</button>
+            <button class="chat-v2-emoji" data-emoji="⚡">⚡</button>
+            <button class="chat-v2-emoji" data-emoji="🤔">🤔</button>
+            <button class="chat-v2-emoji" data-emoji="😅">😅</button>
+            <button class="chat-v2-emoji" data-emoji="🫡">🫡</button>
+          </div>
+        </div>
+
       </div>
     </div>
-    </div><!-- /chat-tab-wrapper -->
   </section>
 
 
@@ -1107,12 +1163,13 @@
     <div class="cl-header">
       <span class="cl-header-icon">🚀</span>
       <div class="cl-header-title">Co nowego?</div>
-      <span class="cl-header-ver" id="clHeaderVer">Panel v10.4 · Changelog</span>
+      <span class="cl-header-ver" id="clHeaderVer">Panel v10.5 · Changelog</span>
       <button id="changelogCloseBtn" class="cl-close cl-header-close" aria-label="Zamknij changelog">✕</button>
     </div>
     <!-- VERSION SELECTOR -->
     <div class="cl-version-selector" id="clVersionSelector">
-      <button class="cl-ver-btn cl-ver-active" data-ver="v10.4"><span class="cl-ver-dot"></span>v10.4<span class="cl-ver-label-new">NOWA</span></button>
+      <button class="cl-ver-btn cl-ver-active" data-ver="v10.5"><span class="cl-ver-dot"></span>v10.5<span class="cl-ver-label-new">NOWA</span></button>
+      <button class="cl-ver-btn" data-ver="v10.4">v10.4</button>
       <button class="cl-ver-btn" data-ver="v10.3">v10.3</button>
       <button class="cl-ver-btn" data-ver="v10.2">v10.2</button>
       <button class="cl-ver-btn" data-ver="v10.1">v10.1</button>
@@ -1120,6 +1177,29 @@
       <button class="cl-ver-btn" data-ver="older" style="opacity:.65">v9 i starsze</button>
     </div>
     <div class="cl-body" id="clBody">
+
+      <!-- ══════ V10.5 ══════ -->
+      <div class="cl-ver-panel" data-ver-panel="v10.5">
+        <div class="cl-ver-banner">
+          <span>💬</span>
+          <span class="cl-ver-banner-label" style="color:#4ecdc4">v10.5 — 13.04.2026</span>
+          <span class="cl-badge cl-badge-new" style="font-size:8px">NAJNOWSZE</span>
+        </div>
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">💬</span> Chat — pełny redesign</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Nowy wygląd chatu — nowoczesny dark UI</div><div class="cl-item-desc">Całkowity redesign zakładki Chat: nowy sidebar z kanałami i DM, eleganckie bąbelki wiadomości, grupowanie kolejnych wiadomości tej samej osoby, nowe awatary z gradientami.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">↩</span><div class="cl-item-body"><div class="cl-item-title">Odpowiadanie na wiadomości</div><div class="cl-item-desc">Najedź na wiadomość i kliknij ↩ aby odpowiedzieć. Powyżej inputa pojawi się pasek z podglądem cytowanej wiadomości. W wysłanej wiadomości widoczny jest cytat oryginału.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">😊</span><div class="cl-item-body"><div class="cl-item-title">Picker emotek — 24 emotki jednym kliknięciem</div><div class="cl-item-desc">Przycisk 😊 otwiera panel z 24 popularnymi emotkami. Kliknij emotkę aby wstawić do pola tekstowego. Panel zamyka się po wyborze lub kliknięciu poza nim.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">👤</span> Profil — naprawa</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#43e97b"><span class="cl-item-icon">🔧</span><div class="cl-item-body"><div class="cl-item-title">Kliknięcie awatara/nazwy otwiera edycję profilu</div><div class="cl-item-desc">Naprawiono podpięcie przycisku profilu w topbarze — używa teraz data-action zamiast wielu nakładających się listenerów, które się wzajemnie anulowały.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+          </div>
+        </div>
+      </div>
 
       <!-- ══════ V10.4 ══════ -->
       <div class="cl-ver-panel" data-ver-panel="v10.4">

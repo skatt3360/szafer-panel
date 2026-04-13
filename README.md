@@ -1,4 +1,4 @@
-# Szafer Panel v10.5
+# Szafer Panel v11
 
 Panel zarządzania dla ekipy Szafer — planer, zadania, chat, harmonogram, Tibia.
 

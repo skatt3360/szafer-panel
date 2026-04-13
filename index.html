@@ -9,7 +9,7 @@
   <meta name="theme-color" content="#05060c" />
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23f7b733' rx='20' width='100' height='100'/><text x='50' y='68' text-anchor='middle' font-size='55'>🎵</text></svg>" />
   <link rel="manifest" href="/manifest.json" />
-  <title>Szafer Panel v10.5 · Planer</title>
+  <title>Szafer Panel v11 · Planer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -78,7 +78,7 @@
           <div class="day-modal-title" style="font-size:22px" id="profModalTitle">Edytuj profil</div>
           <div class="day-modal-sub">Widoczny dla całej ekipy w czasie rzeczywistym</div>
         </div>
-        <button id="profileModalClose" class="day-modal-close">✕</button>
+        <button id="profileModalClose" class="day-modal-close" onclick="if(window.closeProfileModal)window.closeProfileModal()">✕</button>
       </div>
       <div class="day-modal-body" style="max-height:75vh;overflow-y:auto">
 
@@ -176,7 +176,7 @@
           <button id="changelogOpenBtn" class="btn-changelog cl-attention hidden" title="Zobacz co nowego w panelu">
             <span class="btn-cl-spark">✦</span>
             <span class="btn-cl-text">Lista Zmian</span>
-            <span class="btn-cl-badge">v10.5</span>
+            <span class="btn-cl-badge">v11</span>
           </button>
           <div class="push-logout-col">
             <button id="logoutBtn" class="btn-logout-tb hidden">
@@ -1163,12 +1163,13 @@
     <div class="cl-header">
       <span class="cl-header-icon">🚀</span>
       <div class="cl-header-title">Co nowego?</div>
-      <span class="cl-header-ver" id="clHeaderVer">Panel v10.5 · Changelog</span>
+      <span class="cl-header-ver" id="clHeaderVer">Panel v11 · Changelog</span>
       <button id="changelogCloseBtn" class="cl-close cl-header-close" aria-label="Zamknij changelog">✕</button>
     </div>
     <!-- VERSION SELECTOR -->
     <div class="cl-version-selector" id="clVersionSelector">
-      <button class="cl-ver-btn cl-ver-active" data-ver="v10.5"><span class="cl-ver-dot"></span>v10.5<span class="cl-ver-label-new">NOWA</span></button>
+      <button class="cl-ver-btn cl-ver-active" data-ver="v11"><span class="cl-ver-dot"></span>v11<span class="cl-ver-label-new">NOWA</span></button>
+      <button class="cl-ver-btn" data-ver="v10.5">v10.5</button>
       <button class="cl-ver-btn" data-ver="v10.4">v10.4</button>
       <button class="cl-ver-btn" data-ver="v10.3">v10.3</button>
       <button class="cl-ver-btn" data-ver="v10.2">v10.2</button>
@@ -1178,8 +1179,27 @@
     </div>
     <div class="cl-body" id="clBody">
 
+      <!-- ══════ V11 ══════ -->
+      <div class="cl-ver-panel" data-ver-panel="v11">
+        <div class="cl-ver-banner">
+          <span>🎨</span>
+          <span class="cl-ver-banner-label" style="color:#a78bfa">v11 — 13.04.2026</span>
+          <span class="cl-badge cl-badge-new" style="font-size:8px">NAJNOWSZE</span>
+        </div>
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🎨</span> Pełny rebranding UI</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#8b5cf6"><span class="cl-item-icon">🟣</span><div class="cl-item-body"><div class="cl-item-title">Nowa paleta — Neon Noir (Violet × Rose × Cyan)</div><div class="cl-item-desc">Całkowita zmiana szaty graficznej: złoto/pomarańcz zastąpione przez fiolet, różową poświatę i cyjan. Nowe gradienty, glowy, cienie — bardziej premium, bardziej "studio".</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#f472b6"><span class="cl-item-icon">✨</span><div class="cl-item-body"><div class="cl-item-title">Topbar jako szklany pasek z glassmorphism</div><div class="cl-item-desc">Topbar z backdrop-blur, logo z gradientem i glow, tytuł "Szafer" z animowanym gradientem violet→rose.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#22d3ee"><span class="cl-item-icon">🔘</span><div class="cl-item-body"><div class="cl-item-title">Nowe przyciski, taby, formularze</div><div class="cl-item-desc">Przyciski z fioletowym gradientem i hover-glow. Aktywny tab z violet→rose gradient. Inputy z fioletowym focus-ring.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#8b5cf6"><span class="cl-item-icon">🛠️</span><div class="cl-item-body"><div class="cl-item-title">Service Worker — network-first (zawsze świeże pliki)</div><div class="cl-item-desc">SW przepisany: network-first dla wszystkich zasobów. Zmiany widoczne natychmiast bez ręcznego czyszczenia cache.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#f472b6"><span class="cl-item-icon">👤</span><div class="cl-item-body"><div class="cl-item-title">Profil — X zamknięcia działa poprawnie</div><div class="cl-item-desc">Przycisk ✕ w modalnym profilu ma teraz bezpośredni onclick — nie może już nie zadziałać.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+          </div>
+        </div>
+      </div>
+
       <!-- ══════ V10.5 ══════ -->
-      <div class="cl-ver-panel" data-ver-panel="v10.5">
+      <div class="cl-ver-panel hidden" data-ver-panel="v10.5">
         <div class="cl-ver-banner">
           <span>💬</span>
           <span class="cl-ver-banner-label" style="color:#4ecdc4">v10.5 — 13.04.2026</span>

@@ -3249,10 +3249,10 @@
       // Filter (hidden select kept for compat)
       if (filterSelect) filterSelect.addEventListener('change', function() { renderUploadFiles(); });
 
-      // Folder chip shortcuts
-      document.querySelectorAll('.upload-folder-chip').forEach(function(chip) {
+      // Folder chip shortcuts (upv2-chip)
+      document.querySelectorAll('.upv2-chip[data-folder-chip]').forEach(function(chip) {
         chip.addEventListener('click', function() {
-          document.querySelectorAll('.upload-folder-chip').forEach(function(c){ c.classList.remove('active'); });
+          document.querySelectorAll('.upv2-chip[data-folder-chip]').forEach(function(c){ c.classList.remove('active'); });
           chip.classList.add('active');
           var val = chip.dataset.folderChip;
           if (filterSelect) { filterSelect.value = val; renderUploadFiles(); }

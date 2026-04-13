@@ -1894,95 +1894,76 @@
     }
 
     /* ════════════ UPLOAD TAB ════════════ */
-    /* ════ UPLOAD REDESIGN v10.4 ════ */
-    .upload-hero {
+    /* ════ UPLOAD v2 — clean vertical layout ════ */
+    .upv2-wrap { display:flex; flex-direction:column; gap:14px; }
+
+    /* Hero */
+    .upv2-hero {
       display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
-      padding:18px 20px; margin-bottom:20px;
-      background:linear-gradient(135deg, rgba(247,183,51,.08) 0%, rgba(78,205,196,.05) 100%);
-      border:1px solid rgba(247,183,51,.15); border-radius:20px;
+      padding:16px 20px;
+      background:linear-gradient(135deg, rgba(247,183,51,.07), rgba(78,205,196,.04));
+      border:1px solid rgba(247,183,51,.14); border-radius:18px;
     }
-    .upload-hero-inner { display:flex; align-items:center; gap:14px; }
-    .upload-hero-icon {
-      width:48px; height:48px; border-radius:14px; flex-shrink:0;
+    .upv2-hero-left { display:flex; align-items:center; gap:12px; }
+    .upv2-hero-icon {
+      width:40px; height:40px; border-radius:12px; flex-shrink:0;
       background:rgba(247,183,51,.12); border:1px solid rgba(247,183,51,.2);
       display:flex; align-items:center; justify-content:center; color:var(--accent);
     }
-    .upload-hero-title { font-size:17px; font-weight:800; color:var(--text); }
-    .upload-hero-sub { font-size:12px; color:var(--muted); margin-top:2px; }
-    .upload-stats-row { display:flex; gap:8px; flex-wrap:wrap; }
-    .upload-stat-chip {
-      display:flex; flex-direction:column; align-items:center; gap:1px;
-      padding:8px 14px; border-radius:12px;
-      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07);
-      min-width:52px;
-    }
-    .upload-stat-num { font-size:18px; font-weight:800; color:var(--accent); line-height:1; }
-    .upload-stat-label { font-size:9px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+    .upv2-hero-title { font-size:16px; font-weight:800; }
+    .upv2-hero-sub { font-size:11px; color:var(--muted); margin-top:2px; }
+    .upv2-stats { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .upv2-stat { display:flex; flex-direction:column; align-items:center; gap:1px; min-width:40px; }
+    .upv2-stat-n { font-size:20px; font-weight:800; color:var(--accent); line-height:1; }
+    .upv2-stat-l { font-size:9px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+    .upv2-stat-div { width:1px; height:28px; background:rgba(255,255,255,.08); }
 
-    .upload-layout { display:grid; grid-template-columns:260px 1fr; gap:16px; align-items:start; }
-    @media(max-width:720px){ .upload-layout { grid-template-columns:1fr; } }
-
-    .upload-sidebar { display:flex; flex-direction:column; gap:12px; }
-
-    .upload-drop-card {
-      padding:28px 18px; border-radius:18px; text-align:center; cursor:pointer;
-      border:2px dashed rgba(255,255,255,.12); background:rgba(255,255,255,.02);
-      transition:all .25s ease;
+    /* Drop zone */
+    .upv2-drop {
+      padding:32px 24px; border-radius:18px; text-align:center; cursor:pointer;
+      border:2px dashed rgba(255,255,255,.1); background:rgba(255,255,255,.02);
+      transition:all .22s ease;
     }
-    .upload-drop-card:hover, .upload-drop-card.drag-over {
-      border-color:rgba(247,183,51,.45); background:rgba(247,183,51,.05);
-      transform:translateY(-2px); box-shadow:0 8px 30px rgba(247,183,51,.1);
+    .upv2-drop:hover, .upv2-drop.drag-over {
+      border-color:rgba(247,183,51,.45); background:rgba(247,183,51,.04);
+      box-shadow:0 0 30px rgba(247,183,51,.08);
     }
-    .upload-drop-icon-wrap { color:var(--muted); margin-bottom:10px; opacity:.5; transition:all .2s; }
-    .upload-drop-card:hover .upload-drop-icon-wrap { opacity:.9; color:var(--accent); }
-    .upload-drop-label { font-size:14px; font-weight:700; color:var(--text); margin-bottom:4px; }
-    .upload-drop-or { font-size:11px; color:var(--muted); margin:8px 0; }
-    .upload-browse-btn {
-      padding:8px 20px; border-radius:10px; border:none; cursor:pointer; font-size:12px; font-weight:700;
-      background:var(--accent); color:#120d05; transition:all .2s;
-    }
-    .upload-browse-btn:hover { opacity:.85; transform:scale(1.04); }
-    .upload-drop-limit { font-size:10px; color:var(--muted); margin-top:10px; }
+    .upv2-drop-icon { color:var(--muted); opacity:.4; margin-bottom:10px; transition:all .2s; }
+    .upv2-drop:hover .upv2-drop-icon, .upv2-drop.drag-over .upv2-drop-icon { opacity:.9; color:var(--accent); }
+    .upv2-drop-text { font-size:14px; font-weight:600; color:var(--text); }
+    .upv2-drop-link { color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+    .upv2-drop-hint { font-size:11px; color:var(--muted); margin-top:6px; }
 
-    /* old drop zone kept for compat */
+    /* Controls row */
+    .upv2-controls {
+      display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;
+      padding:14px 16px; border-radius:16px;
+      background:rgba(255,255,255,.025); border:1px solid rgba(255,255,255,.06);
+    }
+    .upv2-label { display:block; font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:7px; }
+    .upv2-folder-wrap { flex-shrink:0; }
+    .upv2-select {
+      background:rgba(0,0,0,.4); border:1px solid rgba(255,255,255,.1);
+      border-radius:10px; padding:7px 12px; font-size:12px; color:var(--text); cursor:pointer;
+    }
+    .upv2-filter-wrap { flex:1; min-width:200px; }
+    .upv2-chips { display:flex; flex-wrap:wrap; gap:6px; }
+    .upv2-chip {
+      padding:5px 11px; border-radius:999px; border:1px solid rgba(255,255,255,.09);
+      background:rgba(255,255,255,.03); font-size:11px; color:var(--muted); cursor:pointer;
+      transition:all .14s;
+    }
+    .upv2-chip:hover { background:rgba(255,255,255,.08); color:var(--text); }
+    .upv2-chip.active { background:rgba(247,183,51,.14); border-color:rgba(247,183,51,.35); color:var(--accent); font-weight:700; }
+
+    .upv2-list { margin-top:0 !important; }
+
+    /* Old drop-zone kept for CSS compat (id changed to upv2-drop) */
     .upload-drop-zone {
       padding:40px 20px; border-radius:20px; text-align:center; cursor:pointer;
       border:2px dashed rgba(255,255,255,.12); background:rgba(255,255,255,.02);
       transition:all .25s ease; position:relative;
     }
-    .upload-drop-zone:hover, .upload-drop-zone.drag-over {
-      border-color:rgba(247,183,51,.4); background:rgba(247,183,51,.04); transform:translateY(-2px);
-    }
-    .upload-drop-zone.drag-over { box-shadow:0 0 30px rgba(247,183,51,.15); }
-    .upload-drop-icon { color:var(--muted); margin-bottom:12px; opacity:.5; }
-    .upload-drop-zone:hover .upload-drop-icon { opacity:.8; color:var(--accent); }
-    .upload-drop-text { font-size:16px; font-weight:700; color:var(--text); margin-bottom:6px; }
-    .upload-drop-hint { font-size:12px; color:var(--muted); }
-
-    .upload-folder-card {
-      padding:14px 16px; border-radius:16px;
-      background:rgba(255,255,255,.025); border:1px solid rgba(255,255,255,.07);
-    }
-    .upload-folder-label { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; display:flex; align-items:center; gap:6px; margin-bottom:8px; }
-    .upload-folder-select {
-      width:100%; background:rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.1);
-      border-radius:10px; padding:8px 10px; font-size:13px; color:var(--text); cursor:pointer;
-    }
-
-    .upload-folder-shortcuts { padding:12px 14px; border-radius:16px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); }
-    .upload-folder-shortcut-label { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:8px; }
-    .upload-folder-chips { display:flex; flex-wrap:wrap; gap:6px; }
-    .upload-folder-chip {
-      padding:5px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.1);
-      background:rgba(255,255,255,.03); font-size:11px; color:var(--muted); cursor:pointer;
-      transition:all .15s;
-    }
-    .upload-folder-chip:hover { background:rgba(255,255,255,.08); color:var(--text); }
-    .upload-folder-chip.active { background:rgba(247,183,51,.15); border-color:rgba(247,183,51,.35); color:var(--accent); font-weight:700; }
-
-    .upload-main { display:flex; flex-direction:column; gap:10px; }
-    .upload-main-header { display:flex; align-items:center; justify-content:space-between; padding:0 2px; margin-bottom:2px; }
-    .upload-main-title { font-size:13px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
     .upload-progress-wrap { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
     .upload-progress-item {
       padding:10px 14px; border-radius:12px; background:rgba(255,255,255,.03);

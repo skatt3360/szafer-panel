@@ -2332,13 +2332,13 @@
         msgEl.innerHTML = avatarHtml +
           '<div class="chat-msg-body">' +
             '<div class="chat-msg-header">' +
-              '<span class="chat-msg-name">' + escapeHtml(senderName) +
-                (isMine ? ' <span class="chat-msg-you">Ty</span>' : '') +
-              '</span>' +
+              '<span class="chat-msg-name">' + escapeHtml(senderName) + '</span>' +
               '<span class="chat-msg-time">' + timeStr + '</span>' +
             '</div>' +
-            replyQuoteHtml +
-            '<div class="chat-msg-text">' + textHtml + '</div>' +
+            '<div class="chat-bubble">' +
+              replyQuoteHtml +
+              '<div class="chat-msg-text">' + textHtml + '</div>' +
+            '</div>' +
             (reactionsHtml ? '<div class="chat-msg-reactions">' + reactionsHtml + '</div>' : '') +
           '</div>' +
           '<div class="chat-msg-actions">' + reactBtn + replyBtn + deleteBtn + '</div>';
@@ -2379,7 +2379,11 @@
               });
               popup.appendChild(eb);
             });
-            msgEl.querySelector('.chat-msg-actions').appendChild(popup);
+            // Position popup near button using fixed coords
+            var btnRect = rBtn2.getBoundingClientRect();
+            popup.style.top = (btnRect.bottom + 6) + 'px';
+            popup.style.left = Math.max(8, btnRect.left - 100) + 'px';
+            document.body.appendChild(popup);
             setTimeout(function() {
               document.addEventListener('click', function rm() {
                 popup.remove();

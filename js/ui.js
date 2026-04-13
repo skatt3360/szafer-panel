@@ -43,7 +43,7 @@
    (skrypt może być w dowolnym miejscu HTML)
    ════════════════════════════════════════════════════════ */
 (function() {
-  var _activeVer = 'v10.3';
+  var _activeVer = 'v10.4';
 
   function showChangelog() {
     var m = document.getElementById('changelogModal');
@@ -130,7 +130,7 @@
 
   /* Auto-show once per version */
   (function() {
-    var VER = 'v10.3', KEY = 'szaferCLseen_' + VER;
+    var VER = 'v10.4', KEY = 'szaferCLseen_' + VER;
     function tryAutoShow() {
       var shell = document.getElementById('appShell');
       if (!shell || shell.classList.contains('hidden')) return;

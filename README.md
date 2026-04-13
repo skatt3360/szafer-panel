@@ -1,4 +1,4 @@
-# Szafer Panel v10.3
+# Szafer Panel v10.4
 
 Panel zarządzania dla ekipy Szafer — planer, zadania, chat, harmonogram, Tibia.
 
@@ -35,6 +35,12 @@ Wymagania:
 Szczegółowy poradnik dostępny w panelu: Lista Zmian → v10.3 → "Poradnik: Jak włączyć push na iOS"
 
 ## Changelog
+
+### v10.4 (13.04.2026)
+- ✅ **Kalendarz** — wpisy i zadania w podglądzie dnia są klikalne (przenoszą do edytora)
+- ✅ **Profil** — natychmiastowa synchronizacja po zapisaniu (topbar, Team Pulse, chat, DM sidebar)
+- ✅ **Chat** — auto-scroll na dół przy wejściu w zakładkę i zmianie kanału
+- ✅ **Upload** — przebudowany layout: hero ze statystykami, chipy filtrów, sidebar z drag&drop
 
 ### v10.3 (06.04.2026)
 - ✅ **Service Worker** — push działa na telefonie (Android + iOS 16.4+ PWA)

@@ -309,7 +309,14 @@
             // Init upload tab on first visit
             if (tab === 'upload') { try { initUpload(); } catch(e){} }
             if (tab === 'planning') { try { renderMediaAttachGrid(); } catch(e){} }
-            if (tab === 'chat') { try { initChat(); subscribeChatChannel(); } catch(e){} }
+            if (tab === 'chat') {
+              try { initChat(); subscribeChatChannel(); } catch(e){}
+              // Always scroll to bottom when entering chat tab
+              setTimeout(function() {
+                var chatContainer = document.getElementById('chatMessages');
+                if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+              }, 350);
+            }
           }
         });
       });
@@ -1240,8 +1247,8 @@
           html += items.map(function(item) {
             var accent = item.color || typeColors[item.type] || '#a8adc7';
             var icon   = typeIcons[item.type] || '📌';
-            return '<div class="dm-item" style="--dma:' + accent + '">' +
-              '<div class="dm-item-title"><span>' + icon + '</span><span>' + escapeHtml(item.title) + '</span></div>' +
+            return '<div class="dm-item dm-item-clickable" data-action="open-item" data-id="' + item.id + '" style="--dma:' + accent + '" title="Kliknij aby otworzyć wpis">' +
+              '<div class="dm-item-title"><span>' + icon + '</span><span>' + escapeHtml(item.title) + '</span><span class="dm-item-goto">↗</span></div>' +
               '<div class="dm-item-meta">' +
                 '<span class="item-type-pill" style="color:' + accent + ';border-color:' + accent + '44">' + escapeHtml(item.type) + '</span>' +
                 '<span class="status ' + statusClass(item.status) + '"><span class="dot"></span>' + escapeHtml(item.status) + '</span>' +
@@ -1262,7 +1269,7 @@
             var dmPColor = isDone ? '' : (dmPColors[task.priority] || '#20c997');
             var dmPIcons = { "Wysoki":"🔴","Średni":"🟡","Niski":"🟢" };
             var dmPIcon  = dmPIcons[task.priority] || '⚪';
-            return '<div class="dm-task-item' + (isDone ? ' dm-task-done' : '') + '" data-task-id="' + task.id + '"' + (dmPColor ? ' style="--dm-task-color:' + dmPColor + '"' : '') + '>' +
+            return '<div class="dm-task-item dm-item-clickable' + (isDone ? ' dm-task-done' : '') + '" data-task-id="' + task.id + '" data-action="open-task" data-id="' + task.id + '"' + (dmPColor ? ' style="--dm-task-color:' + dmPColor + '"' : '') + ' title="Kliknij aby otworzyć zadanie">' +
               '<div>' +
                 '<div class="dm-task-title">' + escapeHtml(task.title) + '</div>' +
                 '<div class="dm-task-meta">👤 ' + escapeHtml(task.owner) + ' · ' + dmPIcon + ' ' + escapeHtml(task.priority) + (isDone ? ' · ✓ Ukończone' : '') + '</div>' +
@@ -1279,7 +1286,28 @@
       }
       body.innerHTML = html;
       body.querySelectorAll('[data-action="complete-task-modal"]').forEach(function(btn) {
-        btn.addEventListener('click', function() { completeTask(this.dataset.id, true); });
+        btn.addEventListener('click', function(e) { e.stopPropagation(); completeTask(this.dataset.id, true); });
+      });
+      body.querySelectorAll('[data-action="open-item"]').forEach(function(card) {
+        card.addEventListener('click', function(e) {
+          if (e.target.closest('button')) return;
+          var id = this.dataset.id;
+          closeDayModal();
+          // Switch to planning tab and open item editor
+          var planBtn = document.querySelector('[data-tab="tasks"]');
+          if (planBtn) planBtn.click();
+          setTimeout(function() { editItem(id); }, 300);
+        });
+      });
+      body.querySelectorAll('[data-action="open-task"]').forEach(function(card) {
+        card.addEventListener('click', function(e) {
+          if (e.target.closest('button')) return;
+          var id = this.dataset.id;
+          closeDayModal();
+          var tasksBtn = document.querySelector('[data-tab="tasks"]');
+          if (tasksBtn) tasksBtn.click();
+          setTimeout(function() { editTask(id); }, 300);
+        });
       });
       $('dayModalAddBtn').dataset.iso = iso;
       $('dayModal').classList.remove('hidden');
@@ -2110,7 +2138,8 @@
         return;
       }
 
-      var wasAtBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 60;
+      var _wasEmpty = container.children.length === 0 || container.querySelector('.chat-empty-state') !== null;
+      var wasAtBottom = _wasEmpty || container.scrollTop + container.clientHeight >= container.scrollHeight - 60;
       var frag = document.createDocumentFragment();
       var lastDate = '';
       var prevSenderEmail = null;
@@ -3217,8 +3246,18 @@
         if (e.dataTransfer.files.length) handleUploadFiles(e.dataTransfer.files);
       });
 
-      // Filter
+      // Filter (hidden select kept for compat)
       if (filterSelect) filterSelect.addEventListener('change', function() { renderUploadFiles(); });
+
+      // Folder chip shortcuts
+      document.querySelectorAll('.upload-folder-chip').forEach(function(chip) {
+        chip.addEventListener('click', function() {
+          document.querySelectorAll('.upload-folder-chip').forEach(function(c){ c.classList.remove('active'); });
+          chip.classList.add('active');
+          var val = chip.dataset.folderChip;
+          if (filterSelect) { filterSelect.value = val; renderUploadFiles(); }
+        });
+      });
 
       // Subscribe to file metadata
       var filesRef = ref(db, 'szaferPanel/files');
@@ -3346,9 +3385,21 @@
     function renderUploadFiles() {
       var el = $('uploadFileList');
       if (!el) return;
-      var files = window._uploadedFiles || [];
+      var allFiles = window._uploadedFiles || [];
       var filter = ($('uploadFilterFolder') || {}).value || '';
-      if (filter) files = files.filter(function(f){ return f.folder === filter; });
+      var files = filter ? allFiles.filter(function(f){ return f.folder === filter; }) : allFiles;
+
+      // Update stats
+      (function() {
+        var total  = allFiles.length;
+        var images = allFiles.filter(function(f){ return (f.type||'').startsWith('image/'); }).length;
+        var videos = allFiles.filter(function(f){ return (f.type||'').startsWith('video/'); }).length;
+        var docs   = allFiles.filter(function(f){ return !((f.type||'').startsWith('image/') || (f.type||'').startsWith('video/')); }).length;
+        var s = document.getElementById('uploadStatTotal'); if(s) s.textContent = total;
+        s = document.getElementById('uploadStatImages'); if(s) s.textContent = images;
+        s = document.getElementById('uploadStatVideos'); if(s) s.textContent = videos;
+        s = document.getElementById('uploadStatDocs');   if(s) s.textContent = docs;
+      })();
 
       if (!files.length) {
         el.innerHTML = '<div class="empty" style="text-align:center;padding:30px"><div style="font-size:36px;opacity:.3;margin-bottom:8px">📁</div>Brak plików' + (filter ? ' w folderze "' + filter + '"' : '') + '.<br><span style="font-size:11px;opacity:.6">Wrzuć pliki w strefie po lewej</span></div>';
@@ -3846,7 +3897,15 @@
           if (!newPass) msgEl.innerHTML = '<span style="color:var(--ok)">✅ Profil zapisany!</span>';
         }
 
-        // ── Instant topbar update — no wait for Firebase ──
+        // ── Instant local update — no wait for Firebase listener ──
+        // Update _profileData locally so applyProfilesToUI reflects changes immediately
+        if (!_profileData[currentUser.uid]) _profileData[currentUser.uid] = {};
+        _profileData[currentUser.uid].displayName = displayName;
+        _profileData[currentUser.uid].avatar = _selectedProfileAvatar;
+        _profileData[currentUser.uid].mood = _selectedProfileMood || '';
+        _profileData[currentUser.uid].note = ($('profQuickNote') ? $('profQuickNote').value.trim() : '');
+        _profileData[currentUser.uid].email = currentUser.email;
+        applyProfilesToUI();
         (function() {
           var circle = $('tbAvatarCircle');
           var nameEl = $('tbUserName');
@@ -4070,7 +4129,7 @@
     })()
     // ── New-version update toast ──────────────────────────
     function showVersionUpdateToast() {
-      var SEEN_KEY = 'szafer-seen-v10.3';
+      var SEEN_KEY = 'szafer-seen-v10.4';
       try { if (localStorage.getItem(SEEN_KEY)) return; } catch(e){}
       var toast = document.getElementById('szaferUpdateToast');
       if (!toast) return;
@@ -4090,6 +4149,6 @@
       var toast = document.getElementById('szaferUpdateToast');
       if (!toast) return;
       toast.classList.remove('show');
-      try { localStorage.setItem('szafer-seen-v10.3', '1'); } catch(e){}
+      try { localStorage.setItem('szafer-seen-v10.4', '1'); } catch(e){}
     }
 ;

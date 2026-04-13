@@ -628,64 +628,88 @@
 
       <!-- ═══ UPLOAD TAB ═══ -->
       <section class="tab-panel hidden" data-tab-panel="upload">
-        <div class="grid">
-          <div class="column">
-            <div class="section">
-              <div class="section-header">
-                <div>
-                  <div class="section-title">Upload plików</div>
-                  <div class="subtitle" style="margin-top:6px">Przeciągnij i upuść lub kliknij aby dodać pliki dla ekipy</div>
-                </div>
+        <!-- Upload Hero -->
+        <div class="upload-hero">
+          <div class="upload-hero-inner">
+            <div class="upload-hero-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <div>
+              <div class="upload-hero-title">Pliki ekipy</div>
+              <div class="upload-hero-sub">Wspólne repozytorium plików · synchronizacja w czasie rzeczywistym</div>
+            </div>
+          </div>
+          <!-- Quick stats -->
+          <div class="upload-stats-row" id="uploadStatsRow">
+            <div class="upload-stat-chip"><span class="upload-stat-num" id="uploadStatTotal">0</span><span class="upload-stat-label">plików</span></div>
+            <div class="upload-stat-chip"><span class="upload-stat-num" id="uploadStatImages">0</span><span class="upload-stat-label">grafik</span></div>
+            <div class="upload-stat-chip"><span class="upload-stat-num" id="uploadStatVideos">0</span><span class="upload-stat-label">wideo</span></div>
+            <div class="upload-stat-chip"><span class="upload-stat-num" id="uploadStatDocs">0</span><span class="upload-stat-label">dok.</span></div>
+          </div>
+        </div>
+
+        <div class="upload-layout">
+          <!-- Left: drop zone + folder picker -->
+          <div class="upload-sidebar">
+            <div class="upload-drop-card" id="uploadDropZone">
+              <div class="upload-drop-icon-wrap">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               </div>
-              <div class="section-body">
-                <div id="uploadDropZone" class="upload-drop-zone">
-                  <div class="upload-drop-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                  </div>
-                  <div class="upload-drop-text">Przeciągnij pliki tutaj</div>
-                  <div class="upload-drop-hint">lub kliknij aby wybrać · max 8 MB / plik</div>
-                  <input id="uploadFileInput" type="file" multiple style="display:none" />
-                </div>
-                <div id="uploadProgress" class="upload-progress-wrap hidden"></div>
-                <div class="field" style="margin-top:12px">
-                  <label for="uploadFolder">Folder / tag</label>
-                  <select id="uploadFolder">
-                    <option value="ogólne">📁 Ogólne</option>
-                    <option value="klipy">🎬 Klipy</option>
-                    <option value="grafiki">🖼️ Grafiki</option>
-                    <option value="muzyka">🎵 Muzyka</option>
-                    <option value="dokumenty">📄 Dokumenty</option>
-                    <option value="raw">📦 RAW / Materiały</option>
-                  </select>
-                </div>
+              <div class="upload-drop-label">Upuść pliki tutaj</div>
+              <div class="upload-drop-or">lub</div>
+              <button class="upload-browse-btn" onclick="document.getElementById('uploadFileInput').click()">Wybierz pliki</button>
+              <div class="upload-drop-limit">Max 8 MB / plik</div>
+              <input id="uploadFileInput" type="file" multiple style="display:none" />
+            </div>
+
+            <div id="uploadProgress" class="upload-progress-wrap hidden"></div>
+
+            <div class="upload-folder-card">
+              <div class="upload-folder-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                Folder docelowy
+              </div>
+              <select id="uploadFolder" class="upload-folder-select">
+                <option value="ogólne">📁 Ogólne</option>
+                <option value="klipy">🎬 Klipy</option>
+                <option value="grafiki">🖼️ Grafiki</option>
+                <option value="muzyka">🎵 Muzyka</option>
+                <option value="dokumenty">📄 Dokumenty</option>
+                <option value="raw">📦 RAW / Materiały</option>
+              </select>
+            </div>
+
+            <!-- Folder shortcuts -->
+            <div class="upload-folder-shortcuts">
+              <div class="upload-folder-shortcut-label">Szybki filtr</div>
+              <div class="upload-folder-chips">
+                <button class="upload-folder-chip active" data-folder-chip="">Wszystkie</button>
+                <button class="upload-folder-chip" data-folder-chip="ogólne">📁 Ogólne</button>
+                <button class="upload-folder-chip" data-folder-chip="klipy">🎬 Klipy</button>
+                <button class="upload-folder-chip" data-folder-chip="grafiki">🖼️ Grafiki</button>
+                <button class="upload-folder-chip" data-folder-chip="muzyka">🎵 Muzyka</button>
+                <button class="upload-folder-chip" data-folder-chip="dokumenty">📄 Dokumenty</button>
+                <button class="upload-folder-chip" data-folder-chip="raw">📦 RAW</button>
               </div>
             </div>
           </div>
 
-          <div class="column">
-            <div class="section">
-              <div class="section-header">
-                <div>
-                  <div class="section-title">Pliki ekipy</div>
-                  <div class="subtitle" style="margin-top:6px">Przesłane pliki z podglądem</div>
-                </div>
-                <div style="display:flex;gap:6px;align-items:center">
-                  <select id="uploadFilterFolder" class="upload-filter-select">
-                    <option value="">Wszystkie</option>
-                    <option value="ogólne">📁 Ogólne</option>
-                    <option value="klipy">🎬 Klipy</option>
-                    <option value="grafiki">🖼️ Grafiki</option>
-                    <option value="muzyka">🎵 Muzyka</option>
-                    <option value="dokumenty">📄 Dokumenty</option>
-                    <option value="raw">📦 RAW</option>
-                  </select>
-                </div>
-              </div>
-              <div class="section-body">
-                <div id="uploadFileList" class="upload-file-list">
-                  <div class="empty">Brak przesłanych plików.</div>
-                </div>
-              </div>
+          <!-- Right: file list -->
+          <div class="upload-main">
+            <div class="upload-main-header">
+              <div class="upload-main-title">Przesłane pliki</div>
+              <select id="uploadFilterFolder" class="upload-filter-select" style="display:none">
+                <option value="">Wszystkie</option>
+                <option value="ogólne">📁 Ogólne</option>
+                <option value="klipy">🎬 Klipy</option>
+                <option value="grafiki">🖼️ Grafiki</option>
+                <option value="muzyka">🎵 Muzyka</option>
+                <option value="dokumenty">📄 Dokumenty</option>
+                <option value="raw">📦 RAW</option>
+              </select>
+            </div>
+            <div id="uploadFileList" class="upload-file-list">
+              <div class="empty">Brak przesłanych plików.</div>
             </div>
           </div>
         </div>
@@ -1083,13 +1107,13 @@
     <div class="cl-header">
       <span class="cl-header-icon">🚀</span>
       <div class="cl-header-title">Co nowego?</div>
-      <span class="cl-header-ver" id="clHeaderVer">Panel v10.3 · Changelog</span>
+      <span class="cl-header-ver" id="clHeaderVer">Panel v10.4 · Changelog</span>
       <button id="changelogCloseBtn" class="cl-close cl-header-close" aria-label="Zamknij changelog">✕</button>
     </div>
     <!-- VERSION SELECTOR -->
     <div class="cl-version-selector" id="clVersionSelector">
-      <button class="cl-ver-btn cl-ver-active" data-ver="v10.3"><span class="cl-ver-dot"></span>v10.3<span class="cl-ver-label-new">NOWA</span></button>
-      
+      <button class="cl-ver-btn cl-ver-active" data-ver="v10.4"><span class="cl-ver-dot"></span>v10.4<span class="cl-ver-label-new">NOWA</span></button>
+      <button class="cl-ver-btn" data-ver="v10.3">v10.3</button>
       <button class="cl-ver-btn" data-ver="v10.2">v10.2</button>
       <button class="cl-ver-btn" data-ver="v10.1">v10.1</button>
       <button class="cl-ver-btn" data-ver="v10">v10</button>
@@ -1097,7 +1121,44 @@
     </div>
     <div class="cl-body" id="clBody">
 
-      <!-- ══════ V10.2.1 ══════ -->
+      <!-- ══════ V10.4 ══════ -->
+      <div class="cl-ver-panel" data-ver-panel="v10.4">
+        <div class="cl-ver-banner">
+          <span>✨</span>
+          <span class="cl-ver-banner-label" style="color:#f7b733">v10.4 — 13.04.2026</span>
+          <span class="cl-badge cl-badge-new" style="font-size:8px">NAJNOWSZE</span>
+        </div>
+
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">📅</span> Kalendarz — klikalne wpisy</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">↗</span><div class="cl-item-body"><div class="cl-item-title">Kliknij wpis w kalendarzu → otwiera edytor</div><div class="cl-item-desc">Każdy wpis i zadanie widoczne w podglądzie dnia jest teraz klikalny — kliknięcie przenosi bezpośrednio do edytora danego zgłoszenia. Przycisk "↗" sygnalizuje możliwość przejścia.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
+
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">👤</span> Profil — synchronizacja</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">🔄</span><div class="cl-item-body"><div class="cl-item-title">Natychmiastowa synchronizacja profilu w całej aplikacji</div><div class="cl-item-desc">Po zapisaniu profilu (nazwa, avatar, nastrój) zmiany są teraz widoczne natychmiast — w topbarze, kartach Team Pulse, DM sidebar oraz wiadomościach czatu — bez czekania na odpowiedź Firebase.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+          </div>
+        </div>
+
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">💬</span> Chat — auto-scroll</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">⬇️</span><div class="cl-item-body"><div class="cl-item-title">Chat automatycznie zjeżdża na dół przy wejściu</div><div class="cl-item-desc">Wejście w zakładkę Chat lub przełączenie kanału/DM zawsze przewija wiadomości do najnowszej. Koniec z ręcznym scrollowaniem po każdym wejściu.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+          </div>
+        </div>
+
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">📁</span> Upload — nowy wygląd</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#43e97b"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Przebudowana zakładka Upload</div><div class="cl-item-desc">Nowy layout: hero z statystykami plików (łącznie / grafiki / wideo / dokumenty), boczny panel z drag&amp;drop, szybkie filtry folderów jako chipy, czystsza lista plików po prawej.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════ V10.3 ══════ -->
       <div class="cl-ver-panel" data-ver-panel="v10.3">
         <div class="cl-ver-banner">
           <span>🚀</span>

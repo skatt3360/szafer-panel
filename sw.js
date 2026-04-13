@@ -1,7 +1,7 @@
 /* ════════════════════════════════════════════════
-   Szafer Panel — Service Worker v10.3
+   Szafer Panel — Service Worker v10.4
    ════════════════════════════════════════════════ */
-const CACHE_NAME = 'szafer-panel-v10.3';
+const CACHE_NAME = 'szafer-panel-v10.4';
 const PRECACHE = ['/', '/index.html', '/css/style.css', '/js/app.js', '/js/ui.js', '/manifest.json'];
 
 /* ── Install ── */

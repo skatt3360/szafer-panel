@@ -626,7 +626,9 @@
         return;
       }
       // Only READ the current state — never auto-request (requires user gesture)
-      _pushPermissionGranted = (Notification.permission === 'granted');
+      if (typeof Notification !== 'undefined') {
+        _pushPermissionGranted = (Notification.permission === 'granted');
+      }
       console.log('[Push] Permission:', Notification.permission);
       updatePushButtonUI();
     }
@@ -4284,7 +4286,7 @@
     })()
     // ── New-version update toast ──────────────────────────
     function showVersionUpdateToast() {
-      var SEEN_KEY = 'szafer-seen-v10.5';
+      var SEEN_KEY = 'szafer-seen-v12.1';
       try { if (localStorage.getItem(SEEN_KEY)) return; } catch(e){}
       var toast = document.getElementById('szaferUpdateToast');
       if (!toast) return;
@@ -4304,6 +4306,6 @@
       var toast = document.getElementById('szaferUpdateToast');
       if (!toast) return;
       toast.classList.remove('show');
-      try { localStorage.setItem('szafer-seen-v10.5', '1'); } catch(e){}
+      try { localStorage.setItem('szafer-seen-v12.1', '1'); } catch(e){}
     }
 ;

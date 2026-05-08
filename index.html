@@ -6,13 +6,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Szafer Panel" />
-  <meta name="theme-color" content="#06070d" />
+  <meta name="theme-color" content="#080810" />
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23f7b733' rx='20' width='100' height='100'/><text x='50' y='68' text-anchor='middle' font-size='55'>🎵</text></svg>" />
   <link rel="manifest" href="/manifest.json" />
-  <title>Szafer Panel v11 · Planer</title>
+  <title>Szafer Panel v12.1 · Workstation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css" />
   <script>
     if ('serviceWorker' in navigator) {
@@ -28,14 +28,14 @@
     <header class="topbar">
       <div class="brand szafer-brand">
         <div class="szafer-logo-outer" id="szaferLogoHome" title="Wróć do Panelu głównego">
-          <div class="szafer-logo-inner">⚡</div>
+          <div class="szafer-logo-inner">SP</div>
         </div>
         <div class="szafer-brand-copy">
           <div class="szafer-brand-title">
             <span class="szafer-word-szafer">SZAFER</span><span class="szafer-word-sep"> </span><span class="szafer-word-panel">PANEL</span>
           </div>
           <div class="szafer-brand-sub">
-            <span class="szafer-sub-char" style="--i:0">S</span><span class="szafer-sub-char" style="--i:1">Z</span><span class="szafer-sub-char" style="--i:2">A</span><span class="szafer-sub-char" style="--i:3">F</span><span class="szafer-sub-char" style="--i:4">E</span><span class="szafer-sub-char" style="--i:5">R</span><span class="szafer-sub-char szafer-sub-space" style="--i:6"> </span><span class="szafer-sub-char" style="--i:7">C</span><span class="szafer-sub-char" style="--i:8">E</span><span class="szafer-sub-char" style="--i:9">N</span><span class="szafer-sub-char" style="--i:10">T</span><span class="szafer-sub-char" style="--i:11">R</span><span class="szafer-sub-char" style="--i:12">U</span><span class="szafer-sub-char" style="--i:13">M</span><span class="szafer-sub-char szafer-sub-space" style="--i:14"> </span><span class="szafer-sub-char" style="--i:15">D</span><span class="szafer-sub-char" style="--i:16">O</span><span class="szafer-sub-char" style="--i:17">W</span><span class="szafer-sub-char" style="--i:18">O</span><span class="szafer-sub-char" style="--i:19">D</span><span class="szafer-sub-char" style="--i:20">Z</span><span class="szafer-sub-char" style="--i:21">E</span><span class="szafer-sub-char" style="--i:22">N</span><span class="szafer-sub-char" style="--i:23">I</span><span class="szafer-sub-char" style="--i:24">A</span>
+            <span class="szafer-brand-sub-simple">v12 · WORKSTATION</span>
           </div>
         </div>
       </div>
@@ -47,14 +47,9 @@
         <span id="userLabel"       style="display:none">—</span>
 
         
-        <!-- ── Grupa: Status połączenia + Mood ── -->
+        <!-- ── Status połączenia ── -->
         <div class="authbar-group">
   <span id="dbStatus" class="chip err" style="font-size:10px;letter-spacing:.03em"><span class="dot"></span>Brak połączenia</span>
-  <button id="moodBtn" class="mood-pill">
-            <span class="mood-pill-spark">✦</span>
-            <span class="mood-pill-label">m00d</span>
-            <span id="moodOnlineCount" class="mood-pill-count">0</span>
-          </button>
         </div>
 
         <div class="authbar-divider"></div>
@@ -176,7 +171,7 @@
           <button id="changelogOpenBtn" class="btn-changelog cl-attention hidden" title="Zobacz co nowego w panelu">
             <span class="btn-cl-spark">✦</span>
             <span class="btn-cl-text">Lista Zmian</span>
-            <span class="btn-cl-badge">v11</span>
+            <span class="btn-cl-badge">v12.1</span>
           </button>
           <div class="push-logout-col">
             <button id="logoutBtn" class="btn-logout-tb hidden">
@@ -263,14 +258,11 @@
           <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
           <span class="nav-label">Harmonogram</span>
         </button>
-        <button class="nav-btn tab nav-btn-tibia tab-tibia" data-tab="tibia">
-          <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
-          <span class="nav-label">Tibia</span>
-        </button>
       </nav>
 
   <!-- ═══ CHAT TAB ═══ -->
   <section class="tab-panel hidden" data-tab-panel="chat">
+    <div class="tab-hero"><span class="tab-hero-label">CHAT</span><span class="tab-hero-title">Komunikacja</span></div>
     <div class="chat-v2-shell">
 
       <!-- ── Sidebar ── -->
@@ -399,6 +391,7 @@
 
 
       <section class="tab-panel" data-tab-panel="calendar">
+        <div class="tab-hero"><span class="tab-hero-label">PANEL</span><span class="tab-hero-title">Kalendarz & Zadania</span></div>
 
         <!-- ═══ CALENDAR HERO HEADER ═══ -->
         <div class="cal-hero">
@@ -467,6 +460,7 @@
       </section>
 
       <section class="tab-panel hidden" data-tab-panel="tasks">
+        <div class="tab-hero"><span class="tab-hero-label">ZADANIA</span><span class="tab-hero-title">Lista roboty</span></div>
 
         <!-- ══ TASK FORM — full-width, premium ══ -->
         <div class="task-form-hero">
@@ -565,6 +559,7 @@
       </section>
 
       <section class="tab-panel hidden" data-tab-panel="planning">
+        <div class="tab-hero"><span class="tab-hero-label">PLANOWANIE</span><span class="tab-hero-title">Boards</span></div>
 
         <!-- ══ ITEM FORM HERO — full-width ══ -->
         <div class="item-form-hero">
@@ -718,6 +713,7 @@
 
       <!-- ═══ UPLOAD TAB ═══ -->
       <section class="tab-panel hidden" data-tab-panel="upload">
+        <div class="tab-hero"><span class="tab-hero-label">UPLOAD</span><span class="tab-hero-title">Pliki & Media</span></div>
 
         <!-- Stats bar -->
         <div class="ul-stats-bar">
@@ -807,6 +803,7 @@
 
       <!-- ═══ TIBIA TAB ═══ -->
               <section class="tab-panel hidden" data-tab-panel="harmonogram">
+          <div class="tab-hero"><span class="tab-hero-label">HARMONOGRAM</span><span class="tab-hero-title">Tygodniowy plan</span></div>
           <div class="harm-wrap">
 
             <!-- HERO -->
@@ -947,100 +944,6 @@
 
           </div><!-- /.harm-wrap -->
         </section>
-<section class="tab-panel hidden" data-tab-panel="tibia">
-        <div class="tibia-wrap">
-          <div class="tibia-topbar">
-            <div class="tibia-topbar-left">
-              <div class="tibia-logo">⚔️</div>
-              <div>
-                <div class="tibia-title">Tibia SzaferPanel</div>
-                <div class="tibia-sub">Launcher + narzędzia · graj obok panelu</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="tibia-launcher">
-            <div class="tibia-launch-hero">
-              <div class="tibia-launch-particles" id="tibiaParticles"></div>
-              <div class="tibia-launch-content">
-                <div class="tibia-launch-icon">⚔️</div>
-                <div class="tibia-launch-title">Uruchom Tibię</div>
-                <div class="tibia-launch-desc">Klient otworzy się w osobnym oknie — możesz je przypiąć obok panelu i grać podczas planowania.</div>
-                <button id="tibiaLaunchBtn" class="tibia-launch-btn">
-                  <span class="tibia-launch-btn-glow"></span>
-                  🎮 Uruchom Web Client
-                </button>
-                <div id="tibiaWindowStatus" class="tibia-window-status">
-                  <span class="dot"></span> Klient nieaktywny
-                </div>
-              </div>
-            </div>
-
-            <div class="tibia-tools-grid">
-              <div class="tibia-tool-section">
-                <div class="tibia-tool-title">🔍 Sprawdź postać</div>
-                <div class="tibia-char-lookup">
-                  <input id="tibiaCharName" type="text" placeholder="Wpisz nick postaci..." class="tibia-char-input" />
-                  <button id="tibiaCharBtn" class="tibia-btn">Szukaj</button>
-                </div>
-                <div id="tibiaCharResult" class="tibia-char-result"></div>
-              </div>
-
-              <div class="tibia-tool-section">
-                <div class="tibia-tool-title">⚡ Szybkie akcje</div>
-                <div class="tibia-quick-actions">
-                  <a href="https://www.tibia.com/community/?subtopic=webclient" target="_blank" rel="noopener" class="tibia-action-btn">
-                    🌐 Web Client (nowa karta)
-                  </a>
-                  <a href="https://www.tibia.com/account/?subtopic=accountmanagement" target="_blank" rel="noopener" class="tibia-action-btn">
-                    👤 Moje konto
-                  </a>
-                  <a href="https://www.tibia.com/community/?subtopic=worlds" target="_blank" rel="noopener" class="tibia-action-btn">
-                    🌍 Lista światów
-                  </a>
-                  <a href="https://www.tibia.com/community/?subtopic=highscores" target="_blank" rel="noopener" class="tibia-action-btn">
-                    🏆 Highscores
-                  </a>
-                  <a href="https://www.tibia.com/news/?subtopic=newsarchive" target="_blank" rel="noopener" class="tibia-action-btn">
-                    📰 News Tibia
-                  </a>
-                  <a href="https://www.tibia.com/community/?subtopic=killstatistics" target="_blank" rel="noopener" class="tibia-action-btn">
-                    💀 Kill Statistics
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="tibia-tool-title" style="padding:0 22px;margin-top:4px">🧰 Przydatne strony</div>
-            <div class="tibia-links-grid" style="padding:10px 22px 22px">
-              <a href="https://tibia.fandom.com/wiki/Main_Page" target="_blank" rel="noopener" class="tibia-link-card">
-                <span class="tibia-link-icon">📖</span><span>TibiaWiki</span>
-              </a>
-              <a href="https://guildstats.eu/" target="_blank" rel="noopener" class="tibia-link-card">
-                <span class="tibia-link-icon">📊</span><span>GuildStats</span>
-              </a>
-              <a href="https://tibiamaps.io/" target="_blank" rel="noopener" class="tibia-link-card">
-                <span class="tibia-link-icon">🗺️</span><span>Tibia Maps</span>
-              </a>
-              <a href="https://www.tibiaroyal.com/" target="_blank" rel="noopener" class="tibia-link-card">
-                <span class="tibia-link-icon">👑</span><span>TibiaRoyal</span>
-              </a>
-              <a href="https://intibia.com/" target="_blank" rel="noopener" class="tibia-link-card">
-                <span class="tibia-link-icon">🔍</span><span>inTibia</span>
-              </a>
-              <a href="https://tibiopedia.pl/" target="_blank" rel="noopener" class="tibia-link-card">
-                <span class="tibia-link-icon">🇵🇱</span><span>Tibiopedia PL</span>
-              </a>
-              <a href="https://tibia.toolsoftibia.com/" target="_blank" rel="noopener" class="tibia-link-card">
-                <span class="tibia-link-icon">🔧</span><span>Tools of Tibia</span>
-              </a>
-              <a href="https://tibiapal.com/" target="_blank" rel="noopener" class="tibia-link-card">
-                <span class="tibia-link-icon">🤝</span><span>TibiaPal</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
 
     </div>
   </div>
@@ -1117,80 +1020,6 @@
 
   <script type="module" src="js/app.js"></script>
 
-    <!-- ══════════════════ M00D MODAL ══════════════════ -->
-    <div id="moodModal" class="mood-modal hidden" role="dialog">
-      <div class="mood-modal-backdrop" id="moodModalBackdrop"></div>
-      <div class="mood-modal-panel">
-        <div class="mood-modal-topbar">
-          <div class="mood-modal-title-row">
-            <span class="mood-modal-spark">✦</span>
-            <span class="mood-modal-title-text">m00d</span>
-            <span class="mood-modal-live-badge">
-              <span class="mood-live-dot"></span>NA ŻYWO
-            </span>
-          </div>
-          <button class="mood-modal-close-btn" id="moodModalClose" title="Zamknij (ESC)">✕</button>
-        </div>
-        <div class="mood-modal-body">
-          <div class="mood-tp-wrap">
-            <div class="tp-particles" id="tpParticles"></div>
-          <div class="tp-header">
-            <div class="tp-live-dot"></div>
-            <div class="tp-title-animated">
-              <span class="tp-title-main">Szafer Panel</span>
-              <span class="tp-title-sep">—</span>
-              <span class="tp-title-live">NA ŻYWO</span>
-            </div>
-          </div>
-
-          <div class="tp-team-grid">
-            <div class="tp-person tp-active" data-person="Szafer">
-              <div class="tp-person-avatar">S</div>
-              <div class="tp-person-name">Szafer</div>
-              <div id="tpStatusSzafer" class="tp-person-status"><span class="dot ok"></span>Aktywny</div>
-            </div>
-            <div class="tp-person" data-person="blajetttp">
-              <div class="tp-person-avatar av-blajetttp">A</div>
-              <div class="tp-person-name">blajetttp</div>
-              <div id="tpStatusBlajetttp" class="tp-person-status"><span class="dot ok"></span>Aktywny</div>
-            </div>
-            <div class="tp-person" data-person="Skat">
-              <div class="tp-person-avatar av-skat">SK</div>
-              <div class="tp-person-name">Skat</div>
-              <div id="tpStatusSkat" class="tp-person-status"><span class="dot ok"></span>Aktywny</div>
-            </div>
-          </div>
-
-          <div class="tp-mood-section">
-            <div class="tp-mood-label">Twój mood dzisiaj</div>
-            <div id="tpMoodRow" class="tp-mood-row">
-              <button class="tp-mood-btn" data-mood="🔥" title="Na maxa">🔥</button>
-              <button class="tp-mood-btn" data-mood="😎" title="Chill">😎</button>
-              <button class="tp-mood-btn" data-mood="💪" title="Roboczo">💪</button>
-              <button class="tp-mood-btn" data-mood="🎵" title="Kreatywnie">🎵</button>
-              <button class="tp-mood-btn" data-mood="😴" title="Na luzie">😴</button>
-              <button class="tp-mood-btn" data-mood="🤔" title="Myślę...">🤔</button>
-            </div>
-          </div>
-
-          <div class="field" style="margin-bottom:14px">
-            <label style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Quick Note dla ekipy</label>
-            <textarea id="tpQuickNote" class="tp-quick-note" placeholder="Np. dzisiaj nagrywam vocal, będę off o 18"></textarea>
-          </div>
-
-          <div class="tp-mood-label">Ostatnia aktywność</div>
-          <div id="tpActivityFeed" class="tp-activity-feed">
-            <div class="tp-activity-item">
-              <span class="tp-act-icon">🎬</span>
-              <span class="tp-act-text">Panel uruchomiony — gotowy do pracy!</span>
-              <span class="tp-act-time">teraz</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    </div>
-    <!-- ══════════════════ END M00D MODAL ══════════════════ -->
 <!-- ══════════════════ CHANGELOG MODAL ══════════════════ -->
 <div id="changelogModal" class="cl-overlay hidden">
   <div class="cl-panel">
@@ -1212,6 +1041,30 @@
       <button class="cl-ver-btn" data-ver="older" style="opacity:.65">v9 i starsze</button>
     </div>
     <div class="cl-body" id="clBody">
+
+      <!-- ══════ V12.1 ══════ -->
+      <div class="cl-ver-panel" data-ver-panel="v12.1">
+        <div class="cl-ver-banner">
+          <span>🚀</span>
+          <span class="cl-ver-banner-label" style="color:#3b82f6">v12.1 — 08.05.2026</span>
+          <span class="cl-badge cl-badge-new" style="font-size:8px">NAJNOWSZE</span>
+        </div>
+        <div class="cl-section">
+  <div class="cl-section-header">
+    <div class="cl-section-version">v12.1</div>
+    <div class="cl-section-date">08.05.2026</div>
+    <div class="cl-section-codename">WORKSTATION II</div>
+  </div>
+  <div class="cl-items">
+    <div class="cl-item" style="--cl-accent:#3b82f6"><span class="cl-item-icon">🗑</span><div class="cl-item-body"><div class="cl-item-title">Usunięto zakładkę Tibia</div><div class="cl-item-desc">Zakładka Tibia i wszystkie powiązane funkcje zostały usunięte z panelu.</div></div><span class="cl-badge cl-badge-change">Zmiana</span></div>
+    <div class="cl-item" style="--cl-accent:#dc2626"><span class="cl-item-icon">🚫</span><div class="cl-item-body"><div class="cl-item-title">Usunięto m00d / Team Pulse</div><div class="cl-item-desc">Przycisk i panel m00d zostały usunięte z topbara — uproszczenie interfejsu.</div></div><span class="cl-badge cl-badge-change">Zmiana</span></div>
+    <div class="cl-item" style="--cl-accent:#84cc16"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Redesign zakładki Planowanie</div><div class="cl-item-desc">Nowy wygląd tablic osobistych — lepsza czytelność, kolory per-osoba, animacje.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+    <div class="cl-item" style="--cl-accent:#f59e0b"><span class="cl-item-icon">📅</span><div class="cl-item-body"><div class="cl-item-title">Ulepszony Harmonogram</div><div class="cl-item-desc">Semantyczne kolory slotów, lepsze podświetlenie dzisiejszego dnia, czystsze nagłówki.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+    <div class="cl-item" style="--cl-accent:#3b82f6"><span class="cl-item-icon">🔢</span><div class="cl-item-body"><div class="cl-item-title">Poprawka typografii dat</div><div class="cl-item-desc">Cyfry w datach używają teraz tabular-nums — jednolita szerokość każdej cyfry.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+    <div class="cl-item" style="--cl-accent:#06b6d4"><span class="cl-item-icon">🔔</span><div class="cl-item-body"><div class="cl-item-title">Poprawki powiadomień</div><div class="cl-item-desc">Bezpieczniejsza inicjalizacja Notification API, lepsze z-index modali.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+  </div>
+</div>
+      </div>
 
       <!-- ══════ V11 ══════ -->
       <div class="cl-ver-panel" data-ver-panel="v11">

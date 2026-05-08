@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════
-   SZAFER PANEL v13.3 — ADDONS
-   Command palette · Theme toggle · Compact mode
-   Upcoming widget · Avatar photo upload + image rendering
+   SZAFER PANEL v13.4 — ADDONS
+   Command palette · Theme · Compact · Upcoming
+   Avatar v2 (image/emoji/letter, photo upload, robust paint)
 ═══════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -10,141 +10,113 @@
     if (document.readyState !== 'loading') fn();
     else document.addEventListener('DOMContentLoaded', fn);
   }
-
-  // ═════════ HELPERS ═════════
   function escapeHtml(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;')
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  // ═════════ AVATAR — image vs emoji vs letter ═════════
+  // ═════════ AVATAR PAINTER ═════════
   const EMOJI_RE = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u;
-  function isImage(v) { return typeof v === 'string' && (v.startsWith('data:image') || v.startsWith('http://') || v.startsWith('https://')); }
+  const AV_SELECTOR = '.tb-avatar-circle, .prof-avatar-preview, .pb-header-avatar, .tp-person-avatar, .chat-msg-avatar, .chat-dm-avatar';
+  function isImageVal(v) {
+    return typeof v === 'string' && (v.startsWith('data:image') || /^https?:\/\//.test(v));
+  }
+
+  // Read the "intended" avatar value from element. Prefer dataset.avSrc, then textContent.
+  function readAvVal(el) {
+    if (el.dataset && el.dataset.avSrc) return el.dataset.avSrc;
+    // If we already painted as image, keep current
+    const img = el.querySelector('img.av-img');
+    if (img && img.src) return img.src;
+    return (el.textContent || '').trim();
+  }
 
   function paintAvatar(el) {
     if (!el) return;
-    // If the current textContent is an image URL/dataURL, render as <img>
-    const raw = (el.textContent || '').trim();
-    if (isImage(raw) && !el.querySelector('img.av-img')) {
-      el.innerHTML = `<img class="av-img" src="${escapeHtml(raw)}" alt="" />`;
+    const val = readAvVal(el);
+    if (!val) {
+      el.setAttribute('data-avatar-mode', 'letter');
+      return;
+    }
+    if (isImageVal(val)) {
+      // Cache the value so re-paints don't lose it when textContent gets cleared
+      el.dataset.avSrc = val;
+      const existingImg = el.querySelector('img.av-img');
+      if (existingImg) {
+        if (existingImg.getAttribute('src') !== val) existingImg.setAttribute('src', val);
+      } else {
+        el.innerHTML = '<img class="av-img" alt="" />';
+        el.querySelector('img.av-img').setAttribute('src', val);
+      }
       el.setAttribute('data-avatar-mode', 'image');
       return;
     }
-    // If element already has img.av-img inside but no longer should
-    const img = el.querySelector('img.av-img');
-    if (img && !isImage(img.getAttribute('src') || '')) {
-      img.remove();
+    // Not an image — clear cached src
+    delete el.dataset.avSrc;
+    // If element has img.av-img but value is not image, remove img and set text
+    if (el.querySelector('img.av-img')) {
+      el.innerHTML = '';
+      el.textContent = val;
     }
-    if (img) { el.setAttribute('data-avatar-mode', 'image'); return; }
-    // Otherwise check emoji vs letter
-    if (raw && EMOJI_RE.test(raw)) {
+    if (EMOJI_RE.test(val)) {
       el.setAttribute('data-avatar-mode', 'emoji');
-      el.setAttribute('data-emoji', '1');
-      el.setAttribute('data-has-emoji', '1');
     } else {
       el.setAttribute('data-avatar-mode', 'letter');
-      el.removeAttribute('data-emoji');
-      el.removeAttribute('data-has-emoji');
     }
   }
+
   function paintAllAvatars(root) {
-    (root || document).querySelectorAll(
-      '.tb-avatar-circle, .prof-avatar-preview, .pb-header-avatar, .tp-person-avatar, .chat-msg-avatar'
-    ).forEach(paintAvatar);
+    (root || document).querySelectorAll(AV_SELECTOR).forEach(paintAvatar);
   }
 
+  // Robust observation strategy:
+  // 1. MutationObserver — catches direct DOM mutations
+  // 2. Periodic repaint — fallback for missed changes
+  // 3. Click listener on .prof-av-btn → repaint after handler
   function watchAvatars() {
     const obs = new MutationObserver(muts => {
       const seen = new Set();
       muts.forEach(m => {
-        const t = m.target;
-        if (!t) return;
-        // climb to avatar root
-        const av = t.nodeType === 1 ? t.closest('.tb-avatar-circle, .prof-avatar-preview, .pb-header-avatar, .tp-person-avatar, .chat-msg-avatar') : null;
-        if (av && !seen.has(av)) { seen.add(av); paintAvatar(av); }
+        if (!m.target) return;
+        const targets = [];
+        if (m.target.nodeType === 1 && m.target.matches?.(AV_SELECTOR)) targets.push(m.target);
+        const closest = m.target.nodeType === 1 ? m.target.closest?.(AV_SELECTOR)
+                       : (m.target.parentElement && m.target.parentElement.closest?.(AV_SELECTOR));
+        if (closest) targets.push(closest);
+        targets.forEach(t => { if (!seen.has(t)) { seen.add(t); paintAvatar(t); } });
       });
     });
     obs.observe(document.body, { subtree: true, childList: true, characterData: true });
+    // Periodic safety net — cheap, idempotent
+    setInterval(() => paintAllAvatars(), 600);
   }
 
-  // ═════════ AVATAR — custom photo upload ═════════
-  function injectAvatarUploadButton() {
-    const picker = document.getElementById('profAvatarPicker');
-    if (!picker || picker.querySelector('[data-av-upload]')) return;
-
-    // Create upload button styled like other avatar buttons
-    const btn = document.createElement('button');
-    btn.className = 'prof-av-btn prof-av-upload-btn';
-    btn.setAttribute('data-av-upload', '1');
-    btn.title = 'Wgraj własne zdjęcie';
-    btn.innerHTML = `
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="3"/>
-        <circle cx="9" cy="9" r="2"/>
-        <path d="M21 15l-5-5L5 21"/>
-      </svg>
-    `;
-    picker.appendChild(btn);
-
-    // Hidden file input (re-used)
-    const fi = document.createElement('input');
-    fi.type = 'file';
-    fi.accept = 'image/*';
-    fi.style.display = 'none';
-    fi.id = 'profAvUploadInput';
-    document.body.appendChild(fi);
-
-    btn.addEventListener('click', () => fi.click());
-    fi.addEventListener('change', async () => {
-      const file = fi.files && fi.files[0];
-      fi.value = '';
+  // ═════════ CUSTOM PHOTO UPLOAD ═════════
+  let __avFileInput = null;
+  function ensureFileInput() {
+    if (__avFileInput) return __avFileInput;
+    __avFileInput = document.createElement('input');
+    __avFileInput.type = 'file';
+    __avFileInput.accept = 'image/*';
+    __avFileInput.style.display = 'none';
+    document.body.appendChild(__avFileInput);
+    __avFileInput.addEventListener('change', async () => {
+      const file = __avFileInput.files && __avFileInput.files[0];
+      __avFileInput.value = '';
       if (!file) return;
       if (!file.type.startsWith('image/')) { alert('Wybierz plik graficzny'); return; }
-      if (file.size > 4 * 1024 * 1024) { alert('Max 4MB'); return; }
+      if (file.size > 4 * 1024 * 1024) { alert('Max 4 MB'); return; }
       try {
         const dataUrl = await fileToDataUrl(file);
         const resized = await resizeImage(dataUrl, 240);
         applyCustomAvatar(resized);
       } catch (e) {
-        alert('Błąd wgrywania zdjęcia: ' + e.message);
+        alert('Błąd: ' + e.message);
       }
     });
+    return __avFileInput;
   }
-
-  function applyCustomAvatar(dataUrl) {
-    // Mark all picker buttons as not-selected
-    document.querySelectorAll('#profAvatarPicker .prof-av-btn').forEach(b => b.classList.remove('selected'));
-    // Mark our upload btn as selected
-    const up = document.querySelector('[data-av-upload]');
-    if (up) up.classList.add('selected');
-    // Set the value into preview (textContent — picked up by saveProfile)
-    const preview = document.getElementById('profAvatarPreview');
-    if (preview) {
-      preview.textContent = dataUrl;
-      paintAvatar(preview);
-    }
-    // Sync internal state by simulating the existing avatar selection flow:
-    // The app uses a closure variable `_selectedProfileAvatar`, set via click on .prof-av-btn[data-av]
-    // We can't access closure, but saveProfile reads from the variable... Workaround:
-    // Create or re-use a synthetic .prof-av-btn with this dataUrl and click it.
-    let synth = document.querySelector('[data-av-synth]');
-    if (!synth) {
-      synth = document.createElement('button');
-      synth.setAttribute('data-av-synth', '1');
-      synth.className = 'prof-av-btn';
-      synth.style.display = 'none';
-      const picker = document.getElementById('profAvatarPicker');
-      if (picker) picker.appendChild(synth);
-    }
-    synth.setAttribute('data-av', dataUrl);
-    synth.textContent = ''; // empty visual
-    // Trigger native click on synth → existing delegated handler in app.js will set _selectedProfileAvatar
-    synth.click();
-    // After the click, the app sets preview.textContent = _selectedProfileAvatar (the dataUrl) — paint it
-    setTimeout(() => paintAvatar(preview), 30);
-  }
-
   function fileToDataUrl(file) {
     return new Promise((resolve, reject) => {
       const r = new FileReader();
@@ -172,6 +144,78 @@
       };
       img.onerror = reject;
       img.src = dataUrl;
+    });
+  }
+
+  function applyCustomAvatar(value) {
+    // Mark all picker buttons unselected
+    document.querySelectorAll('#profAvatarPicker .prof-av-btn').forEach(b => b.classList.remove('selected'));
+    // Paint preview immediately (image mode)
+    const preview = document.getElementById('profAvatarPreview');
+    if (preview) {
+      preview.dataset.avSrc = value;
+      paintAvatar(preview);
+    }
+    // Sync internal state via synthetic .prof-av-btn[data-av]
+    let synth = document.querySelector('[data-av-synth]');
+    if (!synth) {
+      synth = document.createElement('button');
+      synth.setAttribute('data-av-synth', '1');
+      synth.className = 'prof-av-btn';
+      synth.style.display = 'none';
+      const picker = document.getElementById('profAvatarPicker');
+      if (picker) picker.appendChild(synth);
+    }
+    synth.setAttribute('data-av', value);
+    synth.click();
+    // After native click, app.js sets preview.textContent = value (long string).
+    // Repaint forces image mode.
+    setTimeout(() => paintAllAvatars(), 30);
+  }
+
+  function clearAvatar() {
+    document.querySelectorAll('#profAvatarPicker .prof-av-btn').forEach(b => b.classList.remove('selected'));
+    let synth = document.querySelector('[data-av-synth]');
+    if (!synth) {
+      synth = document.createElement('button');
+      synth.setAttribute('data-av-synth', '1');
+      synth.className = 'prof-av-btn';
+      synth.style.display = 'none';
+      const picker = document.getElementById('profAvatarPicker');
+      if (picker) picker.appendChild(synth);
+    }
+    synth.setAttribute('data-av', '');
+    synth.click();
+    const preview = document.getElementById('profAvatarPreview');
+    if (preview) {
+      delete preview.dataset.avSrc;
+      paintAvatar(preview);
+    }
+  }
+
+  function bindAvatarTriggers() {
+    document.addEventListener('click', e => {
+      // Custom avatar upload trigger
+      if (e.target.closest('[data-av-upload-trigger]')) {
+        e.preventDefault();
+        ensureFileInput().click();
+        return;
+      }
+      // Clear avatar
+      if (e.target.closest('[data-av-clear-trigger]')) {
+        e.preventDefault();
+        clearAvatar();
+        return;
+      }
+      // After picking emoji, repaint
+      if (e.target.closest('.prof-av-btn')) {
+        setTimeout(() => paintAllAvatars(), 20);
+      }
+      // After save, repaint
+      if (e.target.closest('#profSaveBtn')) {
+        setTimeout(() => paintAllAvatars(), 200);
+        setTimeout(() => paintAllAvatars(), 800);
+      }
     });
   }
 
@@ -206,7 +250,7 @@
     });
   }
 
-  // ═════════ COMPACT MODE ═════════
+  // ═════════ COMPACT ═════════
   const COMPACT_KEY = 'szafer-compact-v13';
   function applyCompact(on) {
     document.documentElement.setAttribute('data-compact', on ? '1' : '0');
@@ -226,23 +270,19 @@
   }
 
   // ═════════ UPCOMING WIDGET ═════════
-  const POL_MONTHS = ['STY','LUT','MAR','KWI','MAJ','CZE','LIP','SIE','WRZ','PAŹ','LIS','GRU'];
   function refreshUpcoming() {
     const list = document.getElementById('sidebarUpcomingList');
     if (!list) return;
-    // Read from rendered .il-row elements — they're already sorted (active first by date asc)
     const rows = document.querySelectorAll('#itemList .il-row:not(.il-done)');
     const items = [];
     rows.forEach(row => {
       const day  = row.querySelector('.il-day')?.textContent?.trim() || '';
       const mon  = row.querySelector('.il-mon')?.textContent?.trim() || '';
       const title= row.querySelector('.il-title')?.textContent?.trim() || '';
-      const accent = row.style.getPropertyValue('--il-color') || '#fbbf24';
+      const accent = (row.style.getPropertyValue('--il-color') || '#fbbf24').trim();
       const typeChip = row.querySelector('.il-chip-type');
       const type = typeChip ? typeChip.textContent.trim().split(/\s+/).slice(1).join(' ') : '';
-      if (day && title) {
-        items.push({ day, mon, title, accent: accent.trim(), type });
-      }
+      if (day && title) items.push({ day, mon, title, accent, type });
     });
     const top = items.slice(0, 3);
     if (!top.length) {
@@ -250,11 +290,8 @@
       return;
     }
     list.innerHTML = top.map(it => `
-      <div class="su-item" data-tab-jump="calendar" style="--su-color:${escapeHtml(it.accent)}">
-        <div class="su-date">
-          <span class="su-day">${escapeHtml(it.day)}</span>
-          <span class="su-mon">${escapeHtml(it.mon)}</span>
-        </div>
+      <div class="su-item" style="--su-color:${escapeHtml(it.accent)}">
+        <div class="su-date"><span class="su-day">${escapeHtml(it.day)}</span><span class="su-mon">${escapeHtml(it.mon)}</span></div>
         <div class="su-body">
           <div class="su-title">${escapeHtml(it.title)}</div>
           ${it.type ? `<div class="su-type">${escapeHtml(it.type)}</div>` : ''}
@@ -268,13 +305,11 @@
   function initUpcoming() {
     refreshUpcoming();
     setInterval(refreshUpcoming, 6000);
-    // Also when calendar items mutate
     const it = document.getElementById('itemList');
     if (it) {
       const obs = new MutationObserver(() => refreshUpcoming());
       obs.observe(it, { childList: true, subtree: true });
     }
-    // Click jump targets
     document.querySelectorAll('[data-tab-jump]').forEach(el => {
       el.addEventListener('click', e => {
         const tab = el.getAttribute('data-tab-jump');
@@ -283,23 +318,22 @@
     });
   }
 
-  // ═════════ COMMAND PALETTE (Cmd+K) ═════════
+  // ═════════ CMD-K ═════════
   const TAB_INDEX = [
     { id: 'tab:calendar',   label: 'Panel · Kalendarz',  tab: 'calendar',    icon: '◧', kw: 'panel kalendarz wpisy' },
     { id: 'tab:tasks',      label: 'Zadania',            tab: 'tasks',       icon: '✓', kw: 'zadania todo task' },
     { id: 'tab:planning',   label: 'Planowanie',         tab: 'planning',    icon: '◫', kw: 'planowanie boards person' },
-    { id: 'tab:chat',       label: 'Chat',               tab: 'chat',        icon: '✉', kw: 'chat wiadomości komunikacja' },
+    { id: 'tab:chat',       label: 'Chat',               tab: 'chat',        icon: '✉', kw: 'chat wiadomości' },
     { id: 'tab:upload',     label: 'Upload · Pliki',     tab: 'upload',      icon: '⇧', kw: 'upload pliki media' },
     { id: 'tab:harmonogram',label: 'Harmonogram',        tab: 'harmonogram', icon: '◴', kw: 'harmonogram tygodniowy plan' },
   ];
   const ACTION_INDEX = [
-    { id: 'act:profile', label: 'Edytuj profil',         action: () => window.openProfileModal && window.openProfileModal(), icon: '◉', kw: 'profil avatar konto' },
-    { id: 'act:changelog', label: 'Lista zmian',          action: () => { const b=document.getElementById('changelogOpenBtn'); b && b.click(); }, icon: '✦', kw: 'zmiany changelog history' },
-    { id: 'act:logout',  label: 'Wyloguj',                action: () => { const b=document.getElementById('logoutBtn'); b && b.click(); }, icon: '⏻', kw: 'wyloguj logout' },
-    { id: 'act:theme',   label: 'Przełącz motyw',         action: () => { const b=document.getElementById('sfThemeBtn'); b && b.click(); }, icon: '◐', kw: 'theme dark light motyw' },
-    { id: 'act:compact', label: 'Tryb kompaktowy',        action: () => { const b=document.getElementById('sfCompactBtn'); b && b.click(); }, icon: '⊟', kw: 'compact zwartny sidebar' },
+    { id: 'act:profile', label: 'Edytuj profil', action: () => window.openProfileModal && window.openProfileModal(), icon: '◉', kw: 'profil avatar konto' },
+    { id: 'act:changelog', label: 'Lista zmian', action: () => { const b=document.getElementById('changelogOpenBtn'); b && b.click(); }, icon: '✦', kw: 'zmiany changelog history' },
+    { id: 'act:logout', label: 'Wyloguj', action: () => { const b=document.getElementById('logoutBtn'); b && b.click(); }, icon: '⏻', kw: 'wyloguj logout' },
+    { id: 'act:theme', label: 'Przełącz motyw', action: () => { const b=document.getElementById('sfThemeBtn'); b && b.click(); }, icon: '◐', kw: 'theme motyw' },
+    { id: 'act:compact', label: 'Tryb kompaktowy', action: () => { const b=document.getElementById('sfCompactBtn'); b && b.click(); }, icon: '⊟', kw: 'compact sidebar' },
   ];
-
   function collectDynamicResults() {
     const results = [];
     document.querySelectorAll('[data-tab-panel="tasks"] .task-card').forEach((el, i) => {
@@ -314,26 +348,21 @@
       const text = el.textContent.trim().slice(0, 80);
       if (text && text.length > 2) results.push({ id: 'plan:' + i, label: text, tab: 'planning', icon: '◫', kw: 'planowanie ' + text.toLowerCase(), type: 'Plan' });
     });
-    const chatMsgs = document.querySelectorAll('[data-tab-panel="chat"] .chat-bubble');
-    Array.from(chatMsgs).slice(-30).forEach((el, i) => {
+    Array.from(document.querySelectorAll('[data-tab-panel="chat"] .chat-bubble')).slice(-30).forEach((el, i) => {
       const text = el.textContent.trim().slice(0, 80);
       if (text && text.length > 2) results.push({ id: 'chat:' + i, label: text, tab: 'chat', icon: '✉', kw: 'wiadomość ' + text.toLowerCase(), type: 'Chat' });
     });
     return results;
   }
-
   function fuzzyScore(query, item) {
     if (!query) return 1;
     const q = query.toLowerCase().trim();
     const hay = (item.label + ' ' + (item.kw || '')).toLowerCase();
     if (hay.includes(q)) return 100 - Math.abs(hay.indexOf(q));
     let qi = 0;
-    for (let i = 0; i < hay.length && qi < q.length; i++) {
-      if (hay[i] === q[qi]) qi++;
-    }
+    for (let i = 0; i < hay.length && qi < q.length; i++) if (hay[i] === q[qi]) qi++;
     return qi === q.length ? 50 : 0;
   }
-
   let cmdkOpen = false, cmdkSelected = 0, cmdkResults = [];
   function openCmdK() {
     if (cmdkOpen) return;
@@ -429,32 +458,16 @@
     if (ov) ov.addEventListener('click', e => { if (e.target === ov) closeCmdK(); });
   }
 
-  // ═════════ UPLOAD — group by folder ═════════
-  function regroupUploadByFolder() {
-    const list = document.getElementById('uploadFileList');
-    if (!list) return;
-    if (list.getAttribute('data-grouped') === '1') return;
-    // We don't change app.js render structure — just CSS handles visual.
-    // But we add data-folder attributes from the existing chips/cards if missing.
-    list.setAttribute('data-grouped', '1');
-  }
-
   // ═════════ INIT ═════════
   ready(() => {
     initTheme();
     initCompact();
     initUpcoming();
     initCmdK();
+    bindAvatarTriggers();
     setTimeout(() => { paintAllAvatars(); watchAvatars(); }, 200);
-    setTimeout(() => { injectAvatarUploadButton(); }, 400);
-    // Re-inject when profile modal opens (in case modal HTML re-renders)
-    const profBtn = document.getElementById('topbarAvatarBtn');
-    if (profBtn) profBtn.addEventListener('click', () => setTimeout(injectAvatarUploadButton, 100));
-    // Watch for upload list changes to regroup
-    const ul = document.getElementById('uploadFileList');
-    if (ul) {
-      const obs = new MutationObserver(() => { regroupUploadByFolder(); paintAllAvatars(ul); });
-      obs.observe(ul, { childList: true, subtree: true });
-    }
+    // Repaint when profile modal opens
+    const tbBtn = document.getElementById('topbarAvatarBtn');
+    if (tbBtn) tbBtn.addEventListener('click', () => setTimeout(paintAllAvatars, 120));
   });
 })();

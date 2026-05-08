@@ -82,95 +82,146 @@
           </button>
           <!-- PROFILE DROPDOWN (injected here by JS openProfileModal) -->
           <div id="profileDropdown" class="prof-dropdown hidden"></div>
-        <div id="profileModal" class="prof-dropdown-panel hidden">
-      <div class="day-modal-header" style="background:linear-gradient(135deg,rgba(247,183,51,.12),rgba(196,113,237,.08),rgba(78,205,196,.06))">
-        <div>
-          <div class="day-modal-eyebrow">✨ Twój profil</div>
-          <div class="day-modal-title" style="font-size:22px" id="profModalTitle">Edytuj profil</div>
-          <div class="day-modal-sub">Widoczny dla całej ekipy w czasie rzeczywistym</div>
-        </div>
-        <button id="profileModalClose" class="day-modal-close" onclick="if(window.closeProfileModal)window.closeProfileModal()">✕</button>
-      </div>
-      <div class="day-modal-body" style="max-height:75vh;overflow-y:auto">
-
-        <!-- AVATAR + NAME ROW -->
-        <div class="prof-top-row">
-          <div class="prof-avatar-col">
+        <div id="profileModal" class="prof-dropdown-panel hidden prof-modal-v13">
+      <!-- ═══ HERO ═══ -->
+      <div class="prof-hero">
+        <div class="prof-hero-bg"></div>
+        <button id="profileModalClose" class="prof-close-x" onclick="if(window.closeProfileModal)window.closeProfileModal()" aria-label="Zamknij">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="prof-hero-content">
+          <div class="prof-avatar-stack">
             <div id="profAvatarPreview" class="prof-avatar-preview">S</div>
-            <div class="prof-avatar-label" style="margin-top:6px">Avatar</div>
+            <button class="prof-avatar-cam-btn" data-av-upload-trigger="1" type="button" title="Wgraj zdjęcie">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </button>
           </div>
-          <div class="prof-name-col">
-            <div class="field" style="margin-bottom:10px">
+          <div class="prof-hero-text">
+            <div class="prof-hero-eyebrow">TWÓJ PROFIL</div>
+            <div class="prof-hero-title" id="profModalTitle">Edytuj profil</div>
+            <div class="prof-hero-sub">Widoczny dla całej ekipy w czasie rzeczywistym</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ BODY ═══ -->
+      <div class="prof-body">
+
+        <!-- BASICS -->
+        <section class="prof-card">
+          <div class="prof-card-header">
+            <div class="prof-card-title">Identyfikacja</div>
+            <div class="prof-card-sub">Tak Cię widzi reszta ekipy</div>
+          </div>
+          <div class="prof-grid-2">
+            <div class="field">
               <label for="profDisplayName">Nazwa użytkownika</label>
               <input id="profDisplayName" type="text" placeholder="Np. Szafer, blajetttp, Skat..."
-                  oninput="(function(v){var el=document.getElementById('tbUserName');if(el&&v)el.textContent=v;})(this.value)" />
+                oninput="(function(v){var el=document.getElementById('tbUserName');if(el&&v)el.textContent=v;})(this.value)" />
             </div>
             <div class="field">
               <label for="profEmail">Email</label>
-              <input id="profEmail" type="email" placeholder="np. blajetttp@gmail.com (dla blajetttp)" />
+              <input id="profEmail" type="email" placeholder="np. blajetttp@gmail.com" />
             </div>
           </div>
-        </div>
+        </section>
 
-        <!-- AVATAR PICKER -->
-        <div id="profAvatarPicker" class="prof-avatar-picker" style="margin:12px 0 0">
-          <button class="prof-av-btn" data-av="😎">😎</button>
-          <button class="prof-av-btn" data-av="🔥">🔥</button>
-          <button class="prof-av-btn" data-av="🎵">🎵</button>
-          <button class="prof-av-btn" data-av="🎤">🎤</button>
-          <button class="prof-av-btn" data-av="🎧">🎧</button>
-          <button class="prof-av-btn" data-av="🎬">🎬</button>
-          <button class="prof-av-btn" data-av="💎">💎</button>
-          <button class="prof-av-btn" data-av="⚡">⚡</button>
-          <button class="prof-av-btn" data-av="🦊">🦊</button>
-          <button class="prof-av-btn" data-av="🐺">🐺</button>
-          <button class="prof-av-btn" data-av="👑">👑</button>
-          <button class="prof-av-btn" data-av="🎯">🎯</button>
-          <button class="prof-av-btn" data-av="🚀">🚀</button>
-          <button class="prof-av-btn" data-av="💀">💀</button>
-          <button class="prof-av-btn" data-av="🤖">🤖</button>
-          <button class="prof-av-btn" data-av="👽">👽</button>
-        </div>
+        <!-- AVATAR -->
+        <section class="prof-card">
+          <div class="prof-card-header">
+            <div class="prof-card-title">Avatar</div>
+            <div class="prof-card-sub">Wybierz emoji albo wgraj własne zdjęcie</div>
+          </div>
+          <div class="prof-avatar-options">
+            <button class="prof-avatar-option-btn" data-av-upload-trigger="1" type="button">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span class="prof-aov-label">Wgraj zdjęcie</span>
+              <span class="prof-aov-hint">JPG / PNG · max 4MB</span>
+            </button>
+            <button class="prof-avatar-option-btn" data-av-clear-trigger="1" type="button">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+              <span class="prof-aov-label">Bez avatara</span>
+              <span class="prof-aov-hint">Tylko inicjał</span>
+            </button>
+          </div>
+          <div class="prof-or-sep"><span>lub wybierz emoji</span></div>
+          <div id="profAvatarPicker" class="prof-avatar-picker">
+            <button class="prof-av-btn" data-av="😎">😎</button>
+            <button class="prof-av-btn" data-av="🔥">🔥</button>
+            <button class="prof-av-btn" data-av="🎵">🎵</button>
+            <button class="prof-av-btn" data-av="🎤">🎤</button>
+            <button class="prof-av-btn" data-av="🎧">🎧</button>
+            <button class="prof-av-btn" data-av="🎬">🎬</button>
+            <button class="prof-av-btn" data-av="💎">💎</button>
+            <button class="prof-av-btn" data-av="⚡">⚡</button>
+            <button class="prof-av-btn" data-av="🦊">🦊</button>
+            <button class="prof-av-btn" data-av="🐺">🐺</button>
+            <button class="prof-av-btn" data-av="👑">👑</button>
+            <button class="prof-av-btn" data-av="🎯">🎯</button>
+            <button class="prof-av-btn" data-av="🚀">🚀</button>
+            <button class="prof-av-btn" data-av="💀">💀</button>
+            <button class="prof-av-btn" data-av="🤖">🤖</button>
+            <button class="prof-av-btn" data-av="👽">👽</button>
+          </div>
+        </section>
 
-        <div class="prof-sep" style="margin:14px 0"></div>
+        <!-- MOOD + NOTE -->
+        <section class="prof-card">
+          <div class="prof-card-header">
+            <div class="prof-card-title">Status na dziś</div>
+            <div class="prof-card-sub">Mood + krótka notka dla ekipy</div>
+          </div>
+          <div class="prof-mood-label">Mood</div>
+          <div id="profMoodPicker" class="prof-mood-row">
+            <button class="tp-mood-btn" data-mood="🔥">🔥</button>
+            <button class="tp-mood-btn" data-mood="😎">😎</button>
+            <button class="tp-mood-btn" data-mood="🎵">🎵</button>
+            <button class="tp-mood-btn" data-mood="💪">💪</button>
+            <button class="tp-mood-btn" data-mood="😴">😴</button>
+            <button class="tp-mood-btn" data-mood="🤔">🤔</button>
+            <button class="tp-mood-btn" data-mood="🚀">🚀</button>
+            <button class="tp-mood-btn" data-mood="😤">😤</button>
+            <button class="tp-mood-btn" data-mood="🎯">🎯</button>
+            <button class="tp-mood-btn" data-mood="❄️">❄️</button>
+          </div>
+          <div class="prof-mood-label" style="margin-top:14px">Notka</div>
+          <textarea id="profQuickNote" class="prof-textarea" placeholder="Co dziś robisz? Napisz coś do ekipy..."></textarea>
+        </section>
 
-        <!-- MOOD -->
-        <div class="prof-section-label">🎭 Twój mood</div>
-        <div id="profMoodPicker" class="tp-mood-row" style="justify-content:flex-start;gap:8px;flex-wrap:wrap;margin:8px 0 4px">
-          <button class="tp-mood-btn" data-mood="🔥">🔥</button>
-          <button class="tp-mood-btn" data-mood="😎">😎</button>
-          <button class="tp-mood-btn" data-mood="🎵">🎵</button>
-          <button class="tp-mood-btn" data-mood="💪">💪</button>
-          <button class="tp-mood-btn" data-mood="😴">😴</button>
-          <button class="tp-mood-btn" data-mood="🤔">🤔</button>
-          <button class="tp-mood-btn" data-mood="🚀">🚀</button>
-          <button class="tp-mood-btn" data-mood="😤">😤</button>
-          <button class="tp-mood-btn" data-mood="🎯">🎯</button>
-          <button class="tp-mood-btn" data-mood="❄️">❄️</button>
-        </div>
+        <!-- SECURITY (collapsible) -->
+        <details class="prof-card prof-collapsible">
+          <summary class="prof-card-header prof-collapsible-summary">
+            <div>
+              <div class="prof-card-title">Bezpieczeństwo</div>
+              <div class="prof-card-sub">Zmiana hasła</div>
+            </div>
+            <svg class="prof-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="prof-grid-2">
+            <div class="field">
+              <label for="profNewPassword">Nowe hasło</label>
+              <input id="profNewPassword" type="password" placeholder="••••••••" />
+            </div>
+            <div class="field">
+              <label for="profConfirmPassword">Potwierdź</label>
+              <input id="profConfirmPassword" type="password" placeholder="••••••••" />
+            </div>
+          </div>
+        </details>
 
-        <!-- QUICK NOTE -->
-        <div class="prof-section-label" style="margin-top:12px">📝 Status / notatka</div>
-        <textarea id="profQuickNote" class="tp-quick-note" placeholder="Co dziś robisz? Napisz coś do ekipy..." style="margin-top:6px;width:100%;box-sizing:border-box"></textarea>
-
-        <div class="prof-sep" style="margin:14px 0"></div>
-
-        <!-- PASSWORD -->
-        <div class="prof-section-label">🔒 Zmiana hasła</div>
-        <div class="field" style="margin:8px 0">
-          <label for="profNewPassword">Nowe hasło (zostaw puste aby nie zmieniać)</label>
-          <input id="profNewPassword" type="password" placeholder="••••••••" />
-        </div>
-        <div class="field" style="margin-bottom:8px">
-          <label for="profConfirmPassword">Potwierdź nowe hasło</label>
-          <input id="profConfirmPassword" type="password" placeholder="••••••••" />
-        </div>
-
-        <div id="profMessage" class="helper" style="min-height:18px"></div>
+        <div id="profMessage" class="prof-message"></div>
       </div>
-      <div class="day-modal-footer">
-        <button id="profSaveBtn" class="btn">💾 Zapisz profil</button>
-        <button id="profCancelBtn" class="btn-ghost">Anuluj</button>
+
+      <!-- ═══ FOOTER ═══ -->
+      <div class="prof-footer">
+        <button id="profCancelBtn" class="btn-ghost prof-btn-cancel" onclick="if(window.closeProfileModal)window.closeProfileModal()">Anuluj</button>
+        <button id="profSaveBtn" class="btn prof-btn-save">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Zapisz profil
+        </button>
       </div>
   </div>
         </div>

@@ -43,13 +43,27 @@
    (skrypt może być w dowolnym miejscu HTML)
    ════════════════════════════════════════════════════════ */
 (function() {
-  var _activeVer = 'v10.5';
+  var _activeVer = null;
+
+  function _detectInitialVer() {
+    // Pick the first visible (non-hidden) cl-ver-panel. Fallback to first.
+    var panels = document.querySelectorAll('.cl-ver-panel');
+    for (var i = 0; i < panels.length; i++) {
+      var p = panels[i];
+      if (!p.classList.contains('hidden') && !p.classList.contains('cl-ver-panel-hidden')) {
+        return p.dataset.verPanel;
+      }
+    }
+    if (panels.length) return panels[0].dataset.verPanel;
+    return 'v13';
+  }
 
   function showChangelog() {
     var m = document.getElementById('changelogModal');
     if (!m) return;
     m.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
+    if (!_activeVer) _activeVer = _detectInitialVer();
     switchClVer(_activeVer, true);
   }
   function closeChangelog() {

@@ -10,7 +10,7 @@
   <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23fbbf24'/><stop offset='.5' stop-color='%23fb7185'/><stop offset='1' stop-color='%23c084fc'/></linearGradient></defs><rect fill='url(%23g)' rx='22' width='100' height='100'/><text x='50' y='72' text-anchor='middle' font-family='Georgia,serif' font-style='italic' font-weight='600' font-size='62' fill='%231a0a00'>S</text></svg>" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23fbbf24'/><stop offset='.5' stop-color='%23fb7185'/><stop offset='1' stop-color='%23c084fc'/></linearGradient></defs><rect fill='url(%23g)' rx='22' width='100' height='100'/><text x='50' y='72' text-anchor='middle' font-family='Georgia,serif' font-style='italic' font-weight='600' font-size='62' fill='%231a0a00'>S</text></svg>" />
   <link rel="manifest" href="/manifest.json" />
-  <title>Szafer Panel v13 · Aurora Studio</title>
+  <title>Szafer Panel v13.2 · Aurora Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -44,7 +44,7 @@
             <span class="szafer-word-szafer">SZAFER</span><span class="szafer-word-sep"> </span><span class="szafer-word-panel">PANEL</span>
           </div>
           <div class="szafer-brand-sub">
-            <span class="szafer-brand-sub-simple">v13 · AURORA STUDIO</span>
+            <span class="szafer-brand-sub-simple">v13.2 · AURORA STUDIO</span>
           </div>
         </div>
       </div>
@@ -56,6 +56,13 @@
         <span id="userLabel"       style="display:none">—</span>
 
         
+        <!-- ── Search trigger (Cmd+K) ── -->
+        <button id="cmdkBtn" class="cmdk-trigger" type="button" title="Szukaj (⌘K)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span class="cmdk-trigger-label">Szukaj wszędzie</span>
+          <span class="cmdk-trigger-kbd"><kbd>⌘</kbd><kbd>K</kbd></span>
+        </button>
+
         <!-- ── Status połączenia ── -->
         <div class="authbar-group">
   <span id="dbStatus" class="chip err" style="font-size:10px;letter-spacing:.03em"><span class="dot"></span>Brak połączenia</span>
@@ -180,7 +187,7 @@
           <button id="changelogOpenBtn" class="btn-changelog cl-attention hidden" title="Zobacz co nowego w panelu">
             <span class="btn-cl-spark">✦</span>
             <span class="btn-cl-text">Lista Zmian</span>
-            <span class="btn-cl-badge">v13</span>
+            <span class="btn-cl-badge">v13.2</span>
           </button>
           <div class="push-logout-col">
             <button id="logoutBtn" class="btn-logout-tb hidden">
@@ -267,6 +274,38 @@
           <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
           <span class="nav-label">Harmonogram</span>
         </button>
+
+        <!-- ═══ PINNED / RECENT (v13.2) ═══ -->
+        <div class="sidebar-recent" id="sidebarRecent">
+          <div class="sidebar-section-label">OSTATNIO</div>
+          <div class="sidebar-recent-list" id="sidebarRecentList">
+            <div class="sidebar-recent-empty">Klikaj wpisy by się tu pojawiały</div>
+          </div>
+        </div>
+
+        <!-- ═══ MINI WIDGET — TODAY ═══ -->
+        <div class="sidebar-widget" id="sidebarWidget" data-tab-jump="calendar" title="Przejdź do Panelu">
+          <div class="sw-row">
+            <span class="sw-icon">✦</span>
+            <span class="sw-label">Dzisiaj</span>
+            <span class="sw-count" id="swTodayCount">—</span>
+          </div>
+          <div class="sw-bar"><div class="sw-bar-fill" id="swTodayFill" style="width:0%"></div></div>
+          <div class="sw-meta" id="swTodayMeta">Kliknij by zobaczyć</div>
+        </div>
+
+        <!-- ═══ FOOTER — THEME / COMPACT TOGGLES ═══ -->
+        <div class="sidebar-footer">
+          <button class="sf-btn" id="sfThemeBtn" title="Zmień motyw" aria-label="Theme">
+            <svg class="sf-ic sf-ic-dark"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <svg class="sf-ic sf-ic-light" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <svg class="sf-ic sf-ic-auto"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2 a10 10 0 0 1 0 20z" fill="currentColor"/></svg>
+            <span class="sf-label" id="sfThemeLabel">Auto</span>
+          </button>
+          <button class="sf-btn sf-compact-btn" id="sfCompactBtn" title="Tryb kompaktowy" aria-label="Compact">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><polyline points="9 6 3 12 9 18"/></svg>
+          </button>
+        </div>
       </nav>
 
   <!-- ═══ CHAT TAB ═══ -->
@@ -1039,343 +1078,157 @@
       <button id="changelogCloseBtn" class="cl-close cl-header-close" aria-label="Zamknij changelog">✕</button>
     </div>
     <!-- VERSION SELECTOR -->
+    <!-- VERSION SELECTOR -->
     <div class="cl-version-selector" id="clVersionSelector">
-      <button class="cl-ver-btn cl-ver-active" data-ver="v11"><span class="cl-ver-dot"></span>v11<span class="cl-ver-label-new">NOWA</span></button>
-      <button class="cl-ver-btn" data-ver="v10.5">v10.5</button>
-      <button class="cl-ver-btn" data-ver="v10.4">v10.4</button>
-      <button class="cl-ver-btn" data-ver="v10.3">v10.3</button>
-      <button class="cl-ver-btn" data-ver="v10.2">v10.2</button>
-      <button class="cl-ver-btn" data-ver="v10.1">v10.1</button>
-      <button class="cl-ver-btn" data-ver="v10">v10</button>
+      <button class="cl-ver-btn cl-ver-active" data-ver="v13"><span class="cl-ver-dot"></span>v13.2<span class="cl-ver-label-new">NAJNOWSZE</span></button>
+      <button class="cl-ver-btn" data-ver="v12">v12.x</button>
+      <button class="cl-ver-btn" data-ver="v11">v11</button>
+      <button class="cl-ver-btn" data-ver="v10">v10.x</button>
       <button class="cl-ver-btn" data-ver="older" style="opacity:.65">v9 i starsze</button>
     </div>
     <div class="cl-body" id="clBody">
 
-      <!-- ══════ V12.1 ══════ -->
-      <div class="cl-ver-panel" data-ver-panel="v12.1">
+      <!-- ══════ V13 — CURRENT ══════ -->
+      <div class="cl-ver-panel" data-ver-panel="v13">
         <div class="cl-ver-banner">
-          <span>🚀</span>
-          <span class="cl-ver-banner-label" style="color:#3b82f6">v12.1 — 08.05.2026</span>
+          <span>✨</span>
+          <span class="cl-ver-banner-label" style="background:linear-gradient(135deg,#fbbf24,#fb7185,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">v13.2 — Aurora Studio · 08.05.2026</span>
           <span class="cl-badge cl-badge-new" style="font-size:8px">NAJNOWSZE</span>
         </div>
+
         <div class="cl-section">
-  <div class="cl-section-header">
-    <div class="cl-section-version">v12.1</div>
-    <div class="cl-section-date">08.05.2026</div>
-    <div class="cl-section-codename">WORKSTATION II</div>
-  </div>
-  <div class="cl-items">
-    <div class="cl-item" style="--cl-accent:#3b82f6"><span class="cl-item-icon">🗑</span><div class="cl-item-body"><div class="cl-item-title">Usunięto zakładkę Tibia</div><div class="cl-item-desc">Zakładka Tibia i wszystkie powiązane funkcje zostały usunięte z panelu.</div></div><span class="cl-badge cl-badge-change">Zmiana</span></div>
-    <div class="cl-item" style="--cl-accent:#dc2626"><span class="cl-item-icon">🚫</span><div class="cl-item-body"><div class="cl-item-title">Usunięto m00d / Team Pulse</div><div class="cl-item-desc">Przycisk i panel m00d zostały usunięte z topbara — uproszczenie interfejsu.</div></div><span class="cl-badge cl-badge-change">Zmiana</span></div>
-    <div class="cl-item" style="--cl-accent:#84cc16"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Redesign zakładki Planowanie</div><div class="cl-item-desc">Nowy wygląd tablic osobistych — lepsza czytelność, kolory per-osoba, animacje.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-    <div class="cl-item" style="--cl-accent:#f59e0b"><span class="cl-item-icon">📅</span><div class="cl-item-body"><div class="cl-item-title">Ulepszony Harmonogram</div><div class="cl-item-desc">Semantyczne kolory slotów, lepsze podświetlenie dzisiejszego dnia, czystsze nagłówki.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-    <div class="cl-item" style="--cl-accent:#3b82f6"><span class="cl-item-icon">🔢</span><div class="cl-item-body"><div class="cl-item-title">Poprawka typografii dat</div><div class="cl-item-desc">Cyfry w datach używają teraz tabular-nums — jednolita szerokość każdej cyfry.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-    <div class="cl-item" style="--cl-accent:#06b6d4"><span class="cl-item-icon">🔔</span><div class="cl-item-body"><div class="cl-item-title">Poprawki powiadomień</div><div class="cl-item-desc">Bezpieczniejsza inicjalizacja Notification API, lepsze z-index modali.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-  </div>
-</div>
+          <div class="cl-section-header">
+            <div class="cl-section-version">v13.2</div>
+            <div class="cl-section-date">08.05.2026</div>
+            <div class="cl-section-codename">COMMAND DECK</div>
+          </div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#fbbf24"><span class="cl-item-icon">⌘</span><div class="cl-item-body"><div class="cl-item-title">Command palette (⌘K)</div><div class="cl-item-desc">Globalne wyszukiwanie zakładek, zadań, wpisów i czatu jednym skrótem. Linear-style — nawigacja strzałkami, Enter otwiera.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#c084fc"><span class="cl-item-icon">📌</span><div class="cl-item-body"><div class="cl-item-title">Ostatnio używane w sidebar</div><div class="cl-item-desc">Sekcja w sidebarze pokazuje 5 ostatnio otwartych zakładek/wpisów. Pamięta między sesjami.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#fb7185"><span class="cl-item-icon">📊</span><div class="cl-item-body"><div class="cl-item-title">Mini-widget Dzisiaj</div><div class="cl-item-desc">Licznik dzisiejszych zadań z paskiem postępu na dole sidebara. Klik = przejście do Panelu.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#6ee7b7"><span class="cl-item-icon">🌗</span><div class="cl-item-body"><div class="cl-item-title">Theme toggle (dark / light / auto)</div><div class="cl-item-desc">Przełącznik motywu w stopce sidebara. Tryb auto słucha systemowego ustawienia.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#7dd3fc"><span class="cl-item-icon">⊟</span><div class="cl-item-body"><div class="cl-item-title">Compact mode</div><div class="cl-item-desc">Zwiń sidebar do samych ikonek. Persystentne między sesjami.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#fbbf24"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Legenda kolorów Harmonogramu</div><div class="cl-item-desc">Najlepiej (mint), Dobrze (amber), Meh (szare). Wyróżnione, zawsze widoczne nad tabelą.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#fb7185"><span class="cl-item-icon">🖼️</span><div class="cl-item-body"><div class="cl-item-title">Naprawa avatarów (emoji vs litery)</div><div class="cl-item-desc">Apple Color Emoji w stack jako pierwszy. Detekcja emoji JS — gradient bg tylko dla liter, neutralny dla emoji.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#84cc16"><span class="cl-item-icon">🚀</span><div class="cl-item-body"><div class="cl-item-title">Quick Access — gradient hover</div><div class="cl-item-desc">Linki Lista / Toolkit / Drive z gradient hover, ikoną w pill, lift na hover.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
+
+        <div class="cl-section">
+          <div class="cl-section-header">
+            <div class="cl-section-version">v13.0–13.1</div>
+            <div class="cl-section-date">08.05.2026</div>
+            <div class="cl-section-codename">AURORA STUDIO</div>
+          </div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#fbbf24"><span class="cl-item-icon">✨</span><div class="cl-item-body"><div class="cl-item-title">Totalny redesign — Aurora Studio</div><div class="cl-item-desc">Nowa koncepcja wizualna: ciepła paleta amber/coral/lavender, animowane gradient bloby w tle, SVG noise grain, glassmorphism.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#c084fc"><span class="cl-item-icon">📐</span><div class="cl-item-body"><div class="cl-item-title">Sidebar navigation</div><div class="cl-item-desc">Nawigacja przeniesiona z poziomych zakładek na lewy sidebar (248px). Logo + wordmark "Szafer Panel" italic Fraunces na górze. Mobilka: bottom-bar.</div></div><span class="cl-badge cl-badge-change">Zmiana</span></div>
+            <div class="cl-item" style="--cl-accent:#fb7185"><span class="cl-item-icon">𝒮</span><div class="cl-item-body"><div class="cl-item-title">Editorial typografia — Fraunces</div><div class="cl-item-desc">Italic variable serif w nagłówkach, JetBrains Mono dla liczb z tabular-nums, Inter w body. Heroes 56px italic h1.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#6ee7b7"><span class="cl-item-icon">⏰</span><div class="cl-item-body"><div class="cl-item-title">Harmonogram — semantyczne kolory</div><div class="cl-item-desc">Godziny 14px mono, mint=best / amber=good / muted=meh, today amber band z bocznymi liniami.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#fbbf24"><span class="cl-item-icon">📤</span><div class="cl-item-body"><div class="cl-item-title">Upload — premium drop zone</div><div class="cl-item-desc">Stats grid 4-kol, gradient circle icon, italic serif "Upuść pliki tutaj", folder chips pill z gradient active.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#7dd3fc"><span class="cl-item-icon">🔝</span><div class="cl-item-body"><div class="cl-item-title">Sticky topbar + Quick Access integration</div><div class="cl-item-desc">Quick Access (Lista/Toolkit/Drive) wepchnięty do topbara. CSS Grid layout — topbar nigdy się nie rozjeżdża. Zawsze widoczny przy scrollu.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#fb7185"><span class="cl-item-icon">📛</span><div class="cl-item-body"><div class="cl-item-title">Brand: Szafer Panel</div><div class="cl-item-desc">Logo single italic "S" w warm gradient, wordmark "Szafer Panel" w Fraunces. Nowy SVG favicon + apple-touch-icon.</div></div><span class="cl-badge cl-badge-change">Zmiana</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════ V12 ══════ -->
+      <div class="cl-ver-panel hidden" data-ver-panel="v12">
+        <div class="cl-ver-banner">
+          <span>🛠️</span>
+          <span class="cl-ver-banner-label" style="color:#3b82f6">v12.0 → v12.1 — 04–05.2026</span>
+        </div>
+        <div class="cl-section">
+          <div class="cl-section-header">
+            <div class="cl-section-version">v12.1</div>
+            <div class="cl-section-codename">WORKSTATION II</div>
+          </div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#dc2626"><span class="cl-item-icon">🗑</span><div class="cl-item-body"><div class="cl-item-title">Usunięto Tibia + m00d</div><div class="cl-item-desc">Zakładka Tibia i panel m00d (Team Pulse) usunięte z panelu. Uproszczenie nawigacji.</div></div><span class="cl-badge cl-badge-change">Zmiana</span></div>
+            <div class="cl-item" style="--cl-accent:#84cc16"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Redesign Planowanie</div><div class="cl-item-desc">Nowe karty per-osoba z gradient akcentami top, animacje hover.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#f59e0b"><span class="cl-item-icon">📅</span><div class="cl-item-body"><div class="cl-item-title">Ulepszony Harmonogram</div><div class="cl-item-desc">Semantyczne kolory slotów, podświetlenie dzisiejszego dnia.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#3b82f6"><span class="cl-item-icon">🔢</span><div class="cl-item-body"><div class="cl-item-title">Tabular nums w datach</div><div class="cl-item-desc">Wszystkie cyfry w datach mają jednolitą szerokość — 4 nie wygląda już szerzej niż 1.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#06b6d4"><span class="cl-item-icon">🔔</span><div class="cl-item-body"><div class="cl-item-title">Powiadomienia + z-index</div><div class="cl-item-desc">Bezpieczna inicjalizacja Notification API, z-index modali 99999+.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+          </div>
+        </div>
+        <div class="cl-section">
+          <div class="cl-section-header">
+            <div class="cl-section-version">v12.0</div>
+            <div class="cl-section-codename">BRUTALIST WORKSTATION</div>
+          </div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#3b82f6"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Brutalist Workstation theme</div><div class="cl-item-desc">Pierwsza próba totalnego redesignu — ostre rogi, monochrome z elektrycznym niebieskim, Syne + IBM Plex Mono.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#84cc16"><span class="cl-item-icon">🟦</span><div class="cl-item-body"><div class="cl-item-title">Tab heroes editorial</div><div class="cl-item-desc">Każda zakładka ma duży hero banner z kolorową labelką i tytułem.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+          </div>
+        </div>
       </div>
 
       <!-- ══════ V11 ══════ -->
-      <div class="cl-ver-panel" data-ver-panel="v11">
+      <div class="cl-ver-panel hidden" data-ver-panel="v11">
         <div class="cl-ver-banner">
           <span>🎨</span>
-          <span class="cl-ver-banner-label" style="color:#a78bfa">v11 — 13.04.2026</span>
-          <span class="cl-badge cl-badge-new" style="font-size:8px">NAJNOWSZE</span>
+          <span class="cl-ver-banner-label" style="color:#a78bfa">v11 — Neon Noir · 13.04.2026</span>
         </div>
         <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">🎨</span> Pełny rebranding UI</div>
+          <div class="cl-section-title"><span class="cl-section-icon">🟣</span> Pełny rebranding UI (Neon Noir)</div>
           <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#8b5cf6"><span class="cl-item-icon">🟣</span><div class="cl-item-body"><div class="cl-item-title">Nowa paleta — Neon Noir (Violet × Rose × Cyan)</div><div class="cl-item-desc">Całkowita zmiana szaty graficznej: złoto/pomarańcz zastąpione przez fiolet, różową poświatę i cyjan. Nowe gradienty, glowy, cienie — bardziej premium, bardziej "studio".</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#f472b6"><span class="cl-item-icon">✨</span><div class="cl-item-body"><div class="cl-item-title">Topbar jako szklany pasek z glassmorphism</div><div class="cl-item-desc">Topbar z backdrop-blur, logo z gradientem i glow, tytuł "Szafer" z animowanym gradientem violet→rose.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#22d3ee"><span class="cl-item-icon">🔘</span><div class="cl-item-body"><div class="cl-item-title">Nowe przyciski, taby, formularze</div><div class="cl-item-desc">Przyciski z fioletowym gradientem i hover-glow. Aktywny tab z violet→rose gradient. Inputy z fioletowym focus-ring.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#8b5cf6"><span class="cl-item-icon">🛠️</span><div class="cl-item-body"><div class="cl-item-title">Service Worker — network-first (zawsze świeże pliki)</div><div class="cl-item-desc">SW przepisany: network-first dla wszystkich zasobów. Zmiany widoczne natychmiast bez ręcznego czyszczenia cache.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-            <div class="cl-item" style="--cl-accent:#f472b6"><span class="cl-item-icon">👤</span><div class="cl-item-body"><div class="cl-item-title">Profil — X zamknięcia działa poprawnie</div><div class="cl-item-desc">Przycisk ✕ w modalnym profilu ma teraz bezpośredni onclick — nie może już nie zadziałać.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#8b5cf6"><span class="cl-item-icon">🟣</span><div class="cl-item-body"><div class="cl-item-title">Paleta Neon Noir — Violet × Rose × Cyan</div><div class="cl-item-desc">Złoto/pomarańcz zastąpione fioletem, różową poświatą i cyjanem.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#f472b6"><span class="cl-item-icon">✨</span><div class="cl-item-body"><div class="cl-item-title">Glassmorphism topbar</div><div class="cl-item-desc">Backdrop-blur, gradient violet→rose w tytule.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#22d3ee"><span class="cl-item-icon">🔘</span><div class="cl-item-body"><div class="cl-item-title">Nowe przyciski + taby</div><div class="cl-item-desc">Hover-glow violet, focus-ring na inputach.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#8b5cf6"><span class="cl-item-icon">🛠️</span><div class="cl-item-body"><div class="cl-item-title">SW network-first</div><div class="cl-item-desc">Zmiany widoczne natychmiast bez ręcznego cache.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
           </div>
         </div>
       </div>
 
-      <!-- ══════ V10.5 ══════ -->
-      <div class="cl-ver-panel hidden" data-ver-panel="v10.5">
+      <!-- ══════ V10.x ══════ -->
+      <div class="cl-ver-panel hidden" data-ver-panel="v10">
         <div class="cl-ver-banner">
-          <span>💬</span>
-          <span class="cl-ver-banner-label" style="color:#4ecdc4">v10.5 — 13.04.2026</span>
-          <span class="cl-badge cl-badge-new" style="font-size:8px">NAJNOWSZE</span>
+          <span>📦</span>
+          <span class="cl-ver-banner-label" style="color:#f7b733">v10 → v10.5 — 03–04.2026</span>
         </div>
+
         <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">💬</span> Chat — pełny redesign</div>
+          <div class="cl-section-title"><span class="cl-section-icon">💬</span> v10.5 — Chat redesign</div>
           <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Nowy wygląd chatu — nowoczesny dark UI</div><div class="cl-item-desc">Całkowity redesign zakładki Chat: nowy sidebar z kanałami i DM, eleganckie bąbelki wiadomości, grupowanie kolejnych wiadomości tej samej osoby, nowe awatary z gradientami.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">↩</span><div class="cl-item-body"><div class="cl-item-title">Odpowiadanie na wiadomości</div><div class="cl-item-desc">Najedź na wiadomość i kliknij ↩ aby odpowiedzieć. Powyżej inputa pojawi się pasek z podglądem cytowanej wiadomości. W wysłanej wiadomości widoczny jest cytat oryginału.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">😊</span><div class="cl-item-body"><div class="cl-item-title">Picker emotek — 24 emotki jednym kliknięciem</div><div class="cl-item-desc">Przycisk 😊 otwiera panel z 24 popularnymi emotkami. Kliknij emotkę aby wstawić do pola tekstowego. Panel zamyka się po wyborze lub kliknięciu poza nim.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">❤️</span><div class="cl-item-body"><div class="cl-item-title">Reakcje na wiadomości (jak Discord/Slack)</div><div class="cl-item-desc">Najedź na wiadomość → kliknij 😊 w pasku akcji → wybierz emotkę z 8 szybkich reakcji. Reakcje są widoczne dla całej ekipy. Kliknij chip reakcji aby dodać lub cofnąć swoją.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Nowy Chat — bubbles + sidebar</div><div class="cl-item-desc">Kanały + DM, eleganckie bubbles, grupowanie wiadomości tej samej osoby.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">↩</span><div class="cl-item-body"><div class="cl-item-title">Replies + emoji picker + reakcje</div><div class="cl-item-desc">Odpowiadanie z cytatem, picker 24 emotek, reakcje jak w Discord/Slack.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
           </div>
         </div>
+
         <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">🗓️</span> Harmonogram — naprawa</div>
+          <div class="cl-section-title"><span class="cl-section-icon">🛠️</span> v10.4 — Stabilność</div>
           <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#43e97b"><span class="cl-item-icon">🔧</span><div class="cl-item-body"><div class="cl-item-title">Podświetlanie dzisiejszej kolumny</div><div class="cl-item-desc">Naprawiono skrypt który nie trafiał w właściwy atrybut (data-col zamiast data-harm-col). Teraz dzisiejszy dzień tygodnia jest poprawnie podświetlany turkusem.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#10b981"><span class="cl-item-icon">🐛</span><div class="cl-item-body"><div class="cl-item-title">Naprawa drop zone uploadu</div><div class="cl-item-desc">Stats bar z width 100%, drop zone reaguje poprawnie na drag-over.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#0ea5e9"><span class="cl-item-icon">📋</span><div class="cl-item-body"><div class="cl-item-title">HTML changelogu naprawiony</div><div class="cl-item-desc">Zagnieżdżona struktura cl-section/cl-items wyprostowana.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
           </div>
         </div>
+
         <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">👤</span> Profil — naprawa</div>
+          <div class="cl-section-title"><span class="cl-section-icon">📱</span> v10.3 — iOS push + SW</div>
           <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#43e97b"><span class="cl-item-icon">🔧</span><div class="cl-item-body"><div class="cl-item-title">Kliknięcie awatara/nazwy otwiera edycję profilu</div><div class="cl-item-desc">Naprawiono podpięcie przycisku — teraz onclick bezpośrednio w HTML, nie może już nie zadziałać niezależnie od kolejności ładowania skryptów.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+            <div class="cl-item" style="--cl-accent:#10b981"><span class="cl-item-icon">📱</span><div class="cl-item-body"><div class="cl-item-title">iOS push notifications</div><div class="cl-item-desc">Push działa na iPhonie po dodaniu do ekranu głównego (PWA).</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#3b82f6"><span class="cl-item-icon">🛠️</span><div class="cl-item-body"><div class="cl-item-title">Service Worker przepisany</div><div class="cl-item-desc">Network-first dla wszystkich zasobów własnych.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
+          </div>
+        </div>
+
+        <div class="cl-section">
+          <div class="cl-section-title"><span class="cl-section-icon">🎯</span> v10.0–10.2 — Foundation</div>
+          <div class="cl-items">
+            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">📅</span><div class="cl-item-body"><div class="cl-item-title">Calendar + Tasks + Planning</div><div class="cl-item-desc">Pełny stack: kalendarz wpisów, lista zadań, tablice planowania per-osoba (Szafer / blajetttp / Skat).</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">🔥</span><div class="cl-item-body"><div class="cl-item-title">Firebase Realtime Database</div><div class="cl-item-desc">Synchronizacja w czasie rzeczywistym, presence (online/offline), profile użytkowników.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
+            <div class="cl-item" style="--cl-accent:#0ea5e9"><span class="cl-item-icon">🗓️</span><div class="cl-item-body"><div class="cl-item-title">Harmonogram tygodniowy</div><div class="cl-item-desc">Optymalne godziny publikacji per platforma (IG, TikTok, YT...) i dzień tygodnia.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
           </div>
         </div>
       </div>
 
-      <!-- ══════ V10.4 ══════ -->
-      <div class="cl-ver-panel" data-ver-panel="v10.4">
-        <div class="cl-ver-banner">
-          <span>✨</span>
-          <span class="cl-ver-banner-label" style="color:#f7b733">v10.4 — 13.04.2026</span>
-          <span class="cl-badge cl-badge-new" style="font-size:8px">NAJNOWSZE</span>
-        </div>
-
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">📅</span> Kalendarz — klikalne wpisy</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">↗</span><div class="cl-item-body"><div class="cl-item-title">Kliknij wpis w kalendarzu → otwiera edytor</div><div class="cl-item-desc">Każdy wpis i zadanie widoczne w podglądzie dnia jest teraz klikalny — kliknięcie przenosi bezpośrednio do edytora danego zgłoszenia. Przycisk "↗" sygnalizuje możliwość przejścia.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-          </div>
-        </div>
-
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">👤</span> Profil — synchronizacja</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">🔄</span><div class="cl-item-body"><div class="cl-item-title">Natychmiastowa synchronizacja profilu w całej aplikacji</div><div class="cl-item-desc">Po zapisaniu profilu (nazwa, avatar, nastrój) zmiany są teraz widoczne natychmiast — w topbarze, kartach Team Pulse, DM sidebar oraz wiadomościach czatu — bez czekania na odpowiedź Firebase.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-          </div>
-        </div>
-
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">💬</span> Chat — auto-scroll</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">⬇️</span><div class="cl-item-body"><div class="cl-item-title">Chat automatycznie zjeżdża na dół przy wejściu</div><div class="cl-item-desc">Wejście w zakładkę Chat lub przełączenie kanału/DM zawsze przewija wiadomości do najnowszej. Koniec z ręcznym scrollowaniem po każdym wejściu.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-          </div>
-        </div>
-
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">📁</span> Upload — nowy wygląd</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#43e97b"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Przebudowana zakładka Upload</div><div class="cl-item-desc">Nowy layout: hero z statystykami plików (łącznie / grafiki / wideo / dokumenty), boczny panel z drag&amp;drop, szybkie filtry folderów jako chipy, czystsza lista plików po prawej.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ══════ V10.3 ══════ -->
-      <div class="cl-ver-panel" data-ver-panel="v10.3">
-        <div class="cl-ver-banner">
-          <span>🚀</span>
-          <span class="cl-ver-banner-label" style="color:#20c997">v10.3 — 06.04.2026</span>
-          <span class="cl-badge cl-badge-new" style="font-size:8px">NAJNOWSZE</span>
-        </div>
-
-        <!-- Push & SW -->
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">🔔</span> Service Worker &amp; Push Fix</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#20c997"><span class="cl-item-icon">⚙️</span><div class="cl-item-body"><div class="cl-item-title">Service Worker — push działa teraz na telefonie</div><div class="cl-item-desc">Dodano <code>sw.js</code> z obsługą zdarzeń <code>push</code> i <code>notificationclick</code>. Powiadomienia działają na Android Chrome i iOS Safari 16.4+ po dodaniu do ekranu głównego.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">📣</span><div class="cl-item-body"><div class="cl-item-title">sendPushNotification — hierarchia SW → fallback</div><div class="cl-item-desc">Funkcja używa teraz <code>SW.showNotification()</code> jako priorytetu (działa w tle na mobile). Bezpośrednie <code>new Notification()</code> tylko jako ostateczny fallback desktopowy.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">🔄</span><div class="cl-item-body"><div class="cl-item-title">Reset _pushInitDone przy wylogowaniu</div><div class="cl-item-desc">Flaga <code>_pushInitDone</code> nie była zerowana przy logout — push nie reinicjalizował się po ponownym logowaniu. Naprawiono.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-          </div>
-        </div>
-
-        <!-- iOS guide button -->
-        <div style="padding: 4px 0 16px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-          <button class="btn-ios-guide" data-open-ios-guide="1" id="iosGuideOpenBtn" title="Jak włączyć push na iPhone" onclick="(function(){var el=document.getElementById('iosGuideModal');if(el){el.classList.remove('hidden');document.body.style.overflow='hidden';}})()">
-            <span class="ios-guide-btn-spark">🍎</span>
-            <span>Poradnik: Jak włączyć push na iOS</span>
-            <span style="font-size:11px; opacity:.7">→</span>
-          </button>
-          <span style="font-size:10px; color:var(--muted); opacity:.65">Wymagane: iOS 16.4+ &amp; Safari</span>
-        </div>
-
-        <!-- Architektura -->
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">📁</span> Architektura &amp; Deploy</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">🌐</span><div class="cl-item-body"><div class="cl-item-title">Podział na pliki — GitHub + Netlify ready</div><div class="cl-item-desc">Panel podzielony na <code>index.html</code>, <code>css/style.css</code>, <code>js/app.js</code>, <code>js/ui.js</code>, <code>manifest.json</code>, <code>sw.js</code> i <code>netlify.toml</code>. Deploy przez GitHub → Netlify.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">📄</span><div class="cl-item-body"><div class="cl-item-title">manifest.json — osobny plik zamiast base64 data URI</div><div class="cl-item-desc">Manifest przeniesiony z inline base64 do <code>/manifest.json</code>. Wymagane do poprawnej rejestracji Service Workera i działania PWA na iOS.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-          </div>
-        </div>
-
-        <!-- CSS -->
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">🎨</span> CSS Cleanup</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">🧹</span><div class="cl-item-body"><div class="cl-item-title">Usunięto 2 zduplikowane reguły .btn-cl-badge</div><div class="cl-item-desc">Reguła <code>.btn-cl-badge</code> była zdefiniowana 3× (2 duplikaty). Pozostawiono jedną kanoniczną definicję z <code>!important</code>.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-          </div>
-        </div>
-
-        <div class="cl-subpatch-divider">
-          <div class="cl-subpatch-line"></div>
-          <div class="cl-subpatch-label">
-            <span class="cl-subpatch-icon">✨</span>
-            <span class="cl-subpatch-version">PATCH v10.3</span>
-            <span class="cl-subpatch-sublabel">SW · Push · Deploy · CSS</span>
-          </div>
-          <div class="cl-subpatch-line"></div>
-        </div>
-      </div><!-- /v10.3 -->
-
-      
-
-      <!-- ══════ V10.2 ══════ -->
-      <div class="cl-ver-panel" data-ver-panel="v10.2">
-        <div class="cl-ver-banner"><span>⚡</span><span class="cl-ver-banner-label" style="color:var(--accent)">v10.2 — 05.04.2026</span><span class="cl-badge" style="font-size:8px;opacity:.7">v10.2</span></div>
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">🚨</span> Krytyczne naprawy</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#ff5d73"><span class="cl-item-icon">💥</span><div class="cl-item-body"><div class="cl-item-title">Krytyczny: async async saveProfile()</div><div class="cl-item-desc">Podwójne słowo kluczowe <code>async</code> powodowało SyntaxError i crash całego bloku profilu, Tibii, uploadu i mediów.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">👤</span><div class="cl-item-body"><div class="cl-item-title">emailToPerson — crash profili</div><div class="cl-item-desc">Funkcja <code>emailToPerson()</code> wywoływana lecz niezdefiniowana → cichy <code>ReferenceError</code>. Dodano alias do <code>resolvePersonFromEmail</code>.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-          </div>
-        </div>
-
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">🔐</span> Autoryzacja i sesja</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#0ea5e9"><span class="cl-item-icon">🔐</span><div class="cl-item-body"><div class="cl-item-title">Modal logowania widoczny przy starcie</div><div class="cl-item-desc">Otwarcie pliku lokalnie (<code>file://</code>) na Firefox powodowało białą stronę — modal teraz widoczny domyślnie + spinner.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-            <div class="cl-item" style="--cl-accent:#ffb020"><span class="cl-item-icon">🔒</span><div class="cl-item-body"><div class="cl-item-title">Auto-logout nie pokazywał logowania</div><div class="cl-item-desc">Po wygaśnięciu 2h sesji panel wyglądał na zablokowany — teraz modal logowania pojawia się automatycznie.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">⌨️</span><div class="cl-item-body"><div class="cl-item-title">Enter w formularzu logowania</div><div class="cl-item-desc">Naciśnięcie Enter w polach email lub hasło od razu loguje — nie trzeba klikać myszką.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-          </div>
-        </div>
-
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">🔥</span> Firebase / API</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#20c997"><span class="cl-item-icon">📧</span><div class="cl-item-body"><div class="cl-item-title">updateEmail → verifyBeforeUpdateEmail</div><div class="cl-item-desc">Zdeprecjonowane <code>updateEmail()</code> zastąpione bezpieczną <code>verifyBeforeUpdateEmail()</code> z potwierdzeniem na mailu przed zmianą.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-          </div>
-        </div>
-
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">🔔</span> Powiadomienia — hotfixy</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">🐛</span><div class="cl-item-body"><div class="cl-item-title">Podwójny handler w powiadomieniach</div><div class="cl-item-desc">Kliknięcie powiadomienia wywoływało podwójną nawigację i re-render (pętla). Usunięto redundantny listener.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">🔔</span><div class="cl-item-body"><div class="cl-item-title">Historia powiadomień + odznaczanie</div><div class="cl-item-desc">Powiadomienia zapamiętywane w localStorage. Przycisk „Odznacz" zamiast „Wyczyść" — kaskadowa animacja fade + read-state.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">🪟</span><div class="cl-item-body"><div class="cl-item-title">Kliknięcie powiadomienia → popup ze szczegółami</div><div class="cl-item-desc">Zamiast przejścia do zakładki — wyskakujące okienko z pełną treścią, ikoną, typem, nadawcą i czasem. Zamykalne przez ✕, Zamknij lub Escape.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-          </div>
-        </div>
-
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">📅</span> Kalendarz</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#ff5d73"><span class="cl-item-icon">📅</span><div class="cl-item-body"><div class="cl-item-title">Przeszłe dni w kalendarzu klikalne</div><div class="cl-item-desc"><code>pointer-events:none</code> blokował podgląd wpisów z przeszłych dni. Teraz można kliknąć i zobaczyć szczegóły.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-          </div>
-        </div>
-
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">👤</span> Profil użytkownika</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">💾</span><div class="cl-item-body"><div class="cl-item-title">Profil zachowany po wylogowaniu</div><div class="cl-item-desc">Nazwa i avatar zapisywane w localStorage — natychmiastowy restore po ponownym logowaniu bez czekania na Firebase.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-          </div>
-        </div>
-
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">🎨</span> CSS i wygląd</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Duplikat CSS text-transform i presence</div><div class="cl-item-desc">Usunięto nadpisany <code>text-transform:capitalize</code> z hero kalendarza i zduplikowaną regułę <code>.tp-online .tp-person-avatar</code>.</div></div><span class="cl-badge cl-badge-perf">Perf</span></div>
-          </div>
-        </div>
-
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">🏠</span> Nawigacja i brand</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">⚡</span><div class="cl-item-body"><div class="cl-item-title">Odświeżony brand — SZAFER PANEL / CENTRUM DOWODZENIA</div><div class="cl-item-desc">Logo ⚡ w animowanym kole gradientowym, tytuł z dwukolorowym shimmerem, podtytuł z animacją literka po literce.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">🏠</span><div class="cl-item-body"><div class="cl-item-title">Logo ⚡ → powrót do Panelu</div><div class="cl-item-desc">Kliknięcie logo (piorun w kole) z dowolnej zakładki przenosi natychmiast do zakładki Panel — działa przez bezpośredni click na przycisk zakładki.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-          </div>
-        </div>
-
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">📋</span> Changelog i meta</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#0ea5e9"><span class="cl-item-icon">📋</span><div class="cl-item-body"><div class="cl-item-title">Naprawiony HTML changelogu</div><div class="cl-item-desc">Zagnieżdżony <code>cl-section</code> wewnątrz niezamkniętego <code>cl-items</code> powodował błędne renderowanie wpisów. Struktura skonsolidowana.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">📅</span><div class="cl-item-body"><div class="cl-item-title">Data changelogu v10.1 poprawiona</div><div class="cl-item-desc">Banner wyświetlał datę 04.04.2026 zamiast poprawnej 05.04.2026.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-          </div>
-        </div>
-
-      </div><!-- /v10.2 -->
-
-      <!-- ══════ V10.1 ══════ -->
-      <div class="cl-ver-panel" data-ver-panel="v10.1">
-        <div class="cl-ver-banner"><span>🔥</span><span class="cl-ver-banner-label" style="color:var(--muted)">v10.1 — 05.04.2026</span></div>
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">💬</span> Team Chat — poprawki</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#ff5d73"><span class="cl-item-icon">🔒</span><div class="cl-item-body"><div class="cl-item-title">Usuwanie tylko swoich wiadomości</div><div class="cl-item-desc">Naprawiony krytyczny bug — każdy mógł usunąć wszystkie wiadomości. Teraz kosz widać tylko przy swoich.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">💎</span><div class="cl-item-body"><div class="cl-item-title">Nowy wygląd wiadomości</div><div class="cl-item-desc">Twoje wiadomości mają teraz avatar + czytelne bąbelki. Cudze też dostały bubble-style. Cały chat wygląda nowocześniej.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-          </div>
-        </div>
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">✨</span> Animacje zakładek</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">🎬</span><div class="cl-item-body"><div class="cl-item-title">Płynne przejścia fade + blur</div><div class="cl-item-desc">Szarpane slide'y zastąpione: fade + translateY + blur. GPU-accelerated, ultra-smooth cubic-bezier. Zero input lagu.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-          </div>
-        </div>
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">🎨</span> Zmiany wyglądu</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">🏠</span><div class="cl-item-body"><div class="cl-item-title">Zakładka "Kalendarz" → "Panel"</div><div class="cl-item-desc">Główna zakładka przemianowana na "Panel" z ikonką 🏠 — lepiej oddaje rolę centrum dowodzenia.</div></div></div>
-            <div class="cl-item" style="--cl-accent:#0ea5e9"><span class="cl-item-icon">📋</span><div class="cl-item-body"><div class="cl-item-title">Lista Zmian z historią wersji</div><div class="cl-item-desc">Changelog obsługuje wiele wersji — przełączaj patche przyciskami v10.1 / v10 / starsze powyżej.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-          </div>
-        </div>
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">🔔</span> Powiadomienia — poprawki</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#ff5d73"><span class="cl-item-icon">🐛</span><div class="cl-item-body"><div class="cl-item-title">Nowe zadania generują powiadomienia</div><div class="cl-item-desc">Naprawiony bug — dodanie nowego zadania nie tworzyło powiadomienia w dzwoneczku. Teraz działa jak wpisy.</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">⏰</span><div class="cl-item-body"><div class="cl-item-title">Przypomnienia 12h przed terminem</div><div class="cl-item-desc">System automatycznie sprawdza co 5 minut i powiadamia o zadaniach/wpisach z terminem w ciągu 12h.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">🧹</span><div class="cl-item-body"><div class="cl-item-title">Naprawiony crash w seedDemo</div><div class="cl-item-desc">Usunięty błędny kod notification z funkcji demo (nieistniejąca zmienna taskPayload).</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-          </div>
-        </div>
-      </div><!-- /v10.1 -->
-
-
-      <!-- ══════ V10 ══════ -->
-      <div class="cl-ver-panel cl-ver-panel-hidden" data-ver-panel="v10">
-        <div class="cl-ver-banner"><span>⚡</span><span class="cl-ver-banner-label" style="color:#4ecdc4">v10 — 2026</span></div>
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">🗂️</span> Nowe zakładki</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">📁</span><div class="cl-item-body"><div class="cl-item-title">Upload plików</div><div class="cl-item-desc">Drag &amp; drop, galeria z podglądem, foldery — do 8 MB na plik, zapis w bazie</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#228b22"><span class="cl-item-icon">⚔️</span><div class="cl-item-body"><div class="cl-item-title">Tibia SzaferPanel</div><div class="cl-item-desc">Launcher klienta, wyszukiwarka postaci na żywo, szybkie linki do narzędzi</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-          </div>
-        </div>
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">⚡</span> Nowe systemy</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#6366f1"><span class="cl-item-icon">💬</span><div class="cl-item-body"><div class="cl-item-title">Team Chat na żywo</div><div class="cl-item-desc">3 kanały (#Ogólny, Pomysły, Feedback) + prywatne DM — wiadomości w czasie rzeczywistym</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#c471ed"><span class="cl-item-icon">😊</span><div class="cl-item-body"><div class="cl-item-title">m00d / Team Pulse</div><div class="cl-item-desc">Status ekipy w czasie rzeczywistym — mood emoji, quick notes, feed aktywności</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#20c997"><span class="cl-item-icon">🟢</span><div class="cl-item-body"><div class="cl-item-title">System obecności online/offline</div><div class="cl-item-desc">Heartbeat co 45s, stale detection co 30s, auto-offline przy zamknięciu taba</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">👤</span><div class="cl-item-body"><div class="cl-item-title">Edytor profilu</div><div class="cl-item-desc">Zmiana nazwy, avatar emoji, mood, notatka statusu, zmiana hasła — widoczne dla ekipy</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#0ea5e9"><span class="cl-item-icon">📎</span><div class="cl-item-body"><div class="cl-item-title">Przypisywanie mediów do wpisów</div><div class="cl-item-desc">Selekcja plików z uploadu, kompatybilność wg kanału (YT=video, IG=zdjęcia...)</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">📲</span><div class="cl-item-body"><div class="cl-item-title">Eksport do kalendarza (.ics)</div><div class="cl-item-desc">Przycisk 📲 przy wpisach i zadaniach — generuje plik .ics z przypomnieniami</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-            <div class="cl-item" style="--cl-accent:#20c997"><span class="cl-item-icon">📱</span><div class="cl-item-body"><div class="cl-item-title">Powiadomienia Push (iPhone / Desktop)</div><div class="cl-item-desc">Natywne powiadomienia systemowe o nowych wiadomościach, zadaniach i wpisach — działają nawet gdy tab jest w tle. Auto-wylogowanie usunięte.</div></div><span class="cl-badge cl-badge-new">Nowe</span></div>
-          </div>
-        </div>
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">💎</span> Wygląd i UX</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#f7b733"><span class="cl-item-icon">📅</span><div class="cl-item-body"><div class="cl-item-title">Przebudowa kalendarza</div><div class="cl-item-desc">Hero header, legenda typów i priorytetów, wypalony wygląd przeszłych dni</div></div></div>
-            <div class="cl-item" style="--cl-accent:#0ea5e9"><span class="cl-item-icon">🎨</span><div class="cl-item-body"><div class="cl-item-title">Nowe formularze wpisów i zadań</div><div class="cl-item-desc">Hero layout, date picker z "Dziś / Jutro / Za 3 dni", picker 14 kolorów</div></div></div>
-            <div class="cl-item" style="--cl-accent:#20c997"><span class="cl-item-icon">🎉</span><div class="cl-item-body"><div class="cl-item-title">Konfetti przy ukończeniu</div><div class="cl-item-desc">Animacja confetti przy oznaczeniu zadania/wpisu jako gotowe + lightbox zdjęć</div></div></div>
-          </div>
-        </div>
-        <div class="cl-section">
-          <div class="cl-section-title"><span class="cl-section-icon">🔧</span> Bugfixy i wydajność</div>
-          <div class="cl-items">
-            <div class="cl-item" style="--cl-accent:#ff5d73"><span class="cl-item-icon">🟢</span><div class="cl-item-body"><div class="cl-item-title">Naprawiony widok online/offline</div><div class="cl-item-desc">Stale checker co 30s, aktualizacja DM kropek, offline przy zamknięciu taba</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-            <div class="cl-item" style="--cl-accent:#ffb020"><span class="cl-item-icon">🐛</span><div class="cl-item-body"><div class="cl-item-title">Race condition zakładek</div><div class="cl-item-desc">Naprawione miganie przy szybkim przełączaniu — sekwencja oparta na animationend</div></div><span class="cl-badge cl-badge-fix">Fix</span></div>
-            <div class="cl-item" style="--cl-accent:#4ecdc4"><span class="cl-item-icon">⚡</span><div class="cl-item-body"><div class="cl-item-title">Optymalizacja wydajności</div><div class="cl-item-desc">GPU animacje, content-visibility, mniej particles, debounce renderAll, prefers-reduced-motion</div></div><span class="cl-badge cl-badge-perf">Perf</span></div>
-          </div>
-        </div>
-      </div><!-- /v10 -->
-
-      <!-- ══════ OLDER ══════ -->
-      <div class="cl-ver-panel cl-ver-panel-hidden" data-ver-panel="older">
+      <!-- ══════ Older ══════ -->
+      <div class="cl-ver-panel hidden" data-ver-panel="older">
         <div style="padding:44px 16px;text-align:center">
           <div style="font-size:44px;margin-bottom:14px;opacity:.28">🗄️</div>
           <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">Archiwum v9 i starsze</div>
           <div style="font-size:12px;line-height:1.65;color:var(--muted)">Historia zmian przed wersją v10 nie jest przechowywana w tym panelu.</div>
         </div>
-      </div><!-- /older -->
+      </div>
 
     </div><!-- /cl-body -->
     <div class="cl-footer">
@@ -1484,6 +1337,24 @@
   <button class="szafer-update-toast-btn" onclick="hideVersionUpdateToast && hideVersionUpdateToast()">Zobacz nowości</button>
 </div>
 
+<!-- ═══ COMMAND PALETTE (v13.2) ═══ -->
+<div id="cmdkOverlay" class="cmdk-overlay hidden" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="cmdk-panel" role="combobox" aria-haspopup="listbox" aria-expanded="true">
+    <div class="cmdk-input-wrap">
+      <svg class="cmdk-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="cmdkInput" type="text" placeholder="Szukaj zakładek, zadań, wpisów, czatu..." autocomplete="off" spellcheck="false" />
+      <kbd class="cmdk-esc">ESC</kbd>
+    </div>
+    <div class="cmdk-results" id="cmdkResults" role="listbox"></div>
+    <div class="cmdk-foot">
+      <span><kbd>↑</kbd><kbd>↓</kbd> nawiguj</span>
+      <span><kbd>↵</kbd> otwórz</span>
+      <span><kbd>esc</kbd> zamknij</span>
+    </div>
+  </div>
+</div>
+
 <script src="js/ui.js"></script>
+<script src="js/v13_addons.js"></script>
 </body>
 </html>

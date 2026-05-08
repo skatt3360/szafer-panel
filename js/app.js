@@ -4286,7 +4286,7 @@
     })()
     // ── New-version update toast ──────────────────────────
     function showVersionUpdateToast() {
-      var SEEN_KEY = 'szafer-seen-v12.1';
+      var SEEN_KEY = 'szafer-seen-v13.0';
       try { if (localStorage.getItem(SEEN_KEY)) return; } catch(e){}
       var toast = document.getElementById('szaferUpdateToast');
       if (!toast) return;
@@ -4306,6 +4306,6 @@
       var toast = document.getElementById('szaferUpdateToast');
       if (!toast) return;
       toast.classList.remove('show');
-      try { localStorage.setItem('szafer-seen-v12.1', '1'); } catch(e){}
+      try { localStorage.setItem('szafer-seen-v13.0', '1'); } catch(e){}
     }
 ;

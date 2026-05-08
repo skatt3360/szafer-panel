@@ -3,7 +3,7 @@
    STRATEGIA: network-first zawsze — żadnego cache na JS/CSS/HTML
    Zmiany są widoczne natychmiast po deploy bez potrzeby ręcznego czyszczenia
 ════════════════════════════════════════════════ */
-const CACHE_NAME = 'szafer-panel-v13.0';
+const CACHE_NAME = 'szafer-panel-v13.1';
 
 /* ── Install — minimal, szybki ── */
 self.addEventListener('install', event => {

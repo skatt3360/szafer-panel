@@ -6843,3 +6843,501 @@ h1, h2, h3, .panel-title, .day-modal-title {
 }
 
 /* End v13 layer */
+
+/* ═══════════════════════════════════════════════════════════════
+   ▓▓▓ SZAFER PANEL v13.1 — POLISH PATCH ▓▓▓
+   Brand · topbar lock-in · harmonogram clarity · upload · avatars
+═══════════════════════════════════════════════════════════════ */
+
+/* ════════ SIDEBAR BRAND — single italic S + "Szafer Panel" ════════ */
+.app-nav::before {
+  content: 'S' !important;
+  font-family: var(--au-font-display) !important;
+  font-style: italic !important;
+  font-weight: 600 !important;
+  font-size: 22px !important;
+  width: 42px !important; height: 42px !important;
+  top: 24px !important; left: 22px !important;
+  border-radius: 12px !important;
+  background: var(--au-grad-warm) !important;
+  color: #1a0a00 !important;
+  letter-spacing: -.02em !important;
+  box-shadow: 0 6px 20px rgba(251,113,133,.35), inset 0 1px 0 rgba(255,255,255,.4) !important;
+}
+.app-nav::after {
+  content: 'Szafer Panel' !important;
+  top: 28px !important; left: 76px !important;
+  font-family: var(--au-font-display) !important;
+  font-style: italic !important;
+  font-weight: 500 !important;
+  font-size: 17px !important;
+  letter-spacing: -.015em !important;
+  color: var(--au-text) !important;
+  width: 130px !important;
+  line-height: 1.15 !important;
+}
+
+/* Push first nav button further down (more breathing room under brand) */
+.app-nav { padding-top: 96px !important; }
+
+/* ════════ TOPBAR — solid sticky, never breaks layout ════════ */
+.topbar {
+  display: grid !important;
+  grid-template-columns: 1fr auto auto !important;
+  grid-template-areas: "launcher status user" !important;
+  align-items: center !important;
+  justify-content: stretch !important;
+  gap: 14px !important;
+  padding: 12px 0 !important;
+  height: auto !important;
+  min-height: 64px !important;
+  background: rgba(10,10,20,.72) !important;
+  border-bottom: 1px solid var(--au-glass-border) !important;
+  margin: 0 0 32px !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 80 !important;
+  backdrop-filter: blur(28px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+}
+/* Topbar overflow guard — when narrow, allow wrap but never overflow */
+.topbar > * { min-width: 0; }
+
+/* Quick-access launcher INSIDE topbar */
+.topbar .app-launcher {
+  grid-area: launcher !important;
+  display: flex !important;
+  gap: 6px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scrollbar-width: none;
+}
+.topbar .app-launcher::-webkit-scrollbar { display: none; }
+.topbar .app-launcher::before, .topbar .app-launcher::after { display: none !important; }
+
+.topbar .app-link {
+  flex: 0 0 auto !important;
+  padding: 7px 12px !important;
+  font-size: 12px !important;
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid var(--au-glass-border) !important;
+  border-radius: 999px !important;
+  color: var(--au-text-soft) !important;
+  white-space: nowrap;
+}
+.topbar .app-link:hover {
+  background: rgba(251,191,36,.1) !important;
+  border-color: rgba(251,191,36,.3) !important;
+  color: var(--au-text) !important;
+}
+
+/* Authbar groups — status + user side by side, never breaks */
+.authbar {
+  grid-area: user !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+  flex-shrink: 0 !important;
+}
+.authbar-group { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.authbar-divider { display: none !important; }
+
+/* Auth-actions-col — buttons in row, no wrapping */
+.auth-actions-col {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-wrap: nowrap !important;
+}
+.push-logout-col { display: flex; gap: 6px; align-items: center; }
+
+/* Hide redundant push-switch label on narrow */
+@media (max-width: 1100px) {
+  .push-switch-label, .btn-changelog .btn-cl-text { display: none !important; }
+  .btn-changelog { padding: 0 10px !important; gap: 6px; }
+  .btn-logout-tb { padding: 0 12px !important; }
+  .btn-logout-tb svg { display: inline; }
+}
+@media (max-width: 900px) {
+  .topbar {
+    grid-template-columns: 1fr !important;
+    grid-template-areas: "user" "launcher" !important;
+    gap: 8px !important;
+    padding: 10px 0 !important;
+  }
+  .authbar { justify-content: flex-end; }
+  .topbar .app-launcher { width: 100%; }
+}
+
+/* ════════ HARMONOGRAM — bigger, clearer hours ════════ */
+.harm-time {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  padding: 8px 14px !important;
+  border-radius: 10px !important;
+  letter-spacing: .01em !important;
+  font-variant-numeric: tabular-nums !important;
+  font-feature-settings: "tnum" !important;
+  font-family: var(--au-font-mono) !important;
+  min-width: 64px !important;
+  display: inline-flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  line-height: 1.15 !important;
+  border-width: 1px !important;
+  transition: transform .2s var(--au-spring), box-shadow .2s !important;
+}
+.harm-time-lbl {
+  font-size: 9.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+  opacity: .75 !important;
+  margin-top: 2px !important;
+  font-family: var(--au-font-mono) !important;
+}
+.harm-time:hover { transform: scale(1.08) !important; }
+
+/* Semantic recolor: best=mint, good=amber, meh=muted */
+.harm-time.best {
+  color: #34d399 !important;
+  background: rgba(52,211,153,.14) !important;
+  border-color: rgba(52,211,153,.32) !important;
+  box-shadow: 0 0 0 0 rgba(52,211,153,0), inset 0 1px 0 rgba(255,255,255,.04) !important;
+}
+.harm-time.best:hover {
+  box-shadow: 0 0 24px rgba(52,211,153,.35), inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+.harm-time.good {
+  color: var(--au-amber-2) !important;
+  background: rgba(251,191,36,.12) !important;
+  border-color: rgba(251,191,36,.28) !important;
+}
+.harm-time.good:hover {
+  box-shadow: 0 0 22px rgba(251,191,36,.32) !important;
+}
+.harm-time.meh {
+  color: rgba(180,180,200,.6) !important;
+  background: rgba(180,180,200,.05) !important;
+  border-color: rgba(180,180,200,.12) !important;
+}
+
+/* Harmonogram cell */
+.harm-times-cell { padding: 14px 8px !important; min-height: 96px !important; gap: 8px !important; }
+
+/* Today column — strong amber vertical band */
+.harm-times-cell.harm-today-col,
+.harm-times-cell.today-col {
+  background: linear-gradient(180deg, rgba(251,191,36,.08), rgba(251,191,36,.02)) !important;
+  border-left: 2px solid var(--au-amber) !important;
+  border-right: 2px solid var(--au-amber) !important;
+}
+.harm-tbl-row-plat:hover .harm-times-cell.today-col {
+  background: linear-gradient(180deg, rgba(251,191,36,.14), rgba(251,191,36,.05)) !important;
+}
+
+/* Harmonogram column header — bigger, italic serif */
+.harm-col-head, .harm-tbl-head {
+  font-family: var(--au-font-display) !important;
+  font-style: italic !important;
+  font-weight: 500 !important;
+  font-size: 17px !important;
+  letter-spacing: -.005em !important;
+  text-transform: none !important;
+  padding: 14px 12px !important;
+  color: var(--au-text) !important;
+}
+
+/* ════════ AVATAR / EMOJI rendering fix ════════ */
+/* Use Apple/Segoe emoji font stack so emojis render properly with crisp shape */
+.prof-av-btn,
+.prof-avatar-preview,
+.tb-avatar-circle,
+.pb-header-avatar,
+.tp-person-avatar,
+.cl-item-icon,
+.app-link-icon,
+.prof-av-btn span,
+.av-blajetttp,
+.av-skat {
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Twemoji Mozilla', sans-serif !important;
+  font-variant-emoji: emoji;
+}
+/* But text-content avatars (S, SK letters) keep serif */
+.tb-avatar-circle:not([data-emoji]),
+.prof-avatar-preview:not([data-emoji]) {
+  /* default — text initials use serif */
+}
+
+/* Avatar picker grid — bigger, cleaner */
+.prof-avatar-picker {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)) !important;
+  gap: 8px !important;
+}
+.prof-av-btn {
+  width: 100% !important;
+  aspect-ratio: 1 / 1;
+  height: auto !important;
+  font-size: 26px !important;
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid var(--au-glass-border) !important;
+  border-radius: 14px !important;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all .2s var(--au-smooth) !important;
+  line-height: 1 !important;
+}
+.prof-av-btn:hover {
+  background: rgba(251,191,36,.12) !important;
+  border-color: rgba(251,191,36,.3) !important;
+  transform: scale(1.08) !important;
+}
+.prof-av-btn.selected {
+  background: var(--au-grad-warm-soft) !important;
+  border-color: rgba(251,191,36,.5) !important;
+  box-shadow: 0 0 16px rgba(251,191,36,.2);
+  transform: scale(1.05);
+}
+
+/* Profile preview avatar — bigger, gradient halo */
+.prof-avatar-preview {
+  width: 96px !important; height: 96px !important;
+  font-size: 44px !important;
+  border-radius: 50% !important;
+  background: var(--au-grad-warm) !important;
+  color: #1a0a00 !important;
+  font-family: var(--au-font-display) !important;
+  font-style: italic !important;
+  font-weight: 600 !important;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 12px 36px rgba(251,113,133,.35), inset 0 2px 0 rgba(255,255,255,.3) !important;
+  position: relative;
+  line-height: 1 !important;
+}
+/* When avatar contains emoji, neutralize the gradient bg */
+.prof-avatar-preview[data-has-emoji="1"] {
+  background: rgba(255,255,255,.06) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.08) !important;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif !important;
+  color: var(--au-text) !important;
+}
+
+/* Topbar avatar emoji handling */
+.tb-avatar-circle {
+  font-size: 14px !important;
+  line-height: 1 !important;
+}
+
+/* Profile save / cancel buttons — clearly clickable */
+#profSaveBtn {
+  background: var(--au-grad-warm) !important;
+  color: #1a0a00 !important;
+  border: none !important;
+  padding: 12px 24px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 6px 20px rgba(251,113,133,.35), inset 0 1px 0 rgba(255,255,255,.3) !important;
+}
+#profSaveBtn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 28px rgba(251,113,133,.45) !important;
+}
+.day-modal-footer {
+  padding: 18px 24px !important;
+  border-top: 1px solid var(--au-glass-border) !important;
+  background: rgba(0,0,0,.18) !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+}
+
+/* ════════ UPLOAD TAB — readable, structured ════════ */
+.ul-stats-bar {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1px !important;
+  background: var(--au-glass-border) !important;
+  border: 1px solid var(--au-glass-border) !important;
+  border-radius: var(--au-r-lg) !important;
+  overflow: hidden !important;
+  margin-bottom: 24px !important;
+  padding: 0 !important;
+}
+.ul-stat {
+  background: var(--au-surface) !important;
+  padding: 18px 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  transition: background .2s !important;
+  backdrop-filter: blur(20px);
+}
+.ul-stat:hover { background: rgba(251,191,36,.06) !important; }
+.ul-stat-sep { display: none !important; }
+.ul-stat-n {
+  font-family: var(--au-font-mono) !important;
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  color: var(--au-text) !important;
+  font-variant-numeric: tabular-nums !important;
+  line-height: 1 !important;
+}
+.ul-stat-l {
+  font-family: var(--au-font-mono) !important;
+  font-size: 10px !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+  color: var(--au-muted) !important;
+  font-weight: 500 !important;
+}
+
+/* Drop zone — premium */
+.ul-drop {
+  background: rgba(255,255,255,.02) !important;
+  border: 2px dashed var(--au-glass-border) !important;
+  border-radius: var(--au-r-lg) !important;
+  padding: 40px 24px !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  transition: all .25s var(--au-smooth) !important;
+  position: relative;
+  overflow: hidden;
+}
+.ul-drop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--au-grad-warm-soft);
+  opacity: 0;
+  transition: opacity .25s;
+  pointer-events: none;
+}
+.ul-drop:hover, .ul-drop.drag-over {
+  border-color: var(--au-amber) !important;
+  border-style: solid !important;
+  background: rgba(251,191,36,.04) !important;
+  transform: translateY(-2px);
+}
+.ul-drop:hover::before, .ul-drop.drag-over::before { opacity: .5; }
+.ul-drop > * { position: relative; z-index: 1; }
+.ul-drop-icon {
+  width: 64px; height: 64px;
+  margin: 0 auto 14px !important;
+  border-radius: 50% !important;
+  background: var(--au-grad-warm) !important;
+  color: #1a0a00 !important;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px rgba(251,113,133,.3), inset 0 2px 0 rgba(255,255,255,.3);
+}
+.ul-drop-icon svg { width: 28px !important; height: 28px !important; stroke-width: 2 !important; }
+.ul-drop-text {
+  font-family: var(--au-font-display) !important;
+  font-style: italic !important;
+  font-weight: 500 !important;
+  font-size: 22px !important;
+  color: var(--au-text) !important;
+  letter-spacing: -.01em !important;
+  margin-bottom: 4px !important;
+}
+.ul-drop-hint {
+  font-family: var(--au-font-mono) !important;
+  font-size: 11px !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+  color: var(--au-muted) !important;
+}
+
+/* Folder filter chips */
+.ul-chips {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  padding: 4px 0 !important;
+}
+.ul-chip {
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid var(--au-glass-border) !important;
+  border-radius: 999px !important;
+  padding: 7px 14px !important;
+  font-family: var(--au-font-body) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--au-muted) !important;
+  cursor: pointer !important;
+  transition: all .2s var(--au-smooth) !important;
+}
+.ul-chip:hover {
+  background: rgba(255,255,255,.08) !important;
+  color: var(--au-text) !important;
+  border-color: var(--au-glass-border-hi) !important;
+}
+.ul-chip.active {
+  background: var(--au-grad-warm) !important;
+  color: #1a0a00 !important;
+  border-color: transparent !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(251,191,36,.3);
+}
+
+/* Upload file rows */
+.upload-file-list {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.upload-file-list .empty {
+  padding: 24px !important;
+  text-align: center !important;
+  font-family: var(--au-font-mono) !important;
+  font-size: 11px !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+  color: var(--au-faint) !important;
+}
+
+/* Upload progress bar */
+.upload-progress-wrap { margin-top: 14px; }
+
+/* ════════ NOTIFICATION BELL DROPDOWN ════════ */
+.notif-dropdown {
+  background: rgba(20,20,32,.92) !important;
+  border: 1px solid var(--au-glass-border-hi) !important;
+  border-radius: var(--au-r-lg) !important;
+  backdrop-filter: blur(40px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(140%) !important;
+  box-shadow: var(--au-shadow-lg) !important;
+  z-index: 99999 !important;
+}
+
+/* ════════ Notif bell badge dot — pulsating */
+@keyframes notifPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(251,113,133,.6); }
+  50% { box-shadow: 0 0 0 6px rgba(251,113,133,0); }
+}
+.notif-bell-btn[data-has-notif="1"]::after {
+  content: '';
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 8px; height: 8px;
+  background: var(--au-coral);
+  border-radius: 50%;
+  animation: notifPulse 2s infinite;
+}
+
+/* ════════ Final layout safety — prevent any overflow ════════ */
+.shell, .app-launcher, .topbar { box-sizing: border-box; }
+.tab-panel { max-width: 100%; overflow-x: hidden; }
+
+/* Mobile spacing */
+@media (max-width: 900px) {
+  .tab-hero-title { font-size: 32px !important; }
+  .ul-stats-bar { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* End v13.1 polish */

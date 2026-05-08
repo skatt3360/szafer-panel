@@ -1,47 +1,181 @@
 /* ═══════════════════════════════════════════════════════════
-   SZAFER PANEL v13.2 — ADDONS
-   Command palette · Pinned/Recent · Theme toggle · Compact mode
-   Mini widget · Presence dots · Avatar emoji detection
+   SZAFER PANEL v13.3 — ADDONS
+   Command palette · Theme toggle · Compact mode
+   Upcoming widget · Avatar photo upload + image rendering
 ═══════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
 
-  // Wait for DOM
   function ready(fn) {
     if (document.readyState !== 'loading') fn();
     else document.addEventListener('DOMContentLoaded', fn);
   }
 
-  // ═════════ EMOJI DETECTOR (mark avatars as emoji vs letter) ═════════
-  const EMOJI_RE = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u;
-  function markEmojiAvatars(root) {
-    (root || document).querySelectorAll(
-      '.tb-avatar-circle, .prof-avatar-preview, .pb-header-avatar, .tp-person-avatar, .chat-msg-avatar'
-    ).forEach(el => {
-      const txt = (el.textContent || '').trim();
-      if (txt && EMOJI_RE.test(txt)) {
-        el.setAttribute('data-emoji', '1');
-        el.setAttribute('data-has-emoji', '1');
-      } else {
-        el.removeAttribute('data-emoji');
-        el.removeAttribute('data-has-emoji');
-      }
-    });
+  // ═════════ HELPERS ═════════
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  // Watch for dynamic avatar changes
+  // ═════════ AVATAR — image vs emoji vs letter ═════════
+  const EMOJI_RE = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u;
+  function isImage(v) { return typeof v === 'string' && (v.startsWith('data:image') || v.startsWith('http://') || v.startsWith('https://')); }
+
+  function paintAvatar(el) {
+    if (!el) return;
+    // If the current textContent is an image URL/dataURL, render as <img>
+    const raw = (el.textContent || '').trim();
+    if (isImage(raw) && !el.querySelector('img.av-img')) {
+      el.innerHTML = `<img class="av-img" src="${escapeHtml(raw)}" alt="" />`;
+      el.setAttribute('data-avatar-mode', 'image');
+      return;
+    }
+    // If element already has img.av-img inside but no longer should
+    const img = el.querySelector('img.av-img');
+    if (img && !isImage(img.getAttribute('src') || '')) {
+      img.remove();
+    }
+    if (img) { el.setAttribute('data-avatar-mode', 'image'); return; }
+    // Otherwise check emoji vs letter
+    if (raw && EMOJI_RE.test(raw)) {
+      el.setAttribute('data-avatar-mode', 'emoji');
+      el.setAttribute('data-emoji', '1');
+      el.setAttribute('data-has-emoji', '1');
+    } else {
+      el.setAttribute('data-avatar-mode', 'letter');
+      el.removeAttribute('data-emoji');
+      el.removeAttribute('data-has-emoji');
+    }
+  }
+  function paintAllAvatars(root) {
+    (root || document).querySelectorAll(
+      '.tb-avatar-circle, .prof-avatar-preview, .pb-header-avatar, .tp-person-avatar, .chat-msg-avatar'
+    ).forEach(paintAvatar);
+  }
+
   function watchAvatars() {
     const obs = new MutationObserver(muts => {
-      let needsCheck = false;
+      const seen = new Set();
       muts.forEach(m => {
-        if (m.type === 'characterData' || m.type === 'childList') needsCheck = true;
+        const t = m.target;
+        if (!t) return;
+        // climb to avatar root
+        const av = t.nodeType === 1 ? t.closest('.tb-avatar-circle, .prof-avatar-preview, .pb-header-avatar, .tp-person-avatar, .chat-msg-avatar') : null;
+        if (av && !seen.has(av)) { seen.add(av); paintAvatar(av); }
       });
-      if (needsCheck) markEmojiAvatars();
     });
     obs.observe(document.body, { subtree: true, childList: true, characterData: true });
   }
 
-  // ═════════ THEME TOGGLE (dark / light / auto) ═════════
+  // ═════════ AVATAR — custom photo upload ═════════
+  function injectAvatarUploadButton() {
+    const picker = document.getElementById('profAvatarPicker');
+    if (!picker || picker.querySelector('[data-av-upload]')) return;
+
+    // Create upload button styled like other avatar buttons
+    const btn = document.createElement('button');
+    btn.className = 'prof-av-btn prof-av-upload-btn';
+    btn.setAttribute('data-av-upload', '1');
+    btn.title = 'Wgraj własne zdjęcie';
+    btn.innerHTML = `
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="3"/>
+        <circle cx="9" cy="9" r="2"/>
+        <path d="M21 15l-5-5L5 21"/>
+      </svg>
+    `;
+    picker.appendChild(btn);
+
+    // Hidden file input (re-used)
+    const fi = document.createElement('input');
+    fi.type = 'file';
+    fi.accept = 'image/*';
+    fi.style.display = 'none';
+    fi.id = 'profAvUploadInput';
+    document.body.appendChild(fi);
+
+    btn.addEventListener('click', () => fi.click());
+    fi.addEventListener('change', async () => {
+      const file = fi.files && fi.files[0];
+      fi.value = '';
+      if (!file) return;
+      if (!file.type.startsWith('image/')) { alert('Wybierz plik graficzny'); return; }
+      if (file.size > 4 * 1024 * 1024) { alert('Max 4MB'); return; }
+      try {
+        const dataUrl = await fileToDataUrl(file);
+        const resized = await resizeImage(dataUrl, 240);
+        applyCustomAvatar(resized);
+      } catch (e) {
+        alert('Błąd wgrywania zdjęcia: ' + e.message);
+      }
+    });
+  }
+
+  function applyCustomAvatar(dataUrl) {
+    // Mark all picker buttons as not-selected
+    document.querySelectorAll('#profAvatarPicker .prof-av-btn').forEach(b => b.classList.remove('selected'));
+    // Mark our upload btn as selected
+    const up = document.querySelector('[data-av-upload]');
+    if (up) up.classList.add('selected');
+    // Set the value into preview (textContent — picked up by saveProfile)
+    const preview = document.getElementById('profAvatarPreview');
+    if (preview) {
+      preview.textContent = dataUrl;
+      paintAvatar(preview);
+    }
+    // Sync internal state by simulating the existing avatar selection flow:
+    // The app uses a closure variable `_selectedProfileAvatar`, set via click on .prof-av-btn[data-av]
+    // We can't access closure, but saveProfile reads from the variable... Workaround:
+    // Create or re-use a synthetic .prof-av-btn with this dataUrl and click it.
+    let synth = document.querySelector('[data-av-synth]');
+    if (!synth) {
+      synth = document.createElement('button');
+      synth.setAttribute('data-av-synth', '1');
+      synth.className = 'prof-av-btn';
+      synth.style.display = 'none';
+      const picker = document.getElementById('profAvatarPicker');
+      if (picker) picker.appendChild(synth);
+    }
+    synth.setAttribute('data-av', dataUrl);
+    synth.textContent = ''; // empty visual
+    // Trigger native click on synth → existing delegated handler in app.js will set _selectedProfileAvatar
+    synth.click();
+    // After the click, the app sets preview.textContent = _selectedProfileAvatar (the dataUrl) — paint it
+    setTimeout(() => paintAvatar(preview), 30);
+  }
+
+  function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+  }
+  function resizeImage(dataUrl, max) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        if (width > height) {
+          if (width > max) { height = Math.round(height * (max / width)); width = max; }
+        } else {
+          if (height > max) { width = Math.round(width * (max / height)); height = max; }
+        }
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.86));
+      };
+      img.onerror = reject;
+      img.src = dataUrl;
+    });
+  }
+
+  // ═════════ THEME TOGGLE ═════════
   const THEME_KEY = 'szafer-theme-v13';
   function applyTheme(theme) {
     const html = document.documentElement;
@@ -53,8 +187,6 @@
     html.setAttribute('data-theme-pref', theme);
     const lbl = document.getElementById('sfThemeLabel');
     if (lbl) lbl.textContent = theme === 'auto' ? 'Auto' : (theme === 'light' ? 'Jasny' : 'Ciemny');
-    const btn = document.getElementById('sfThemeBtn');
-    if (btn) btn.setAttribute('data-theme-state', theme);
   }
   function initTheme() {
     let theme = 'dark';
@@ -68,7 +200,6 @@
       try { localStorage.setItem(THEME_KEY, next); } catch(e){}
       applyTheme(next);
     });
-    // React to OS scheme change in auto
     matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => {
       const cur = document.documentElement.getAttribute('data-theme-pref') || 'dark';
       if (cur === 'auto') applyTheme('auto');
@@ -94,87 +225,61 @@
     });
   }
 
-  // ═════════ PINNED / RECENT (sidebar) ═════════
-  const RECENT_KEY = 'szafer-recent-v13';
-  const MAX_RECENT = 5;
-  function getRecent() {
-    try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); } catch(e) { return []; }
-  }
-  function setRecent(arr) {
-    try { localStorage.setItem(RECENT_KEY, JSON.stringify(arr.slice(0, MAX_RECENT))); } catch(e){}
-  }
-  function addRecent(item) {
-    if (!item || !item.label) return;
-    let list = getRecent();
-    list = list.filter(x => x.id !== item.id);
-    list.unshift({ id: item.id, label: item.label, tab: item.tab, icon: item.icon || '✦', ts: Date.now() });
-    setRecent(list);
-    renderRecent();
-  }
-  function renderRecent() {
-    const wrap = document.getElementById('sidebarRecentList');
-    if (!wrap) return;
-    const list = getRecent();
-    if (!list.length) {
-      wrap.innerHTML = '<div class="sidebar-recent-empty">Klikaj wpisy by się tu pojawiały</div>';
+  // ═════════ UPCOMING WIDGET ═════════
+  const POL_MONTHS = ['STY','LUT','MAR','KWI','MAJ','CZE','LIP','SIE','WRZ','PAŹ','LIS','GRU'];
+  function refreshUpcoming() {
+    const list = document.getElementById('sidebarUpcomingList');
+    if (!list) return;
+    // Read from rendered .il-row elements — they're already sorted (active first by date asc)
+    const rows = document.querySelectorAll('#itemList .il-row:not(.il-done)');
+    const items = [];
+    rows.forEach(row => {
+      const day  = row.querySelector('.il-day')?.textContent?.trim() || '';
+      const mon  = row.querySelector('.il-mon')?.textContent?.trim() || '';
+      const title= row.querySelector('.il-title')?.textContent?.trim() || '';
+      const accent = row.style.getPropertyValue('--il-color') || '#fbbf24';
+      const typeChip = row.querySelector('.il-chip-type');
+      const type = typeChip ? typeChip.textContent.trim().split(/\s+/).slice(1).join(' ') : '';
+      if (day && title) {
+        items.push({ day, mon, title, accent: accent.trim(), type });
+      }
+    });
+    const top = items.slice(0, 3);
+    if (!top.length) {
+      list.innerHTML = '<div class="su-empty">Brak nadchodzących wpisów</div>';
       return;
     }
-    wrap.innerHTML = list.map(r =>
-      `<button class="sidebar-recent-item" data-recent-tab="${r.tab||''}" data-recent-id="${escapeAttr(r.id)}" title="${escapeAttr(r.label)}">
-         <span class="sri-icon">${escapeHtml(r.icon)}</span>
-         <span class="sri-label">${escapeHtml(r.label)}</span>
-       </button>`
-    ).join('');
-    wrap.querySelectorAll('.sidebar-recent-item').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tab = btn.getAttribute('data-recent-tab');
-        if (tab) jumpToTab(tab);
+    list.innerHTML = top.map(it => `
+      <div class="su-item" data-tab-jump="calendar" style="--su-color:${escapeHtml(it.accent)}">
+        <div class="su-date">
+          <span class="su-day">${escapeHtml(it.day)}</span>
+          <span class="su-mon">${escapeHtml(it.mon)}</span>
+        </div>
+        <div class="su-body">
+          <div class="su-title">${escapeHtml(it.title)}</div>
+          ${it.type ? `<div class="su-type">${escapeHtml(it.type)}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+    list.querySelectorAll('.su-item').forEach(el => {
+      el.addEventListener('click', () => jumpToTab('calendar'));
+    });
+  }
+  function initUpcoming() {
+    refreshUpcoming();
+    setInterval(refreshUpcoming, 6000);
+    // Also when calendar items mutate
+    const it = document.getElementById('itemList');
+    if (it) {
+      const obs = new MutationObserver(() => refreshUpcoming());
+      obs.observe(it, { childList: true, subtree: true });
+    }
+    // Click jump targets
+    document.querySelectorAll('[data-tab-jump]').forEach(el => {
+      el.addEventListener('click', e => {
+        const tab = el.getAttribute('data-tab-jump');
+        if (tab) { e.stopPropagation(); jumpToTab(tab); }
       });
-    });
-  }
-  // Expose for app integration
-  window.szPanelAddRecent = addRecent;
-
-  // ═════════ MINI WIDGET — today's tasks ═════════
-  function refreshMiniWidget() {
-    const countEl = document.getElementById('swTodayCount');
-    const fillEl  = document.getElementById('swTodayFill');
-    const metaEl  = document.getElementById('swTodayMeta');
-    if (!countEl) return;
-    // Try multiple sources: visible task cards
-    const cards = document.querySelectorAll('[data-tab-panel="tasks"] .task-card, [data-tab-panel="planning"] .person-board-item');
-    const il = document.querySelectorAll('#itemList .il-row');
-    const today = new Date();
-    const tStr = today.toISOString().slice(0,10);
-    let total = 0, done = 0;
-    cards.forEach(c => {
-      total++;
-      if (c.classList.contains('done') || c.classList.contains('completed') || c.querySelector('.task-checkbox.checked')) done++;
-    });
-    // Calendar items today
-    let todayItems = 0;
-    il.forEach(r => {
-      const txt = r.textContent || '';
-      if (txt.includes(tStr) || txt.includes(formatPL(today))) todayItems++;
-    });
-    const tot = total + todayItems;
-    countEl.textContent = tot || '0';
-    const pct = tot ? Math.min(100, Math.round((done / Math.max(tot,1)) * 100)) : 0;
-    if (fillEl) fillEl.style.width = pct + '%';
-    if (metaEl) metaEl.textContent = tot ? (done + ' / ' + tot + ' zrobione · ' + pct + '%') : 'Brak zadań na dziś';
-  }
-  function formatPL(d) {
-    return [String(d.getDate()).padStart(2,'0'), String(d.getMonth()+1).padStart(2,'0'), d.getFullYear()].join('.');
-  }
-  function initMiniWidget() {
-    const w = document.getElementById('sidebarWidget');
-    if (!w) return;
-    w.addEventListener('click', () => jumpToTab('calendar'));
-    refreshMiniWidget();
-    setInterval(refreshMiniWidget, 8000);
-    // also refresh after tab switches
-    document.addEventListener('click', e => {
-      if (e.target.closest('.nav-btn.tab')) setTimeout(refreshMiniWidget, 300);
     });
   }
 
@@ -197,38 +302,22 @@
 
   function collectDynamicResults() {
     const results = [];
-    // Tasks
-    document.querySelectorAll('[data-tab-panel="tasks"] .task-card .task-title, [data-tab-panel="tasks"] .task-card').forEach((el, i) => {
+    document.querySelectorAll('[data-tab-panel="tasks"] .task-card').forEach((el, i) => {
       const text = (el.querySelector('.task-title')?.textContent || el.textContent || '').trim().slice(0, 80);
-      if (text && text.length > 2) results.push({
-        id: 'task:' + i, label: text, tab: 'tasks', icon: '✓', kw: 'zadanie ' + text.toLowerCase(),
-        type: 'Zadanie'
-      });
+      if (text && text.length > 2) results.push({ id: 'task:' + i, label: text, tab: 'tasks', icon: '✓', kw: 'zadanie ' + text.toLowerCase(), type: 'Zadanie' });
     });
-    // Calendar items
     document.querySelectorAll('#itemList .il-row').forEach((el, i) => {
-      const title = (el.querySelector('.il-text, .il-title') || el).textContent.trim().slice(0, 80);
-      if (title && title.length > 2) results.push({
-        id: 'cal:' + i, label: title, tab: 'calendar', icon: '◧', kw: 'wpis ' + title.toLowerCase(),
-        type: 'Wpis'
-      });
+      const title = el.querySelector('.il-title')?.textContent.trim() || '';
+      if (title && title.length > 2) results.push({ id: 'cal:' + i, label: title, tab: 'calendar', icon: '◧', kw: 'wpis ' + title.toLowerCase(), type: 'Wpis' });
     });
-    // Person board items (planning)
     document.querySelectorAll('[data-tab-panel="planning"] .pb-item-text').forEach((el, i) => {
       const text = el.textContent.trim().slice(0, 80);
-      if (text && text.length > 2) results.push({
-        id: 'plan:' + i, label: text, tab: 'planning', icon: '◫', kw: 'planowanie ' + text.toLowerCase(),
-        type: 'Plan'
-      });
+      if (text && text.length > 2) results.push({ id: 'plan:' + i, label: text, tab: 'planning', icon: '◫', kw: 'planowanie ' + text.toLowerCase(), type: 'Plan' });
     });
-    // Chat last 30 messages
     const chatMsgs = document.querySelectorAll('[data-tab-panel="chat"] .chat-bubble');
     Array.from(chatMsgs).slice(-30).forEach((el, i) => {
       const text = el.textContent.trim().slice(0, 80);
-      if (text && text.length > 2) results.push({
-        id: 'chat:' + i, label: text, tab: 'chat', icon: '✉', kw: 'wiadomość ' + text.toLowerCase(),
-        type: 'Chat'
-      });
+      if (text && text.length > 2) results.push({ id: 'chat:' + i, label: text, tab: 'chat', icon: '✉', kw: 'wiadomość ' + text.toLowerCase(), type: 'Chat' });
     });
     return results;
   }
@@ -238,7 +327,6 @@
     const q = query.toLowerCase().trim();
     const hay = (item.label + ' ' + (item.kw || '')).toLowerCase();
     if (hay.includes(q)) return 100 - Math.abs(hay.indexOf(q));
-    // letter sequence match
     let qi = 0;
     for (let i = 0; i < hay.length && qi < q.length; i++) {
       if (hay[i] === q[qi]) qi++;
@@ -246,10 +334,7 @@
     return qi === q.length ? 50 : 0;
   }
 
-  let cmdkOpen = false;
-  let cmdkSelected = 0;
-  let cmdkResults = [];
-
+  let cmdkOpen = false, cmdkSelected = 0, cmdkResults = [];
   function openCmdK() {
     if (cmdkOpen) return;
     cmdkOpen = true;
@@ -263,7 +348,6 @@
     renderCmdK('');
   }
   function closeCmdK() {
-    if (!cmdkOpen) return;
     cmdkOpen = false;
     const ov = document.getElementById('cmdkOverlay');
     if (ov) ov.classList.add('hidden');
@@ -282,15 +366,13 @@
       out.innerHTML = '<div class="cmdk-empty">Brak wyników. Spróbuj innej frazy.</div>';
       return;
     }
-    // Group by type
     const groups = {};
     cmdkResults.forEach(r => {
       const t = r.action ? 'Akcje' : (r.type || (r.id.startsWith('tab:') ? 'Zakładki' : 'Inne'));
       groups[t] = groups[t] || [];
       groups[t].push(r);
     });
-    let html = '';
-    let idx = 0;
+    let html = '', idx = 0;
     Object.keys(groups).forEach(g => {
       html += `<div class="cmdk-group">${escapeHtml(g)}</div>`;
       groups[g].forEach(r => {
@@ -304,14 +386,8 @@
     });
     out.innerHTML = html;
     out.querySelectorAll('.cmdk-result').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const i = parseInt(btn.getAttribute('data-idx'), 10) || 0;
-        runCmdK(i);
-      });
-      btn.addEventListener('mouseenter', () => {
-        cmdkSelected = parseInt(btn.getAttribute('data-idx'), 10) || 0;
-        updateCmdKHighlight();
-      });
+      btn.addEventListener('click', () => runCmdK(parseInt(btn.getAttribute('data-idx'),10) || 0));
+      btn.addEventListener('mouseenter', () => { cmdkSelected = parseInt(btn.getAttribute('data-idx'),10) || 0; updateCmdKHighlight(); });
     });
     updateCmdKHighlight();
   }
@@ -322,38 +398,27 @@
     const btns = document.querySelectorAll('#cmdkResults .cmdk-result');
     btns.forEach(b => b.classList.remove('selected'));
     const cur = btns[cmdkSelected];
-    if (cur) {
-      cur.classList.add('selected');
-      cur.scrollIntoView({ block: 'nearest' });
-    }
+    if (cur) { cur.classList.add('selected'); cur.scrollIntoView({ block: 'nearest' }); }
   }
   function runCmdK(i) {
     const r = cmdkResults[i];
     if (!r) return;
     closeCmdK();
     if (r.action) { try { r.action(); } catch(e){ console.warn(e); } return; }
-    if (r.tab) {
-      jumpToTab(r.tab);
-      addRecent({ id: r.id, label: r.label, tab: r.tab, icon: r.icon || '✦' });
-    }
+    if (r.tab) jumpToTab(r.tab);
   }
   function jumpToTab(tab) {
     const btn = document.querySelector('.nav-btn.tab[data-tab="' + tab + '"]');
     if (btn) btn.click();
   }
-
   function initCmdK() {
     const trigBtn = document.getElementById('cmdkBtn');
     if (trigBtn) trigBtn.addEventListener('click', openCmdK);
-    // Click jump for sidebar widget
-    document.querySelectorAll('[data-tab-jump]').forEach(el => {
-      el.addEventListener('click', () => jumpToTab(el.getAttribute('data-tab-jump')));
-    });
     document.addEventListener('keydown', e => {
       const isCmdK = (e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K');
       if (isCmdK) { e.preventDefault(); cmdkOpen ? closeCmdK() : openCmdK(); return; }
       if (!cmdkOpen) return;
-      if (e.key === 'Escape') { e.preventDefault(); closeCmdK(); return; }
+      if (e.key === 'Escape')    { e.preventDefault(); closeCmdK(); return; }
       if (e.key === 'ArrowDown') { e.preventDefault(); cmdkSelected = Math.min(cmdkSelected + 1, cmdkResults.length - 1); updateCmdKHighlight(); return; }
       if (e.key === 'ArrowUp')   { e.preventDefault(); cmdkSelected = Math.max(cmdkSelected - 1, 0); updateCmdKHighlight(); return; }
       if (e.key === 'Enter')     { e.preventDefault(); runCmdK(cmdkSelected); return; }
@@ -364,29 +429,32 @@
     if (ov) ov.addEventListener('click', e => { if (e.target === ov) closeCmdK(); });
   }
 
-  // ═════════ HELPERS ═════════
-  function escapeHtml(s) {
-    return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  // ═════════ UPLOAD — group by folder ═════════
+  function regroupUploadByFolder() {
+    const list = document.getElementById('uploadFileList');
+    if (!list) return;
+    if (list.getAttribute('data-grouped') === '1') return;
+    // We don't change app.js render structure — just CSS handles visual.
+    // But we add data-folder attributes from the existing chips/cards if missing.
+    list.setAttribute('data-grouped', '1');
   }
-  function escapeAttr(s) { return escapeHtml(s).replace(/"/g, '&quot;'); }
 
   // ═════════ INIT ═════════
   ready(() => {
     initTheme();
     initCompact();
-    renderRecent();
-    initMiniWidget();
+    initUpcoming();
     initCmdK();
-    setTimeout(() => { markEmojiAvatars(); watchAvatars(); }, 200);
-    // Track tab switches for recent
-    document.querySelectorAll('.nav-btn.tab').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const t = btn.getAttribute('data-tab');
-        const lbl = btn.querySelector('.nav-label')?.textContent?.trim();
-        if (t && lbl) addRecent({ id: 'tab:' + t, label: lbl, tab: t, icon: '◌' });
-      });
-    });
+    setTimeout(() => { paintAllAvatars(); watchAvatars(); }, 200);
+    setTimeout(() => { injectAvatarUploadButton(); }, 400);
+    // Re-inject when profile modal opens (in case modal HTML re-renders)
+    const profBtn = document.getElementById('topbarAvatarBtn');
+    if (profBtn) profBtn.addEventListener('click', () => setTimeout(injectAvatarUploadButton, 100));
+    // Watch for upload list changes to regroup
+    const ul = document.getElementById('uploadFileList');
+    if (ul) {
+      const obs = new MutationObserver(() => { regroupUploadByFolder(); paintAllAvatars(ul); });
+      obs.observe(ul, { childList: true, subtree: true });
+    }
   });
 })();

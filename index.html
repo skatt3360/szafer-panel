@@ -275,23 +275,17 @@
           <span class="nav-label">Harmonogram</span>
         </button>
 
-        <!-- ═══ PINNED / RECENT (v13.2) ═══ -->
-        <div class="sidebar-recent" id="sidebarRecent">
-          <div class="sidebar-section-label">OSTATNIO</div>
-          <div class="sidebar-recent-list" id="sidebarRecentList">
-            <div class="sidebar-recent-empty">Klikaj wpisy by się tu pojawiały</div>
+        <!-- ═══ UPCOMING WIDGET (v13.3) ═══ -->
+        <div class="sidebar-upcoming" id="sidebarUpcoming">
+          <div class="sidebar-section-label">
+            <span>NADCHODZĄCE</span>
+            <button class="su-jump" data-tab-jump="calendar" title="Zobacz wszystkie">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
           </div>
-        </div>
-
-        <!-- ═══ MINI WIDGET — TODAY ═══ -->
-        <div class="sidebar-widget" id="sidebarWidget" data-tab-jump="calendar" title="Przejdź do Panelu">
-          <div class="sw-row">
-            <span class="sw-icon">✦</span>
-            <span class="sw-label">Dzisiaj</span>
-            <span class="sw-count" id="swTodayCount">—</span>
+          <div class="sidebar-upcoming-list" id="sidebarUpcomingList">
+            <div class="su-empty">Brak nadchodzących wpisów</div>
           </div>
-          <div class="sw-bar"><div class="sw-bar-fill" id="swTodayFill" style="width:0%"></div></div>
-          <div class="sw-meta" id="swTodayMeta">Kliknij by zobaczyć</div>
         </div>
 
         <!-- ═══ FOOTER — THEME / COMPACT TOGGLES ═══ -->
